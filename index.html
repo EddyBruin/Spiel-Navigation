@@ -1,656 +1,732 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SPIEL Essen Navigator</title>
-    
+    <title>SPIEL Navigator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
-    
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; overscroll-behavior-y: none; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        .custom-toggle:checked + .toggle-bg { background-color: #4f46e5; }
-        .custom-toggle:checked + .toggle-bg .toggle-dot { transform: translateX(1.25rem); }
-
-        .view-map #panel-list { display: none !important; }
-        .view-list #panel-map { display: none !important; }
+        body { overscroll-behavior-y: contain; }
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: bold; }
+        .hidden-mobile { display: none; }
         @media (min-width: 768px) {
-            .view-map #panel-list, .view-list #panel-list { display: flex !important; }
-            .view-map #panel-map, .view-list #panel-map { display: flex !important; }
-            #mobile-view-tabs { display: none !important; }
+            .hidden-mobile { display: flex !important; }
+            .mobile-tabs { display: none; }
+            #sidebar { display: flex !important; }
+            #map-container { display: flex !important; }
         }
-
-        #map-wrapper { cursor: grab; display: inline-block; position: relative; transform-origin: 0 0; }
-        #map-wrapper:active { cursor: grabbing; }
-        #map-img { display: block; max-width: none; pointer-events: none; }
         
-        .note-body { display: none; }
-        .note-body.open { display: block; animation: slideDown 0.2s ease-out forwards; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Priority Backgrounds */
+        .bg-prio-need { background-color: #dcfce7; } /* green-100 */
+        .bg-prio-want { background-color: #dbeafe; } /* blue-100 */
+        .bg-prio-like { background-color: #fef9c3; } /* yellow-100 */
+        .bg-prio-maybe { background-color: #f3f4f6; } /* gray-100 */
         
-        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        /* Priority Labels */
+        .lbl-need { background-color: #22c55e; color: white; } /* green-500 */
+        .lbl-want { background-color: #3b82f6; color: white; } /* blue-500 */
+        .lbl-like { background-color: #eab308; color: black; } /* yellow-500 */
+        .lbl-maybe { background-color: #6b7280; color: white; } /* gray-500 */
+        .lbl-notfound { background-color: #ef4444; color: white; } /* red-500 */
 
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .strike { text-decoration: line-through; opacity: 0.6; }
+        .pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-ring { 
+            0% { transform: scale(1); opacity: 1; } 
+            50% { transform: scale(1.5); opacity: 0.5; } 
+            100% { transform: scale(1); opacity: 0; } 
         }
-        .pulse-target {
-            position: absolute; border: 4px solid #ef4444; background: rgba(239, 68, 68, 0.3);
-            border-radius: 4px; animation: pulse-ring 2s infinite; pointer-events: none; z-index: 50;
-        }
-
-        /* Prevent text selection while panning on mobile */
-        .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col bg-slate-100 text-slate-800 view-list">
+<body class="bg-slate-50 h-screen flex flex-col font-sans overflow-hidden">
 
-    <header id="drop-header" class="hidden bg-white border-b border-slate-200 shadow-sm z-30 shrink-0">
-        <div id="drop-zone" class="m-4 p-8 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer text-slate-500 bg-slate-50 hover:bg-slate-100 transition-colors">
-            <i class="fa-solid fa-file-csv text-4xl mb-3 text-indigo-400"></i>
-            <h2 class="text-lg font-bold text-slate-700">Missing data.csv</h2>
-            <p class="text-sm mt-1">Drag and drop your CSV here, or click to upload</p>
-            <input type="file" id="file-input" accept=".csv, .txt" class="hidden">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-3 shadow-md flex justify-between items-center z-20 shrink-0">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-blue-400"></i>
+            <span id="txt-title">SPIEL Navigator</span>
+        </h1>
+        <div class="flex items-center gap-2 text-sm bg-slate-800 rounded-lg p-1">
+            <button onclick="setLang('nl')" id="lang-nl" class="px-2 py-1 rounded font-bold">NL</button>
+            <button onclick="setLang('en')" id="lang-en" class="px-2 py-1 rounded">EN</button>
+            <button onclick="setLang('de')" id="lang-de" class="px-2 py-1 rounded">DE</button>
         </div>
     </header>
 
-    <header id="loaded-header" class="bg-slate-900 text-white shadow-md z-30 shrink-0 flex flex-col">
-        <div class="px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-map-location-dot text-indigo-400"></i> SPIEL Tracker
-            </h1>
-            <div class="flex gap-2">
-                <button onclick="clearCache()" class="text-xs bg-red-600 hover:bg-red-500 px-2 py-1 rounded text-white flex items-center gap-1" title="Force OCR Re-scan">
-                    <i class="fa-solid fa-trash"></i> OCR
-                </button>
-            </div>
-        </div>
+    <!-- Mobile View Tabs -->
+    <div class="mobile-tabs flex bg-white border-b shrink-0 shadow-sm z-10">
+        <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-3 text-center tab-active text-gray-500 transition-colors">
+            <i class="fa-solid fa-list mr-1"></i> <span id="txt-tab-list">Lijst</span>
+        </button>
+        <button onclick="switchTab('map')" id="tab-map" class="flex-1 py-3 text-center text-gray-500 transition-colors">
+            <i class="fa-solid fa-map mr-1"></i> <span id="txt-tab-map">Kaart</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden relative">
         
-        <div id="mobile-view-tabs" class="flex bg-slate-800 p-1 mx-2 mb-2 rounded-lg">
-            <button id="btn-view-list" class="flex-1 py-2 px-3 text-sm font-semibold rounded bg-indigo-600 text-white shadow transition-all">List</button>
-            <button id="btn-view-map" class="flex-1 py-2 px-3 text-sm font-semibold rounded text-slate-300 hover:text-white transition-all">Map</button>
+        <!-- Sidebar / List -->
+        <div id="sidebar" class="w-full md:w-1/3 lg:w-1/4 bg-white border-r flex flex-col h-full z-10 absolute md:relative inset-0">
+            <!-- Controls -->
+            <div class="p-3 border-b bg-slate-50 shrink-0 flex justify-between items-center">
+                <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                    <input type="checkbox" id="hide-visited" checked class="w-4 h-4 text-blue-600 rounded">
+                    <span id="txt-hide">Verberg afgevinkt</span>
+                </label>
+                <div id="ocr-status" class="text-xs text-blue-600 font-medium hidden">
+                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> <span id="txt-scanning">Scannen...</span>
+                </div>
+            </div>
+
+            <!-- Hall Tabs -->
+            <div class="flex overflow-x-auto border-b bg-slate-100 shrink-0 scrollbar-hide text-sm" id="hall-tabs">
+                <!-- Tabs generated by JS -->
+            </div>
+
+            <!-- List -->
+            <ul id="game-list" class="overflow-y-auto flex-1 p-2 space-y-2 pb-20 md:pb-2">
+                <!-- List items generated by JS -->
+            </ul>
         </div>
-    </header>
 
-    <div id="app-content" class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-        
-        <aside id="panel-list" class="w-full md:w-[26rem] lg:w-[30rem] bg-white border-r border-slate-200 flex flex-col shadow-lg z-20 shrink-0 h-full">
-            <div class="p-2 border-b border-slate-200 bg-slate-50">
-                <p class="text-xs font-bold text-slate-500 mb-2 uppercase px-1">Hall Selection</p>
-                <div class="flex flex-wrap gap-1" id="hall-tabs"></div>
+        <!-- Map Area -->
+        <div id="map-container" class="w-full md:w-2/3 lg:w-3/4 bg-slate-200 hidden md:flex flex-col relative h-full absolute inset-0">
+            <div class="absolute inset-0 overflow-hidden" id="panzoom-wrapper">
+                <div id="panzoom-element" class="relative w-full h-full origin-top-left">
+                    <img id="map-image" src="" class="absolute top-0 left-0 max-w-none shadow-lg border bg-white hidden" style="transform-origin: top left;">
+                    <canvas id="map-overlay" class="absolute top-0 left-0 pointer-events-none"></canvas>
+                    <div id="pulse-marker" class="absolute w-10 h-10 border-4 border-blue-500 rounded-full pulse hidden pointer-events-none" style="transform: translate(-50%, -50%);"></div>
+                </div>
             </div>
-
-            <div class="p-2 border-b border-slate-200 bg-white">
-                <p class="text-xs font-bold text-slate-500 mb-2 uppercase px-1">Priorities</p>
-                <div class="flex flex-wrap gap-1" id="priority-filters"></div>
-            </div>
-
-            <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-3 text-sm font-medium">
-                <label class="flex items-center cursor-pointer">
-                    <input type="checkbox" id="toggle-hide-visited" class="sr-only custom-toggle" checked>
-                    <div class="w-9 h-5 bg-slate-300 rounded-full relative transition-colors duration-200 toggle-bg">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 toggle-dot shadow"></div>
-                    </div>
-                    <span class="ml-2 text-slate-700">Hide crossed-out items</span>
-                </label>
-                
-                <label class="flex items-center cursor-pointer">
-                    <input type="checkbox" id="toggle-notes" class="sr-only custom-toggle">
-                    <div class="w-9 h-5 bg-slate-300 rounded-full relative transition-colors duration-200 toggle-bg">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 toggle-dot shadow"></div>
-                    </div>
-                    <span class="ml-2 text-slate-700">Expand all notes</span>
-                </label>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-3 bg-slate-100 space-y-2 relative" id="games-container">
-                <div class="text-center p-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2 block"></i>Loading...</div>
-            </div>
-        </aside>
-
-        <main id="panel-map" class="flex-1 flex flex-col bg-slate-200 relative overflow-hidden h-full">
             
-            <div class="absolute top-4 right-4 z-20 flex gap-2">
-                <div class="bg-white rounded-lg shadow-lg flex flex-col border border-slate-200">
-                    <button id="btn-zoom-in" class="p-3 hover:bg-slate-100 rounded-t-lg border-b border-slate-200"><i class="fa-solid fa-plus text-slate-700"></i></button>
-                    <button id="btn-zoom-out" class="p-3 hover:bg-slate-100 rounded-b-lg"><i class="fa-solid fa-minus text-slate-700"></i></button>
-                </div>
+            <!-- Map Controls -->
+            <div class="absolute bottom-6 right-6 flex flex-col gap-2 z-20">
+                <button onclick="zoomIn()" class="bg-white p-3 rounded-full shadow-lg text-slate-700 hover:text-blue-600"><i class="fa-solid fa-plus"></i></button>
+                <button onclick="zoomOut()" class="bg-white p-3 rounded-full shadow-lg text-slate-700 hover:text-blue-600"><i class="fa-solid fa-minus"></i></button>
+                <button onclick="resetZoom()" class="bg-white p-3 rounded-full shadow-lg text-slate-700 hover:text-blue-600"><i class="fa-solid fa-expand"></i></button>
             </div>
+        </div>
 
-            <div id="ocr-progress-widget" class="absolute bottom-4 left-4 right-4 md:right-auto md:w-80 bg-slate-900 text-white rounded-lg shadow-2xl p-4 z-20 transition-transform duration-300 transform translate-y-full opacity-0 hidden">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-bold text-sm"><i class="fa-solid fa-microchip fa-spin text-indigo-400 mr-2"></i>Double-Pass OCR</h4>
-                    <span id="ocr-progress-count" class="text-xs bg-slate-700 px-2 py-0.5 rounded">0/8</span>
-                </div>
-                <div class="w-full bg-slate-700 rounded-full h-2 mb-1 overflow-hidden">
-                    <div id="ocr-progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <p id="ocr-progress-text" class="text-[10px] text-slate-400 font-mono truncate">Initializing...</p>
+    </main>
+
+    <!-- File Upload Fallback (If data.csv is missing) -->
+    <div id="upload-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
+            <i class="fa-solid fa-file-csv text-5xl text-blue-500 mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">CSV Upload</h2>
+            <p class="text-sm text-slate-600 mb-4" id="txt-upload-desc">Sleep je data.csv hierheen of selecteer het bestand.</p>
+            <input type="file" id="csv-file" accept=".csv" class="hidden">
+            <label for="csv-file" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium cursor-pointer hover:bg-blue-700 block">Kies Bestand</label>
+        </div>
+    </div>
+
+    <!-- Modal for Map Clicks -->
+    <div id="booth-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <h3 class="font-bold text-lg" id="modal-title">Booth Games</h3>
+                <button onclick="closeModal()" class="text-slate-500 hover:text-slate-800"><i class="fa-solid fa-xmark fa-lg"></i></button>
             </div>
-
-            <div class="flex-1 relative overflow-hidden no-select" id="map-viewport">
-                <div id="map-error" class="hidden absolute inset-0 m-auto flex-col items-center justify-center text-slate-500 z-10 p-4">
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 text-center max-w-sm w-full">
-                        <i class="fa-solid fa-image-slash text-4xl mb-3 text-slate-300"></i>
-                        <p class="font-bold text-slate-700 text-lg mb-2">Map File Missing</p>
-                        <p class="text-sm font-mono bg-slate-100 p-2 rounded text-indigo-600 font-bold" id="error-file-name">hal1.png</p>
-                    </div>
-                </div>
-
-                <div id="map-wrapper" class="hidden">
-                    <img id="map-img" alt="Map">
-                    <canvas id="map-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
-                    <div id="map-click-layer" class="absolute top-0 left-0 w-full h-full touch-none"></div>
-                    <div id="map-pulse-layer" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
-                </div>
-            </div>
-        </main>
-        
-        <div id="info-modal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform translate-y-4 transition-transform duration-200" id="info-modal-content">
-                <div class="bg-slate-900 p-4 flex justify-between items-center text-white">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fa-solid fa-location-dot text-indigo-400"></i> 
-                        <span id="modal-booth-title">Booth</span>
-                    </h3>
-                    <button id="modal-close" class="text-slate-300 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
-                </div>
-                <div class="p-4 max-h-[60vh] overflow-y-auto space-y-3 bg-slate-50" id="modal-games-list"></div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-3" id="modal-content">
+                <!-- Populated by JS -->
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_VISITED = 'checkedGames';
-        const STORAGE_NOTES = 'customNotes';
-        const STORAGE_OCR = 'ocrCache_v2';
-
-        const PriorityMap = {
-            'Need':  { level: 1, solid: '#16a34a', bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300' },
-            'Want':  { level: 2, solid: '#2563eb', bg: 'bg-blue-100',  text: 'text-blue-800', border: 'border-blue-300' },
-            'Like':  { level: 3, solid: '#ca8a04', bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-300' },
-            'Maybe': { level: 4, solid: '#4b5563', bg: 'bg-gray-100',  text: 'text-gray-800', border: 'border-gray-300' }
+        // --- Translations ---
+        const i18n = {
+            'nl': {
+                title: "SPIEL Navigator", tabList: "Lijst", tabMap: "Kaart", hideVisited: "Verberg afgevinkt",
+                scanning: "Scannen...", hall: "Hal", uploadDesc: "Kon data.csv niet automatisch inladen. Upload handmatig.",
+                notes: "Notities...", preorder: "Preorder", noGames: "Geen spellen in deze hal."
+            },
+            'en': {
+                title: "SPIEL Navigator", tabList: "List", tabMap: "Map", hideVisited: "Hide visited",
+                scanning: "Scanning...", hall: "Hall", uploadDesc: "Could not auto-load data.csv. Please upload manually.",
+                notes: "Notes...", preorder: "Preorder", noGames: "No games in this hall."
+            },
+            'de': {
+                title: "SPIEL Navigator", tabList: "Liste", tabMap: "Karte", hideVisited: "Besuchte ausb.",
+                scanning: "Scannen...", hall: "Halle", uploadDesc: "data.csv konnte nicht geladen werden. Bitte manuell hochladen.",
+                notes: "Notizen...", preorder: "Vorbestellung", noGames: "Keine Spiele in dieser Halle."
+            }
         };
 
-        const AppState = {
-            games: [],
-            halls: ['1', '2', '3', '4', '5', '6', '7', '8'],
-            currentHall: '1',
-            activePriorities: new Set(['Need', 'Want', 'Like', 'Maybe']),
-            
-            hideVisited: true,
-            showAllNotes: false,
-            expandedNotes: new Set(),
-            
-            savedVisited: JSON.parse(localStorage.getItem(STORAGE_VISITED)) || {},
-            savedNotes: JSON.parse(localStorage.getItem(STORAGE_NOTES)) || {},
-            ocrData: JSON.parse(localStorage.getItem(STORAGE_OCR)) || {},
-            
-            panzoomInstance: null,
-            focusTarget: null,
+        const prioOrder = { 'Need': 1, 'Want': 2, 'Like': 3, 'Maybe': 4 };
 
-            pointerState: { startX: 0, startY: 0, isDown: false }
-        };
+        // --- State ---
+        let lang = 'nl';
+        let games = [];
+        let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
+        let userNotes = JSON.parse(localStorage.getItem('spielNotes') || '{}');
+        let ocrCache = JSON.parse(localStorage.getItem('spielOcrCacheV3') || '{}');
+        let currentHall = '1';
+        let panzoomInstance = null;
+        let isOcrRunning = false;
 
-        const Elements = {
-            dropHeader: document.getElementById('drop-header'),
-            fileInput: document.getElementById('file-input'),
-            hallTabs: document.getElementById('hall-tabs'),
-            priorityFilters: document.getElementById('priority-filters'),
-            gameList: document.getElementById('games-container'),
-            mapWrapper: document.getElementById('map-wrapper'),
-            mapImg: document.getElementById('map-img'),
-            mapCanvas: document.getElementById('map-canvas'),
-            mapClickLayer: document.getElementById('map-click-layer'),
-            mapPulseLayer: document.getElementById('map-pulse-layer'),
-            mapError: document.getElementById('map-error'),
-            ocrWidget: document.getElementById('ocr-progress-widget'),
-            modal: document.getElementById('info-modal'),
-            modalContent: document.getElementById('info-modal-content'),
-            modalClose: document.getElementById('modal-close')
-        };
+        // Pointer tracking for map clicks
+        let pointerDownPos = { x: 0, y: 0 };
 
-        function initApp() {
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initPanzoom();
+            setupEventListeners();
+            setLang('nl'); // Default
+            attemptAutoLoadCSV();
+        });
+
+        function setLang(l) {
+            lang = l;
+            document.querySelectorAll('#lang-nl, #lang-en, #lang-de').forEach(el => el.classList.remove('bg-blue-600', 'text-white'));
+            document.getElementById(`lang-${l}`).classList.add('bg-blue-600', 'text-white');
+            
+            document.getElementById('txt-title').innerText = i18n[l].title;
+            document.getElementById('txt-tab-list').innerText = i18n[l].tabList;
+            document.getElementById('txt-tab-map').innerText = i18n[l].tabMap;
+            document.getElementById('txt-hide').innerText = i18n[l].hideVisited;
+            document.getElementById('txt-scanning').innerText = i18n[l].scanning;
+            document.getElementById('txt-upload-desc').innerText = i18n[l].uploadDesc;
+            
+            if (games.length > 0) {
+                renderHallTabs();
+                renderList();
+            }
+        }
+
+        // --- File Handling ---
+        function attemptAutoLoadCSV() {
             fetch('data.csv')
-                .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-                .then(t => Papa.parse(t, { header: true, skipEmptyLines: true, complete: res => processCSVData(res.data) }))
+                .then(response => {
+                    if (!response.ok) throw new Error('Not found');
+                    return response.text();
+                })
+                .then(csv => processCSV(csv))
                 .catch(() => {
-                    Elements.dropHeader.classList.remove('hidden');
-                    document.getElementById('drop-zone').onclick = () => Elements.fileInput.click();
-                    Elements.fileInput.onchange = e => {
-                        if (e.target.files.length) Papa.parse(e.target.files[0], { header: true, skipEmptyLines: true, complete: res => processCSVData(res.data) });
-                    };
+                    document.getElementById('upload-overlay').classList.remove('hidden');
                 });
-
-            document.getElementById('btn-view-list').onclick = () => setMobileView('list');
-            document.getElementById('btn-view-map').onclick = () => setMobileView('map');
-
-            document.getElementById('toggle-hide-visited').onchange = e => { AppState.hideVisited = e.target.checked; renderGames(); drawMap(); };
-            document.getElementById('toggle-notes').onchange = e => { AppState.showAllNotes = e.target.checked; AppState.expandedNotes.clear(); renderGames(); };
-
-            document.getElementById('btn-zoom-in').onclick = () => { if(AppState.panzoomInstance) AppState.panzoomInstance.zoomIn(); };
-            document.getElementById('btn-zoom-out').onclick = () => { if(AppState.panzoomInstance) AppState.panzoomInstance.zoomOut(); };
-
-            Elements.modalClose.onclick = closeModal;
-            Elements.modal.onclick = e => { if(e.target === Elements.modal) closeModal(); };
-
-            setupMapClicks();
         }
 
-        function clearCache() {
-            localStorage.removeItem(STORAGE_OCR);
-            location.reload();
-        }
-
-        function processCSVData(data) {
-            Elements.dropHeader.classList.add('hidden');
-            AppState.games = [];
-            data.forEach(row => {
-                const keys = Object.keys(row).reduce((acc, k) => { acc[k.toLowerCase().trim()] = k; return acc; }, {});
-                const getVal = (...names) => { for(let n of names) if(keys[n]) return row[keys[n]].trim(); return ''; };
-
-                const name = getVal('name', 'title');
-                if (!name) return;
-
-                const hallRaw = getVal('hall', 'hal');
-                const boothRaw = getVal('booth', 'stand');
-                const combinedBooth = (hallRaw + boothRaw).replace(/\s+/g, '').toUpperCase();
-                
-                let pRaw = getVal('priority', 'category');
-                pRaw = pRaw.charAt(0).toUpperCase() + pRaw.slice(1).toLowerCase();
-                const category = PriorityMap[pRaw] ? pRaw : 'Maybe';
-
-                AppState.games.push({
-                    uid: `${name}_${combinedBooth}`.replace(/[^a-zA-Z0-9]/g, '_'),
-                    name, publisher: getVal('publishers', 'publisher'), 
-                    hall: hallRaw, booth: boothRaw, combinedBooth,
-                    priority: category, priorityIndex: PriorityMap[category].level,
-                    isPreorder: getVal('preorder') == '1', csvNotes: getVal('notes', 'notities')
-                });
-            });
-
-            // Primary: Priority, Secondary: Booth alphanumeric
-            AppState.games.sort((a, b) => a.priorityIndex - b.priorityIndex || a.combinedBooth.localeCompare(b.combinedBooth));
-            
-            buildFilters();
-            buildHallTabs();
-            loadHall('1');
-
-            if (Object.keys(AppState.ocrData).length === 0) {
-                runDoublePassOCR();
+        document.getElementById('csv-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => processCSV(evt.target.result);
+                reader.readAsText(file);
             }
-        }
+        });
 
-        function setMobileView(view) {
-            const body = document.body;
-            const btnL = document.getElementById('btn-view-list');
-            const btnM = document.getElementById('btn-view-map');
-            
-            if(view === 'list') {
-                body.classList.replace('view-map', 'view-list');
-                btnL.className = "flex-1 py-2 px-3 text-sm font-semibold rounded bg-indigo-600 text-white shadow transition-all";
-                btnM.className = "flex-1 py-2 px-3 text-sm font-semibold rounded text-slate-300 hover:text-white bg-transparent transition-all";
-            } else {
-                body.classList.replace('view-list', 'view-map');
-                btnM.className = "flex-1 py-2 px-3 text-sm font-semibold rounded bg-indigo-600 text-white shadow transition-all";
-                btnL.className = "flex-1 py-2 px-3 text-sm font-semibold rounded text-slate-300 hover:text-white bg-transparent transition-all";
-                if (AppState.panzoomInstance && Elements.mapImg.complete) fitMapToScreen();
-            }
-        }
-
-        async function runDoublePassOCR() {
-            Elements.ocrWidget.classList.remove('hidden');
-            setTimeout(() => Elements.ocrWidget.classList.remove('translate-y-full', 'opacity-0'), 100);
-
-            const worker = await Tesseract.createWorker("eng", 1, {
-                logger: m => { if(m.status === 'recognizing text') document.getElementById('ocr-progress-text').innerText = `Pass: ${Math.floor(m.progress * 100)}%`; }
-            });
-            await worker.setParameters({ tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT });
-
-            let completed = 0;
-            for (let hall of AppState.halls) {
-                document.getElementById('ocr-progress-count').innerText = `${completed}/8 Halls`;
-                document.getElementById('ocr-progress-bar').style.width = `${(completed / 8) * 100}%`;
-
-                try {
-                    const img = new Image(); img.src = `hal${hall}.png`;
-                    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+        function processCSV(csvText) {
+            document.getElementById('upload-overlay').classList.add('hidden');
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    games = results.data.map((row, idx) => {
+                        const hall = row['hall'] ? row['hall'].replace('.0', '').trim() : '';
+                        const booth = row['booth'] ? row['booth'].trim() : '';
+                        return {
+                            id: `game_${idx}`,
+                            name: row['name'],
+                            publisher: row['publishers'],
+                            hall: hall,
+                            boothLabel: hall && booth ? `${hall}${booth}` : '',
+                            rawBooth: booth,
+                            priority: row['priority'],
+                            preorder: row['preorder'] === '1',
+                            notes: row['notes'] || ''
+                        };
+                    });
                     
-                    const extractedWords = [];
-                    const rx = /[A-Z]\s?[0-9]{2,3}/g;
-
-                    // Pass 1: Scale 2.5x, Contrast + Grayscale
-                    const cvs1 = document.createElement('canvas');
-                    cvs1.width = img.naturalWidth * 2.5; cvs1.height = img.naturalHeight * 2.5;
-                    const ctx1 = cvs1.getContext('2d');
-                    ctx1.filter = 'contrast(200%) grayscale(100%)';
-                    ctx1.drawImage(img, 0, 0, cvs1.width, cvs1.height);
-                    
-                    const res1 = await worker.recognize(cvs1);
-                    res1.data.words.forEach(w => extractedWords.push({...w, scale: 2.5, cvsW: cvs1.width, cvsH: cvs1.height}));
-
-                    // Pass 2: Scale 3.5x, Strict B&W Threshold
-                    const cvs2 = document.createElement('canvas');
-                    cvs2.width = img.naturalWidth * 3.5; cvs2.height = img.naturalHeight * 3.5;
-                    const ctx2 = cvs2.getContext('2d');
-                    ctx2.drawImage(img, 0, 0, cvs2.width, cvs2.height);
-                    const imgData = ctx2.getImageData(0,0, cvs2.width, cvs2.height);
-                    for(let i=0; i<imgData.data.length; i+=4) {
-                        const avg = (imgData.data[i] + imgData.data[i+1] + imgData.data[i+2]) / 3;
-                        const v = avg > 140 ? 255 : 0;
-                        imgData.data[i] = imgData.data[i+1] = imgData.data[i+2] = v;
-                    }
-                    ctx2.putImageData(imgData, 0, 0);
-
-                    const res2 = await worker.recognize(cvs2);
-                    res2.data.words.forEach(w => extractedWords.push({...w, scale: 3.5, cvsW: cvs2.width, cvsH: cvs2.height}));
-
-                    // Process and normalize words
-                    const validBooths = [];
-                    extractedWords.forEach(w => {
-                        const rawText = w.text.replace(/O/g, '0').toUpperCase();
-                        const matches = rawText.match(rx);
-                        if (matches) {
-                            const pureStr = matches[0].replace(/\s+/g, ''); // e.g. D450
-                            validBooths.push({
-                                text: pureStr,
-                                xPct: w.bbox.x0 / w.cvsW, yPct: w.bbox.y0 / w.cvsH,
-                                wPct: (w.bbox.x1 - w.bbox.x0) / w.cvsW, hPct: (w.bbox.y1 - w.bbox.y0) / w.cvsH
-                            });
+                    // Sort: Priority -> Hall -> Booth
+                    games.sort((a, b) => {
+                        if (prioOrder[a.priority] !== prioOrder[b.priority]) {
+                            return (prioOrder[a.priority] || 9) - (prioOrder[b.priority] || 9);
                         }
+                        if (a.hall !== b.hall) return a.hall.localeCompare(b.hall);
+                        return a.boothLabel.localeCompare(b.boothLabel);
                     });
 
-                    AppState.ocrData[hall] = validBooths;
-                    if (AppState.currentHall === hall) { renderGames(); drawMap(); }
-                } catch(e) { console.warn(`Skipped Hal ${hall}`); }
-                completed++;
-            }
-            
-            await worker.terminate();
-            localStorage.setItem(STORAGE_OCR, JSON.stringify(AppState.ocrData));
-            document.getElementById('ocr-progress-text').innerText = "Complete!";
-            document.getElementById('ocr-progress-bar').style.width = '100%';
-            setTimeout(() => { Elements.ocrWidget.classList.add('hidden'); }, 1500);
-            renderGames(); drawMap();
+                    // Start background OCR if not fully cached
+                    checkAndRunOCR();
+                    
+                    // Render UI
+                    currentHall = '1';
+                    renderHallTabs();
+                    loadMapImage();
+                }
+            });
         }
 
-        function buildFilters() {
-            Elements.priorityFilters.innerHTML = '';
-            Object.keys(PriorityMap).forEach(key => {
+        // --- UI Rendering ---
+        function getPrioStyles(priority) {
+            switch(priority) {
+                case 'Need': return { bg: 'bg-prio-need', border: 'border-green-300', lbl: 'lbl-need', hex: 'rgba(34, 197, 94, 0.4)' };
+                case 'Want': return { bg: 'bg-prio-want', border: 'border-blue-300', lbl: 'lbl-want', hex: 'rgba(59, 130, 246, 0.4)' };
+                case 'Like': return { bg: 'bg-prio-like', border: 'border-yellow-300', lbl: 'lbl-like', hex: 'rgba(234, 179, 8, 0.4)' };
+                case 'Maybe': return { bg: 'bg-prio-maybe', border: 'border-gray-300', lbl: 'lbl-maybe', hex: 'rgba(107, 114, 128, 0.4)' };
+                default: return { bg: 'bg-white', border: 'border-slate-200', lbl: 'bg-slate-500 text-white', hex: 'rgba(148, 163, 184, 0.4)' };
+            }
+        }
+
+        function renderHallTabs() {
+            const tabsContainer = document.getElementById('hall-tabs');
+            tabsContainer.innerHTML = '';
+            const hideChecked = document.getElementById('hide-visited').checked;
+            
+            for (let i = 1; i <= 8; i++) {
+                const hallStr = i.toString();
+                
+                // Calculate count
+                const count = games.filter(g => g.hall === hallStr && (!hideChecked || !visited.includes(g.id))).length;
+                
                 const btn = document.createElement('button');
-                btn.className = `flex-1 py-1 px-2 text-xs font-bold rounded border transition-colors ${
-                    AppState.activePriorities.has(key) ? `bg-slate-800 text-white border-slate-800` : 'bg-white border-slate-200 text-slate-400'
-                }`;
-                btn.innerText = key;
+                btn.className = `flex-none px-4 py-3 font-medium transition-colors border-b-2 ${currentHall === hallStr ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-600 hover:bg-slate-200'}`;
+                btn.innerHTML = `${i18n[lang].hall} ${i} <span class="ml-1 text-xs bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full">${count}</span>`;
                 btn.onclick = () => {
-                    if(AppState.activePriorities.has(key)) { if(AppState.activePriorities.size > 1) AppState.activePriorities.delete(key); } 
-                    else { AppState.activePriorities.add(key); }
-                    buildFilters(); renderGames(); drawMap();
+                    currentHall = hallStr;
+                    renderHallTabs(); // Refresh active state & counts
+                    loadMapImage();
                 };
-                Elements.priorityFilters.appendChild(btn);
-            });
-        }
-
-        function buildHallTabs() {
-            Elements.hallTabs.innerHTML = '';
-            AppState.halls.forEach(hall => {
-                const btn = document.createElement('button');
-                btn.className = `px-3 py-1.5 rounded text-sm font-semibold transition-colors border ${
-                    AppState.currentHall === hall ? `bg-slate-800 text-white shadow` : `bg-white text-slate-600 hover:bg-slate-50`
-                }`;
-                btn.innerText = `Hall ${hall}`;
-                btn.onclick = () => loadHall(hall);
-                Elements.hallTabs.appendChild(btn);
-            });
-        }
-
-        function renderGames() {
-            Elements.gameList.innerHTML = '';
-            const filtered = AppState.games.filter(g => 
-                g.hall === AppState.currentHall && 
-                AppState.activePriorities.has(g.priority) && 
-                !(AppState.hideVisited && AppState.savedVisited[g.uid])
-            );
-
-            if (!filtered.length) {
-                Elements.gameList.innerHTML = `<div class="text-center p-6 text-slate-400">No games found.</div>`; return;
+                tabsContainer.appendChild(btn);
             }
+        }
 
-            const ocrHall = AppState.ocrData[AppState.currentHall] || [];
+        function renderList() {
+            const list = document.getElementById('game-list');
+            list.innerHTML = '';
+            const hideChecked = document.getElementById('hide-visited').checked;
             
-            filtered.forEach(g => {
-                const isVisited = AppState.savedVisited[g.uid];
-                const userNotes = AppState.savedNotes[g.uid] !== undefined ? AppState.savedNotes[g.uid] : g.csvNotes;
-                const pInfo = PriorityMap[g.priority];
-                const isExp = AppState.showAllNotes || AppState.expandedNotes.has(g.uid);
+            const hallGames = games.filter(g => g.hall === currentHall);
+            let visibleCount = 0;
 
-                // Check if found in OCR
-                const pureBooth = g.combinedBooth.replace(/^\d+/, '');
-                const found = ocrHall.some(w => w.text === g.combinedBooth || w.text === pureBooth);
-                const labelStyle = found ? `${pInfo.bg} ${pInfo.text} ${pInfo.border}` : `bg-red-500 text-white border-red-600`;
-                const mapIcon = found ? 'fa-crosshairs' : 'fa-triangle-exclamation';
+            hallGames.forEach(game => {
+                const isVisited = visited.includes(game.id);
+                if (hideChecked && isVisited) return;
+                visibleCount++;
 
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-lg border transition-all flex flex-col gap-2 bg-white ${isVisited ? 'opacity-50 grayscale' : 'shadow-sm'}`;
-                if(!isVisited) div.style.borderLeft = `4px solid ${pInfo.solid}`;
+                const styles = getPrioStyles(game.priority);
+                
+                // OCR check for label color
+                const hallOcr = ocrCache[currentHall] || {};
+                let labelStyle = styles.lbl;
+                let found = false;
+                
+                // Check if booth string exists in OCR data
+                if (game.boothLabel) {
+                    const searchStr = game.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                    for (const [key, val] of Object.entries(hallOcr)) {
+                        if (key.includes(searchStr) || searchStr.includes(key)) {
+                            found = true; break;
+                        }
+                    }
+                }
+                
+                if (game.boothLabel && !found && Object.keys(hallOcr).length > 0) {
+                    labelStyle = 'lbl-notfound'; // Red if OCR finished but not found
+                }
 
-                div.innerHTML = `
-                    <div class="flex gap-3 items-start">
-                        <div class="mt-0.5 w-6 h-6 shrink-0 cursor-pointer flex items-center justify-center" onclick="event.stopPropagation(); window.toggleVisited('${g.uid}')">
-                            <div class="w-5 h-5 border-2 rounded flex items-center justify-center ${isVisited ? 'bg-slate-500 border-slate-500' : 'bg-white border-slate-300'}">
-                                <svg class="w-3.5 h-3.5 ${isVisited ? 'block' : 'hidden'} text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                const savedNote = userNotes[game.id] !== undefined ? userNotes[game.id] : game.notes;
+                
+                const li = document.createElement('li');
+                li.className = `p-3 rounded-lg border shadow-sm transition-all ${isVisited ? 'opacity-50 grayscale bg-white' : styles.bg} ${styles.border}`;
+                
+                li.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" ${isVisited ? 'checked' : ''} onchange="toggleVisited('${game.id}')" class="mt-1 w-5 h-5 text-blue-600 rounded cursor-pointer shrink-0">
+                        <div class="flex-1 min-w-0" onclick="toggleNote('${game.id}')">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-bold text-slate-800 truncate ${isVisited ? 'strike' : ''}">${game.name}</h3>
+                                ${game.preorder ? '<i class="fa-solid fa-money-bill-wave text-green-600 ml-2" title="Preorder"></i>' : ''}
                             </div>
-                        </div>
-                        <div class="flex-1 min-w-0 cursor-pointer" onclick="window.toggleCardNote('${g.uid}')">
-                            <div class="flex justify-between items-start gap-2">
-                                <h3 class="font-bold text-sm leading-tight ${isVisited ? 'line-through text-slate-500' : 'text-slate-900'}">
-                                    ${g.name} ${g.isPreorder ? '<i class="fa-solid fa-sack-dollar text-green-600" title="Preorder"></i>' : ''}
-                                </h3>
-                                <button onclick="event.stopPropagation(); window.focusOnMap('${g.hall}', '${g.combinedBooth}')" 
-                                        class="border transition-colors text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 shadow-sm flex items-center gap-1 ${labelStyle}">
-                                    <i class="fa-solid ${mapIcon}"></i> ${g.combinedBooth}
+                            <p class="text-sm text-slate-600 truncate mb-2">${game.publisher || '-'}</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="focusMap('${game.boothLabel}'); event.stopPropagation();" class="text-xs px-2 py-1 rounded font-bold shadow-sm ${labelStyle}">
+                                    <i class="fa-solid fa-location-dot mr-1"></i>${game.boothLabel || '?'}
                                 </button>
+                                <span class="text-xs bg-white/60 text-slate-700 px-2 py-1 rounded border border-slate-300 font-medium">
+                                    ${game.priority}
+                                </span>
                             </div>
-                            <p class="text-xs mt-1 truncate text-slate-500"><i class="fa-solid fa-industry mr-1 opacity-70"></i>${g.publisher}</p>
+                            
+                            <div id="note-${game.id}" class="mt-3 hidden">
+                                <textarea onchange="saveNote('${game.id}', this.value)" onclick="event.stopPropagation()" class="w-full text-sm p-2 border rounded bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="${i18n[lang].notes}">${savedNote}</textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="note-body ${isExp ? 'open' : ''}">
-                        <textarea class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400 resize-none h-20" 
-                            placeholder="Add notes..." oninput="window.saveNote('${g.uid}', this.value)" onclick="event.stopPropagation()">${userNotes}</textarea>
                     </div>
                 `;
-                Elements.gameList.appendChild(div);
+                list.appendChild(li);
             });
+
+            if (visibleCount === 0) {
+                list.innerHTML = `<li class="p-4 text-center text-slate-500 italic">${i18n[lang].noGames}</li>`;
+            }
+            
+            renderHallTabs(); // Update counters
         }
 
-        window.toggleVisited = function(uid) {
-            AppState.savedVisited[uid] = !AppState.savedVisited[uid];
-            localStorage.setItem(STORAGE_VISITED, JSON.stringify(AppState.savedVisited));
-            renderGames(); drawMap(); 
-        };
-
-        window.toggleCardNote = function(uid) {
-            if (AppState.showAllNotes) return;
-            AppState.expandedNotes.has(uid) ? AppState.expandedNotes.delete(uid) : AppState.expandedNotes.add(uid);
-            renderGames();
-        };
-
-        let noteTimeout;
-        window.saveNote = function(uid, val) {
-            clearTimeout(noteTimeout);
-            noteTimeout = setTimeout(() => {
-                AppState.savedNotes[uid] = val; localStorage.setItem(STORAGE_NOTES, JSON.stringify(AppState.savedNotes));
-            }, 300);
-        };
-
-        function loadHall(hall, keepFocus = false) {
-            AppState.currentHall = hall;
-            buildHallTabs(); renderGames();
-            if(!keepFocus) AppState.focusTarget = null;
-
-            Elements.mapWrapper.style.display = 'none'; Elements.mapError.classList.add('hidden');
-            Elements.mapImg.src = `hal${hall}.png`;
-            document.getElementById('error-file-name').innerText = `hal${hall}.png`;
-            
-            Elements.mapImg.onload = () => {
-                Elements.mapError.classList.add('hidden'); Elements.mapWrapper.style.display = 'inline-block';
-                Elements.mapWrapper.style.width = Elements.mapImg.naturalWidth + 'px';
-                Elements.mapWrapper.style.height = Elements.mapImg.naturalHeight + 'px';
-                Elements.mapCanvas.width = Elements.mapImg.naturalWidth;
-                Elements.mapCanvas.height = Elements.mapImg.naturalHeight;
-                initPanzoom(); drawMap();
-                if(AppState.focusTarget) executeFocus();
-            };
-            
-            Elements.mapImg.onerror = () => {
-                Elements.mapError.classList.remove('hidden'); Elements.mapError.style.display = 'flex';
-                if(AppState.panzoomInstance) { AppState.panzoomInstance.dispose(); AppState.panzoomInstance = null; }
-            };
+        // --- Interactivity ---
+        function toggleVisited(id) {
+            if (visited.includes(id)) {
+                visited = visited.filter(v => v !== id);
+            } else {
+                visited.push(id);
+            }
+            localStorage.setItem('spielVisited', JSON.stringify(visited));
+            renderList();
+            drawOverlay();
         }
 
-        function initPanzoom() {
-            if (AppState.panzoomInstance) AppState.panzoomInstance.dispose();
-            AppState.panzoomInstance = panzoom(Elements.mapWrapper, { maxZoom: 5, minZoom: 0.1, bounds: true, boundsPadding: 0.1 });
-            fitMapToScreen();
+        function toggleNote(id) {
+            const el = document.getElementById(`note-${id}`);
+            el.classList.toggle('hidden');
         }
 
-        function fitMapToScreen() {
-            if(!AppState.panzoomInstance || !Elements.mapImg.complete || Elements.mapImg.naturalWidth === 0) return;
-            const vw = document.getElementById('map-viewport').clientWidth;
-            const vh = document.getElementById('map-viewport').clientHeight;
-            const scale = Math.min(vw / Elements.mapImg.naturalWidth, vh / Elements.mapImg.naturalHeight) * 0.95; 
-            AppState.panzoomInstance.zoomAbs(0, 0, scale);
-            AppState.panzoomInstance.moveTo((vw - Elements.mapImg.naturalWidth * scale) / 2, (vh - Elements.mapImg.naturalHeight * scale) / 2);
+        function saveNote(id, val) {
+            userNotes[id] = val;
+            localStorage.setItem('spielNotes', JSON.stringify(userNotes));
         }
 
-        function drawMap() {
-            const ctx = Elements.mapCanvas.getContext('2d');
-            ctx.clearRect(0, 0, Elements.mapCanvas.width, Elements.mapCanvas.height);
+        function switchTab(tab) {
+            document.getElementById('tab-list').classList.toggle('tab-active', tab === 'list');
+            document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             
-            const hallWords = AppState.ocrData[AppState.currentHall];
-            if (!hallWords) return;
-
-            const gamesToDraw = AppState.games.filter(g => g.hall === AppState.currentHall && AppState.activePriorities.has(g.priority) && !AppState.savedVisited[g.uid]);
+            const sidebar = document.getElementById('sidebar');
+            const mapCont = document.getElementById('map-container');
             
-            const boothGroups = {};
-            gamesToDraw.forEach(g => { if(!boothGroups[g.combinedBooth]) boothGroups[g.combinedBooth] = []; boothGroups[g.combinedBooth].push(g); });
-
-            for (const [booth, group] of Object.entries(boothGroups)) {
-                const pure = booth.replace(/^\d+/, '');
-                const match = hallWords.find(w => w.text === booth || w.text === pure);
-                if (match) {
-                    const dominant = PriorityMap[group[0].priority];
-                    
-                    const x = match.xPct * Elements.mapCanvas.width;
-                    const y = match.yPct * Elements.mapCanvas.height;
-                    const w = match.wPct * Elements.mapCanvas.width;
-                    const h = match.hPct * Elements.mapCanvas.height;
-                    
-                    const pad = 20; 
-                    ctx.fillStyle = dominant.solid + '40'; // 25% opacity hex
-                    ctx.fillRect(x - pad, y - pad, w + (pad*2), h + (pad*2));
-                    ctx.strokeStyle = dominant.solid; ctx.lineWidth = 4;
-                    ctx.strokeRect(x - pad, y - pad, w + (pad*2), h + (pad*2));
+            if (window.innerWidth < 768) { // Mobile behavior
+                if (tab === 'list') {
+                    sidebar.style.display = 'flex';
+                    mapCont.style.display = 'none';
+                } else {
+                    sidebar.style.display = 'none';
+                    mapCont.style.display = 'flex';
+                    // Re-calculate panzoom constraints on un-hide
+                    if(panzoomInstance) setTimeout(() => panzoomInstance.pan(0,0), 50);
                 }
             }
         }
 
-        function setupMapClicks() {
-            const layer = Elements.mapClickLayer;
-            layer.addEventListener('pointerdown', e => { AppState.pointerState = { startX: e.clientX, startY: e.clientY, isDown: true }; });
-            layer.addEventListener('pointerup', e => {
-                if (!AppState.pointerState.isDown) return;
-                AppState.pointerState.isDown = false;
-                const dist = Math.hypot(e.clientX - AppState.pointerState.startX, e.clientY - AppState.pointerState.startY);
+        document.getElementById('hide-visited').addEventListener('change', () => {
+            renderList();
+            drawOverlay();
+        });
+
+        function setupEventListeners() {
+            window.addEventListener('resize', () => {
+                // Reset inline styles on resize to allow CSS media queries to work
+                document.getElementById('sidebar').style.display = '';
+                document.getElementById('map-container').style.display = '';
+                drawOverlay();
+            });
+
+            // Map Clicks (differentiate drag vs click)
+            const mapWrap = document.getElementById('panzoom-wrapper');
+            mapWrap.addEventListener('pointerdown', e => {
+                pointerDownPos = { x: e.clientX, y: e.clientY };
+            });
+            mapWrap.addEventListener('pointerup', e => {
+                const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
                 if (dist < 5) handleMapClick(e);
             });
         }
 
-        function handleMapClick(e) {
-            const rect = Elements.mapClickLayer.getBoundingClientRect();
-            const xPct = (e.clientX - rect.left) / rect.width;
-            const yPct = (e.clientY - rect.top) / rect.height;
-            
-            const hallWords = AppState.ocrData[AppState.currentHall];
-            if(!hallWords) return;
-
-            // Find clicked bounding box (with padding tolerance)
-            const padX = 0.015, padY = 0.015;
-            const clicked = hallWords.find(w => xPct >= w.xPct - padX && xPct <= w.xPct + w.wPct + padX && yPct >= w.yPct - padY && yPct <= w.yPct + w.hPct + padY);
-
-            if (clicked) {
-                const matches = AppState.games.filter(g => g.hall === AppState.currentHall && (g.combinedBooth === clicked.text || g.combinedBooth.replace(/^\d+/, '') === clicked.text));
-                if(matches.length) openModal(matches[0].combinedBooth, matches);
-            }
+        // --- Map & Panzoom ---
+        function initPanzoom() {
+            const elem = document.getElementById('panzoom-element');
+            panzoomInstance = Panzoom(elem, {
+                maxScale: 5,
+                minScale: 0.5,
+                contain: 'outside',
+                canvas: true
+            });
+            elem.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
         }
 
-        window.focusOnMap = function(hall, booth) {
-            setMobileView('map');
-            AppState.focusTarget = booth; 
-            if (AppState.currentHall !== hall) loadHall(hall, true);
-            else executeFocus();
-        };
+        function zoomIn() { panzoomInstance.zoomIn(); }
+        function zoomOut() { panzoomInstance.zoomOut(); }
+        function resetZoom() { 
+            panzoomInstance.reset(); 
+            setTimeout(drawOverlay, 50);
+        }
 
-        function executeFocus() {
-            if(!AppState.focusTarget || !AppState.ocrData[AppState.currentHall] || !AppState.panzoomInstance) return;
-            const bth = AppState.focusTarget, pure = bth.replace(/^\d+/, '');
-            const match = AppState.ocrData[AppState.currentHall].find(w => w.text === bth || w.text === pure);
-            
-            if(match) {
-                const imgW = Elements.mapImg.naturalWidth, imgH = Elements.mapImg.naturalHeight;
-                const cX = (match.xPct + match.wPct/2) * imgW, cY = (match.yPct + match.hPct/2) * imgH;
-                const vw = document.getElementById('map-viewport').clientWidth, vh = document.getElementById('map-viewport').clientHeight;
+        function loadMapImage() {
+            const img = document.getElementById('map-image');
+            img.onload = () => {
+                img.classList.remove('hidden');
                 
-                AppState.panzoomInstance.zoomAbs(0, 0, 1.8);
-                AppState.panzoomInstance.moveTo((vw/2) - (cX * 1.8), (vh/2) - (cY * 1.8));
+                // Setup canvas dimensions
+                const cvs = document.getElementById('map-overlay');
+                cvs.width = img.naturalWidth;
+                cvs.height = img.naturalHeight;
+                cvs.style.width = `${img.naturalWidth}px`;
+                cvs.style.height = `${img.naturalHeight}px`;
+                
+                const wrapper = document.getElementById('panzoom-element');
+                wrapper.style.width = `${img.naturalWidth}px`;
+                wrapper.style.height = `${img.naturalHeight}px`;
 
-                Elements.mapPulseLayer.innerHTML = '';
-                const pulse = document.createElement('div');
-                pulse.className = 'pulse-target';
-                pulse.style.left = `${(match.xPct * imgW) - 30}px`; pulse.style.top = `${(match.yPct * imgH) - 30}px`;
-                pulse.style.width = `${(match.wPct * imgW) + 60}px`; pulse.style.height = `${(match.hPct * imgH) + 60}px`;
-                Elements.mapPulseLayer.appendChild(pulse);
-                setTimeout(() => { if(pulse.parentNode) pulse.remove(); }, 5000);
-            }
-            AppState.focusTarget = null;
+                panzoomInstance.reset();
+                renderList();
+                drawOverlay();
+            };
+            img.src = `hal${currentHall}.png`;
         }
 
-        function openModal(boothId, games) {
-            document.getElementById('modal-booth-title').innerText = `Booth ${boothId}`;
-            Elements.modalGames.innerHTML = '';
-            games.forEach(g => {
-                const n = AppState.savedNotes[g.uid] !== undefined ? AppState.savedNotes[g.uid] : g.csvNotes;
-                Elements.modalGames.innerHTML += `
-                    <div class="bg-white border-l-4 rounded p-3 relative shadow-sm" style="border-left-color: ${PriorityMap[g.priority].solid}">
-                        <h4 class="font-bold text-slate-900 pr-6">${g.name}</h4>
-                        ${g.isPreorder ? '<i class="fa-solid fa-sack-dollar text-green-600 absolute top-3 right-3 text-lg"></i>' : ''}
-                        <p class="text-xs text-slate-500 mb-2">${g.publisher}</p>
-                        ${n ? `<div class="bg-slate-50 p-2 text-xs rounded border border-slate-200 italic text-slate-700 whitespace-pre-wrap">${n}</div>` : ''}
+        // --- Focus & Highlight (Pulse) ---
+        function focusMap(boothLabel) {
+            if(!boothLabel) return;
+            const searchStr = boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+            const hallOcr = ocrCache[currentHall] || {};
+            
+            let target = null;
+            for (const [key, val] of Object.entries(hallOcr)) {
+                if (key.includes(searchStr) || searchStr.includes(key)) {
+                    target = val; break;
+                }
+            }
+
+            if(target) {
+                switchTab('map');
+                const img = document.getElementById('map-image');
+                const pxX = (target.x / 100) * img.naturalWidth;
+                const pxY = (target.y / 100) * img.naturalHeight;
+                
+                // Move pulse marker
+                const pulse = document.getElementById('pulse-marker');
+                pulse.style.left = `${pxX}px`;
+                pulse.style.top = `${pxY}px`;
+                pulse.classList.remove('hidden');
+                
+                // Pan to center
+                const wrapperRect = document.getElementById('panzoom-wrapper').getBoundingClientRect();
+                const scale = 2; // Zoom in
+                panzoomInstance.zoom(scale, { animate: true });
+                setTimeout(() => {
+                    panzoomInstance.pan(
+                        (wrapperRect.width / 2) - (pxX * scale),
+                        (wrapperRect.height / 2) - (pxY * scale),
+                        { animate: true }
+                    );
+                }, 100);
+
+                setTimeout(() => { pulse.classList.add('hidden'); }, 4000);
+            } else {
+                alert(`Locatie '${boothLabel}' (nog) niet gevonden op de kaart.`);
+            }
+        }
+
+        // --- Map Interaction ---
+        function handleMapClick(e) {
+            const img = document.getElementById('map-image');
+            if(img.classList.contains('hidden')) return;
+
+            const rect = img.getBoundingClientRect();
+            // Calculate coordinates relative to intrinsic image size
+            const scaleX = img.naturalWidth / rect.width;
+            const scaleY = img.naturalHeight / rect.height;
+            
+            const clickX = (e.clientX - rect.left) * scaleX;
+            const clickY = (e.clientY - rect.top) * scaleY;
+
+            // Convert to percentage
+            const pctX = (clickX / img.naturalWidth) * 100;
+            const pctY = (clickY / img.naturalHeight) * 100;
+
+            const hallOcr = ocrCache[currentHall] || {};
+            let clickedLabel = null;
+
+            // Check if click falls within padded bounding box
+            for (const [text, box] of Object.entries(hallOcr)) {
+                // Apply padding logic here too
+                const padW = box.w * 0.4; 
+                const padH = box.h * 0.4;
+                const minX = box.x - padW;
+                const maxX = box.x + box.w + padW;
+                const minY = box.y - padH;
+                const maxY = box.y + box.h + padH;
+
+                if (pctX >= minX && pctX <= maxX && pctY >= minY && pctY <= maxY) {
+                    clickedLabel = text;
+                    break;
+                }
+            }
+
+            if (clickedLabel) {
+                // Find matching games
+                const matchedGames = games.filter(g => 
+                    g.hall === currentHall && 
+                    g.boothLabel && 
+                    (clickedLabel.includes(g.boothLabel.replace(/[^a-zA-Z0-9]/g, '')) || 
+                     g.boothLabel.replace(/[^a-zA-Z0-9]/g, '').includes(clickedLabel))
+                );
+
+                if(matchedGames.length > 0) {
+                    showModal(matchedGames);
+                }
+            }
+        }
+
+        function showModal(matchedGames) {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
+            document.getElementById('modal-title').innerText = `Stands: ${matchedGames[0].boothLabel}`;
+
+            matchedGames.forEach(game => {
+                const styles = getPrioStyles(game.priority);
+                const isVisited = visited.includes(game.id);
+                const savedNote = userNotes[game.id] !== undefined ? userNotes[game.id] : game.notes;
+
+                const div = document.createElement('div');
+                div.className = `p-3 rounded border ${styles.bg} ${styles.border} ${isVisited ? 'opacity-50 grayscale bg-white' : ''}`;
+                div.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <input type="checkbox" ${isVisited ? 'checked' : ''} onchange="toggleVisitedModal('${game.id}')" id="mod-chk-${game.id}" class="mt-1 w-5 h-5 cursor-pointer">
+                        <div class="flex-1">
+                            <h4 class="font-bold ${isVisited ? 'strike' : ''}" id="mod-title-${game.id}">${game.name}</h4>
+                            <p class="text-xs text-slate-600 mb-2">${game.publisher}</p>
+                            <span class="text-xs px-2 py-1 rounded bg-white/60 border font-bold">${game.priority}</span>
+                            <textarea onchange="saveNote('${game.id}', this.value)" class="w-full mt-2 text-sm p-2 border rounded bg-white/80" rows="2">${savedNote}</textarea>
+                        </div>
                     </div>
                 `;
+                content.appendChild(div);
             });
-            Elements.modal.classList.remove('hidden');
-            setTimeout(() => { Elements.modal.classList.remove('opacity-0'); Elements.modalContent.classList.remove('translate-y-4'); }, 10);
+
+            document.getElementById('booth-modal').classList.remove('hidden');
         }
 
         function closeModal() {
-            Elements.modal.classList.add('opacity-0'); Elements.modalContent.classList.add('translate-y-4');
-            setTimeout(() => Elements.modal.classList.add('hidden'), 200);
+            document.getElementById('booth-modal').classList.add('hidden');
         }
 
-        window.addEventListener('DOMContentLoaded', initApp);
+        function toggleVisitedModal(id) {
+            toggleVisited(id);
+            const isVis = visited.includes(id);
+            const titleEl = document.getElementById(`mod-title-${id}`);
+            const parentEl = titleEl.closest('.p-3');
+            
+            if(isVis) {
+                titleEl.classList.add('strike');
+                parentEl.classList.add('opacity-50', 'grayscale', 'bg-white');
+            } else {
+                titleEl.classList.remove('strike');
+                parentEl.classList.remove('opacity-50', 'grayscale', 'bg-white');
+            }
+        }
+
+        // --- Background OCR & Drawing ---
+        async function checkAndRunOCR() {
+            if (isOcrRunning) return;
+            isOcrRunning = true;
+            document.getElementById('ocr-status').classList.remove('hidden');
+
+            const worker = await Tesseract.createWorker('eng');
+            await worker.setParameters({
+                tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-',
+                tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
+            });
+
+            for (let i = 1; i <= 8; i++) {
+                const hId = i.toString();
+                // Check if we have games in this hall to justify scanning
+                const hasGames = games.some(g => g.hall === hId);
+                
+                if (hasGames && !ocrCache[hId]) {
+                    try {
+                        console.log(`Scanning Hall ${hId}...`);
+                        // Create a temporary off-screen canvas to enhance the image for OCR
+                        const tempImg = new Image();
+                        tempImg.src = `hal${hId}.png`;
+                        await new Promise(resolve => tempImg.onload = resolve);
+                        
+                        const cvs = document.createElement('canvas');
+                        // Scale up by 2x for better small text recognition
+                        cvs.width = tempImg.width * 2;
+                        cvs.height = tempImg.height * 2;
+                        const ctx = cvs.getContext('2d');
+                        
+                        // Enhance contrast
+                        ctx.filter = 'grayscale(100%) contrast(200%)';
+                        ctx.drawImage(tempImg, 0, 0, cvs.width, cvs.height);
+
+                        const ret = await worker.recognize(cvs);
+                        
+                        ocrCache[hId] = {};
+                        ret.data.words.forEach(word => {
+                            const text = word.text.replace(/[^A-Z0-9]/g, '');
+                            // Looking for pattern like D450, 2D450, etc.
+                            if (text.length >= 2 && /[A-Z]/.test(text) && /\d/.test(text)) {
+                                ocrCache[hId][text] = {
+                                    // Scale back coordinates to percentages
+                                    x: (word.bbox.x0 / cvs.width) * 100,
+                                    y: (word.bbox.y0 / cvs.height) * 100,
+                                    w: ((word.bbox.x1 - word.bbox.x0) / cvs.width) * 100,
+                                    h: ((word.bbox.y1 - word.bbox.y0) / cvs.height) * 100
+                                };
+                            }
+                        });
+
+                        localStorage.setItem('spielOcrCacheV3', JSON.stringify(ocrCache));
+                        
+                        if (currentHall === hId) {
+                            renderList(); // Update missing labels
+                            drawOverlay();
+                        }
+                    } catch (err) {
+                        console.error(`OCR failed for Hall ${hId}`, err);
+                    }
+                }
+            }
+
+            await worker.terminate();
+            isOcrRunning = false;
+            document.getElementById('ocr-status').classList.add('hidden');
+        }
+
+        function drawOverlay() {
+            const cvs = document.getElementById('map-overlay');
+            const img = document.getElementById('map-image');
+            if (img.classList.contains('hidden') || !ocrCache[currentHall]) return;
+
+            const ctx = cvs.getContext('2d');
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            
+            const hideChecked = document.getElementById('hide-visited').checked;
+            const hallGames = games.filter(g => g.hall === currentHall && (!hideChecked || !visited.includes(g.id)));
+
+            hallGames.forEach(game => {
+                if (!game.boothLabel) return;
+                const searchStr = game.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                
+                for (const [text, box] of Object.entries(ocrCache[currentHall])) {
+                    if (text.includes(searchStr) || searchStr.includes(text)) {
+                        const pxX = (box.x / 100) * cvs.width;
+                        const pxY = (box.y / 100) * cvs.height;
+                        const pxW = (box.w / 100) * cvs.width;
+                        const pxH = (box.h / 100) * cvs.height;
+
+                        // Padding to fill the booth area visually (heuristic)
+                        const padW = pxW * 0.4;
+                        const padH = pxH * 0.4;
+
+                        ctx.fillStyle = getPrioStyles(game.priority).hex;
+                        ctx.fillRect(pxX - padW, pxY - padH, pxW + (padW*2), pxH + (padH*2));
+                        
+                        // Border
+                        ctx.strokeStyle = getPrioStyles(game.priority).hex.replace('0.4', '1.0');
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(pxX - padW, pxY - padH, pxW + (padW*2), pxH + (padH*2));
+                        break;
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
