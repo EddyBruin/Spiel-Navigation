@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SPIEL Essen Navigator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Gebruik Tesseract v5 via CDN (absolute URL's lossen lokale CORS problemen voor scripts op) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Drag & Drop Zone Styles */
+        .drop-zone { border: 2px dashed #94a3b8; transition: all 0.2s; }
+        .drop-zone.dragover { border-color: #4f46e5; background-color: #e0e7ff; }
+        
+        /* Map Layout */
+        .map-container {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+            transform-origin: top left;
+        }
+        #map-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Checkbox styling */
+        .custom-checkbox:checked + div {
+            background-color: currentColor;
+            border-color: currentColor;
+        }
+        .custom-checkbox:checked + div svg {
+            display: block;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-slate-100 text-slate-800">
+
+    <!-- Drag & Drop Zone (Collapses after load) -->
+    <header id="drop-header" class="bg-white border-b border-slate-200 shadow-sm z-30 shrink-0 transition-all duration-300">
+        <div id="drop-zone" class="drop-zone m-4 p-8 rounded-xl flex flex-col items-center justify-center cursor-pointer text-slate-500 bg-slate-50 hover:bg-slate-100">
+            <i class="fa-solid fa-file-csv text-4xl mb-3 text-indigo-400"></i>
+            <h2 class="text-lg font-bold text-slate-700">Sleep data.csv hierheen</h2>
+            <p class="text-sm mt-1">of klik om een bestand te selecteren</p>
+            <input type="file" id="file-input" accept=".csv" class="hidden">
+        </div>
+        <div id="loaded-header" class="hidden flex justify-between items-center px-4 py-3 bg-slate-900 text-white">
+            <h1 class="text-lg font-bold flex items-center gap-2">
+                <i class="fa-solid fa-map-location-dot text-indigo-400"></i> SPIEL Navigator
+            </h1>
+            <div class="text-sm bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                <i class="fa-solid fa-check text-green-400 mr-1"></i> Data geladen
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Content (Hidden until CSV is loaded) -->
+    <div id="app-content" class="hidden flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        
+        <!-- Sidebar: Games & Categories -->
+        <aside class="w-full md:w-80 lg:w-96 bg-white border-r border-slate-200 flex flex-col shadow-lg z-20 shrink-0">
+            
+            <!-- Category Tabs -->
+            <div class="flex overflow-x-auto border-b border-slate-200 p-2 gap-2 bg-slate-50" id="category-tabs">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Games List -->
+            <div class="flex-1 overflow-y-auto p-3 bg-slate-50 space-y-2 relative" id="games-container">
+                <!-- Injected via JS -->
+            </div>
+            
+        </aside>
+
+        <!-- Main View: Halls & Map -->
+        <main class="flex-1 flex flex-col bg-slate-200 relative overflow-hidden">
+            
+            <!-- Hall Navigation -->
+            <div class="bg-white shadow-sm shrink-0 border-b border-slate-200 flex overflow-x-auto p-2 gap-2 z-10" id="hall-tabs">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Map Area -->
+            <div class="flex-1 overflow-auto p-4 flex justify-center items-start relative" id="map-scroll-area">
+                
+                <div class="map-container shadow-2xl bg-white rounded-lg overflow-hidden" id="map-wrapper">
+                    <!-- Placeholder/Image -->
+                    <img id="map-image" class="hidden max-w-none block" alt="Hal Plattegrond">
+                    
+                    <!-- Drawing Canvas -->
+                    <canvas id="map-canvas" class="hidden"></canvas>
+                    
+                    <!-- Loading / OCR Overlay -->
+                    <div id="ocr-overlay" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-white">
+                        <i class="fa-solid fa-microchip fa-spin text-5xl mb-4 text-indigo-400"></i>
+                        <h3 class="text-xl font-bold mb-2" id="ocr-status-title">Scannen van Hal X...</h3>
+                        <p class="text-slate-300 text-sm mb-4">Plattegrond analyseren met OCR. Dit gebeurt slechts één keer.</p>
+                        <div class="w-64 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div id="ocr-progress" class="h-full bg-indigo-500 w-0 transition-all duration-300"></div>
+                        </div>
+                        <p class="text-xs font-mono text-slate-400 mt-2" id="ocr-status-text">Initialiseren...</p>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="map-error" class="hidden absolute inset-0 m-auto flex flex-col items-center justify-center text-slate-500 bg-white w-full max-w-lg h-64 rounded-xl shadow border border-slate-200">
+                    <i class="fa-solid fa-image-slash text-4xl mb-3 text-slate-300"></i>
+                    <p class="font-medium text-slate-700">Afbeelding niet gevonden of kan niet geladen worden.</p>
+                    <p class="text-xs mt-2 font-mono bg-slate-100 p-1 rounded border border-slate-200" id="error-file-name">hal1.png</p>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // System State
+        const State = {
+            games: [],
+            currentCategory: 'Need',
+            currentHall: '1',
+            isScanning: false,
+            // Categories config with matching colors
+            categories: [
+                { id: 'Need',  color: 'rgba(34, 197, 94, 0.4)',  borderColor: '#15803d', textClass: 'text-green-600',  bgClass: 'bg-green-100' },
+                { id: 'Want',  color: 'rgba(59, 130, 246, 0.4)', borderColor: '#1d4ed8', textClass: 'text-blue-600',   bgClass: 'bg-blue-100' },
+                { id: 'Like',  color: 'rgba(234, 179, 8, 0.4)',  borderColor: '#a16207', textClass: 'text-yellow-600', bgClass: 'bg-yellow-100' },
+                { id: 'Maybe', color: 'rgba(107, 114, 128, 0.4)', borderColor: '#4b5563', textClass: 'text-gray-600',   bgClass: 'bg-gray-100' }
+            ],
+            halls: ['1', '2', '3', '4', '5', '6', '7', '8'],
+            // Stores cached bounding boxes { xPct, yPct, wPct, hPct } per booth per hall
+            ocrCache: { '1': {}, '2': {}, '3': {}, '4': {}, '5': {}, '6': {}, '7': {}, '8': {} },
+            ocrCompleted: { '1': false, '2': false, '3': false, '4': false, '5': false, '6': false, '7': false, '8': false }
+        };
+
+        const Elements = {
+            dropZone: document.getElementById('drop-zone'),
+            fileInput: document.getElementById('file-input'),
+            dropHeader: document.getElementById('drop-header'),
+            loadedHeader: document.getElementById('loaded-header'),
+            appContent: document.getElementById('app-content'),
+            catTabs: document.getElementById('category-tabs'),
+            gameList: document.getElementById('games-container'),
+            hallTabs: document.getElementById('hall-tabs'),
+            mapImg: document.getElementById('map-image'),
+            mapCanvas: document.getElementById('map-canvas'),
+            mapError: document.getElementById('map-error'),
+            ocrOverlay: document.getElementById('ocr-overlay'),
+            ocrStatusTitle: document.getElementById('ocr-status-title'),
+            ocrStatusText: document.getElementById('ocr-status-text'),
+            ocrProgress: document.getElementById('ocr-progress')
+        };
+
+        function initApp() {
+            // Drag and Drop Events
+            Elements.dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                Elements.dropZone.classList.add('dragover');
+            });
+            Elements.dropZone.addEventListener('dragleave', () => {
+                Elements.dropZone.classList.remove('dragover');
+            });
+            Elements.dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                Elements.dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+            });
+            Elements.dropZone.addEventListener('click', () => Elements.fileInput.click());
+            Elements.fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) handleFile(e.target.files[0]);
+            });
+
+            // Handle map resizing
+            const resizeObserver = new ResizeObserver(() => drawHighlights());
+            resizeObserver.observe(Elements.mapImg);
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                alert("Upload aub een .csv bestand.");
+                return;
+            }
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    parseData(results.data);
+                    showApp();
+                },
+                error: (err) => alert("Fout bij lezen: " + err.message)
+            });
+        }
+
+        function parseData(data) {
+            State.games = [];
+            data.forEach((row, index) => {
+                // Fuzzy column matching
+                const getCol = (keywords) => {
+                    const key = Object.keys(row).find(k => keywords.includes(k.toLowerCase().trim()));
+                    return key ? row[key].trim() : '';
+                };
+
+                const name = getCol(['name', 'title', 'spel']);
+                const publisher = getCol(['publisher', 'company', 'uitgever']);
+                const hallRaw = getCol(['hall', 'hal']);
+                const boothRaw = getCol(['booth', 'stand']);
+                let priority = getCol(['priority', 'category', 'status', 'behoefte']);
+                
+                if (!name) return;
+
+                // Normalize priority
+                priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
+                const matchedCat = State.categories.find(c => c.id === priority);
+                const finalCategory = matchedCat ? matchedCat.id : 'Maybe';
+
+                // Extract clear booth ID (e.g. "2-D450" -> "D450")
+                let boothMatch = boothRaw.match(/[A-Za-z]\d{2,4}/);
+                let cleanBooth = boothMatch ? boothMatch[0].toUpperCase() : boothRaw;
+
+                State.games.push({
+                    id: `g_${index}`,
+                    name, publisher, 
+                    hall: hallRaw, 
+                    boothRaw, cleanBooth, 
+                    category: finalCategory,
+                    checked: true // Checked by default
+                });
+            });
+        }
+
+        function showApp() {
+            Elements.dropZone.classList.add('hidden');
+            Elements.loadedHeader.classList.remove('hidden');
+            Elements.appContent.classList.remove('hidden');
+            
+            renderCatTabs();
+            renderGames();
+            renderHallTabs();
+            loadHallMap(State.currentHall);
+        }
+
+        function renderCatTabs() {
+            Elements.catTabs.innerHTML = '';
+            State.categories.forEach(cat => {
+                const count = State.games.filter(g => g.category === cat.id).length;
+                const isActive = State.currentCategory === cat.id;
+                
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    State.currentCategory = cat.id;
+                    renderCatTabs();
+                    renderGames();
+                };
+                
+                btn.className = `px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all border ${
+                    isActive ? `${cat.bgClass} ${cat.textClass} border-[${cat.borderColor}] shadow-sm` : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                }`;
+                btn.innerHTML = `${cat.id} <span class="ml-1 opacity-60 text-xs px-1 rounded-md bg-white/50">${count}</span>`;
+                Elements.catTabs.appendChild(btn);
+            });
+        }
+
+        function renderGames() {
+            Elements.gameList.innerHTML = '';
+            const filtered = State.games.filter(g => g.category === State.currentCategory);
+            
+            if (filtered.length === 0) {
+                Elements.gameList.innerHTML = `<div class="text-center p-6 text-slate-400 text-sm">Geen spellen in deze categorie.</div>`;
+                return;
+            }
+
+            const activeCat = State.categories.find(c => c.id === State.currentCategory);
+
+            filtered.forEach(game => {
+                const div = document.createElement('div');
+                div.className = `bg-white p-3 rounded-lg border transition-all cursor-pointer shadow-sm hover:shadow ${game.checked ? 'border-slate-300' : 'border-slate-200 opacity-60'}`;
+                
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        game.checked = !game.checked;
+                        renderGames();
+                        drawHighlights();
+                    }
+                };
+
+                div.innerHTML = `
+                    <div class="flex gap-3">
+                        <div class="mt-0.5 relative flex items-center justify-center shrink-0">
+                            <input type="checkbox" class="custom-checkbox opacity-0 absolute inset-0 cursor-pointer" ${game.checked ? 'checked' : ''}>
+                            <div class="w-5 h-5 border-2 rounded transition-colors pointer-events-none text-white
+                                ${game.checked ? `${activeCat.textClass.replace('text-', 'bg-')} border-transparent` : 'bg-slate-100 border-slate-300'}">
+                                <svg class="w-3.5 h-3.5 mx-auto mt-[2px] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start gap-2">
+                                <h3 class="font-bold text-slate-900 text-sm leading-tight truncate" title="${game.name}">${game.name}</h3>
+                                <span class="inline-block bg-slate-100 border border-slate-200 text-[10px] font-bold px-1.5 py-0.5 rounded text-slate-600 shrink-0">
+                                    ${game.boothRaw || '???'}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1 truncate"><i class="fa-solid fa-industry mr-1"></i>${game.publisher}</p>
+                        </div>
+                    </div>
+                `;
+                Elements.gameList.appendChild(div);
+            });
+        }
+
+        function renderHallTabs() {
+            Elements.hallTabs.innerHTML = '';
+            State.halls.forEach(hall => {
+                const btn = document.createElement('button');
+                const isActive = State.currentHall === hall;
+                const isScanned = State.ocrCompleted[hall];
+                
+                btn.onclick = () => {
+                    if (!State.isScanning) loadHallMap(hall);
+                };
+                
+                let classes = isActive 
+                    ? 'bg-slate-800 text-white shadow-sm' 
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50';
+                    
+                if (State.isScanning && !isActive) classes += ' opacity-50 cursor-not-allowed';
+                
+                btn.className = `px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0 relative ${classes}`;
+                btn.disabled = State.isScanning && !isActive;
+                
+                const icon = isScanned ? `<i class="fa-solid fa-check text-green-400 absolute top-1 right-1 text-[10px]"></i>` : '';
+                btn.innerHTML = `Hal ${hall} ${icon}`;
+                
+                Elements.hallTabs.appendChild(btn);
+            });
+        }
+
+        function loadHallMap(hall) {
+            State.currentHall = hall;
+            renderHallTabs();
+            
+            const filename = `hal${hall}.png`;
+            document.getElementById('error-file-name').innerText = filename;
+            
+            Elements.mapImg.onload = () => {
+                Elements.mapImg.classList.remove('hidden');
+                Elements.mapCanvas.classList.remove('hidden');
+                Elements.mapError.classList.add('hidden');
+                
+                // If not scanned, start OCR immediately
+                if (!State.ocrCompleted[hall]) {
+                    startOCR(hall);
+                } else {
+                    drawHighlights();
+                }
+            };
+            
+            Elements.mapImg.onerror = () => {
+                Elements.mapImg.classList.add('hidden');
+                Elements.mapCanvas.classList.add('hidden');
+                Elements.mapError.classList.remove('hidden');
+            };
+
+            // Trigger load (cache buster prevents local caching issues sometimes)
+            Elements.mapImg.src = filename; 
+        }
+
+        async function startOCR(hall) {
+            if (State.isScanning) return;
+            State.isScanning = true;
+            renderHallTabs(); // Update UI to disabled state
+            
+            Elements.ocrOverlay.classList.remove('hidden');
+            Elements.ocrStatusTitle.innerText = `Scannen van Hal ${hall}`;
+            Elements.ocrProgress.style.width = '0%';
+            
+            try {
+                // Initialize Tesseract (Loads worker scripts and eng.traineddata)
+                Elements.ocrStatusText.innerText = "Initialiseren Tesseract Engine...";
+                const worker = await Tesseract.createWorker("eng", 1, {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.floor(m.progress * 100);
+                            Elements.ocrProgress.style.width = `${pct}%`;
+                            Elements.ocrStatusText.innerText = `Herkenning... ${pct}%`;
+                        } else {
+                            Elements.ocrStatusText.innerText = m.status;
+                        }
+                    }
+                });
+                
+                // For local files, passing the IMG element directly is safest.
+                // Note: If the local browser setup heavily restricts tainted canvas, 
+                // this might fail, but it's the standard approach for SPAs.
+                const { data: { words } } = await worker.recognize(Elements.mapImg);
+                
+                // Regular Expression for finding stands (e.g., A10, D450, M123)
+                // Looks for exact matches: 1 letter followed by 2-4 digits.
+                const regex = /^[A-Z]\d{2,4}$/i;
+                
+                const wImg = Elements.mapImg.naturalWidth;
+                const hImg = Elements.mapImg.naturalHeight;
+                
+                words.forEach(word => {
+                    // Clean up word (Tesseract sometimes adds noise/spaces)
+                    const cleanText = word.text.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    
+                    if (regex.test(cleanText)) {
+                        // Store Bounding Box as percentages to allow fluid resizing
+                        const bbox = word.bbox;
+                        State.ocrCache[hall][cleanText] = {
+                            xPct: bbox.x0 / wImg,
+                            yPct: bbox.y0 / hImg,
+                            wPct: (bbox.x1 - bbox.x0) / wImg,
+                            hPct: (bbox.y1 - bbox.y0) / hImg
+                        };
+                    }
+                });
+                
+                await worker.terminate();
+                State.ocrCompleted[hall] = true;
+
+            } catch (error) {
+                console.error("OCR Error:", error);
+                alert("Er is een fout opgetreden bij de automatische herkenning. Dit kan gebeuren vanwege browser veiligheidsrestricties op lokale bestanden (Canvas Tainting).");
+            } finally {
+                State.isScanning = false;
+                Elements.ocrOverlay.classList.add('hidden');
+                renderHallTabs();
+                drawHighlights();
+            }
+        }
+
+        function drawHighlights() {
+            const img = Elements.mapImg;
+            const canvas = Elements.mapCanvas;
+            
+            // Validation check
+            if (img.classList.contains('hidden') || img.clientWidth === 0 || !State.ocrCompleted[State.currentHall]) {
+                return;
+            }
+            
+            // Sync canvas resolution with display size
+            canvas.width = img.clientWidth;
+            canvas.height = img.clientHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const hallData = State.ocrCache[State.currentHall];
+            const gamesInHall = State.games.filter(g => g.hall === State.currentHall && g.checked);
+            
+            gamesInHall.forEach(game => {
+                const box = hallData[game.cleanBooth];
+                if (box) {
+                    const catInfo = State.categories.find(c => c.id === game.category) || State.categories[3];
+                    
+                    // Convert percentages back to current pixel dimensions
+                    const x = box.xPct * canvas.width;
+                    const y = box.yPct * canvas.height;
+                    const w = box.wPct * canvas.width;
+                    const h = box.hPct * canvas.height;
+                    
+                    // Padding around the OCR'd text
+                    const pad = 8;
+                    const drawX = x - pad;
+                    const drawY = y - pad;
+                    const drawW = w + (pad*2);
+                    const drawH = h + (pad*2);
+
+                    // Fill Rect
+                    ctx.fillStyle = catInfo.color;
+                    ctx.fillRect(drawX, drawY, drawW, drawH);
+                    
+                    // Border Rect
+                    ctx.strokeStyle = catInfo.borderColor;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(drawX, drawY, drawW, drawH);
+                    
+                    // Inner dot for visual accent
+                    ctx.beginPath();
+                    ctx.arc(drawX + (drawW/2), drawY + (drawH/2), 3, 0, 2 * Math.PI);
+                    ctx.fillStyle = catInfo.borderColor;
+                    ctx.fill();
+                }
+            });
+        }
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
