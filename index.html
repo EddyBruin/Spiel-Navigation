@@ -20,24 +20,22 @@
             #map-container { display: flex !important; }
         }
         
-        /* Priority Backgrounds */
-        .bg-prio-need { background-color: #dcfce7; } /* green-100 */
-        .bg-prio-want { background-color: #dbeafe; } /* blue-100 */
-        .bg-prio-like { background-color: #fef9c3; } /* yellow-100 */
-        .bg-prio-maybe { background-color: #f3f4f6; } /* gray-100 */
+        .bg-prio-need { background-color: #dcfce7; }
+        .bg-prio-want { background-color: #dbeafe; }
+        .bg-prio-like { background-color: #fef9c3; }
+        .bg-prio-maybe { background-color: #f3f4f6; }
         
-        /* Priority Labels */
-        .lbl-need { background-color: #22c55e; color: white; } /* green-500 */
-        .lbl-want { background-color: #3b82f6; color: white; } /* blue-500 */
-        .lbl-like { background-color: #eab308; color: black; } /* yellow-500 */
-        .lbl-maybe { background-color: #6b7280; color: white; } /* gray-500 */
-        .lbl-notfound { background-color: #ef4444; color: white; } /* red-500 */
+        .lbl-need { background-color: #22c55e; color: white; }
+        .lbl-want { background-color: #3b82f6; color: white; }
+        .lbl-like { background-color: #eab308; color: black; }
+        .lbl-maybe { background-color: #6b7280; color: white; }
+        .lbl-notfound { background-color: #ef4444; color: white; }
 
         .strike { text-decoration: line-through; opacity: 0.6; }
         .pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse-ring { 
             0% { transform: scale(1); opacity: 1; } 
-            50% { transform: scale(1.5); opacity: 0.5; } 
+            50% { transform: scale(2); opacity: 0.5; } 
             100% { transform: scale(1); opacity: 0; } 
         }
     </style>
@@ -59,10 +57,10 @@
 
     <!-- Mobile View Tabs -->
     <div class="mobile-tabs flex bg-white border-b shrink-0 shadow-sm z-10">
-        <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-3 text-center tab-active text-gray-500 transition-colors">
+        <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-3 text-center tab-active text-slate-600 transition-colors">
             <i class="fa-solid fa-list mr-1"></i> <span id="txt-tab-list">Lijst</span>
         </button>
-        <button onclick="switchTab('map')" id="tab-map" class="flex-1 py-3 text-center text-gray-500 transition-colors">
+        <button onclick="switchTab('map')" id="tab-map" class="flex-1 py-3 text-center text-slate-600 transition-colors">
             <i class="fa-solid fa-map mr-1"></i> <span id="txt-tab-map">Kaart</span>
         </button>
     </div>
@@ -72,24 +70,41 @@
         
         <!-- Sidebar / List -->
         <div id="sidebar" class="w-full md:w-1/3 lg:w-1/4 bg-white border-r flex flex-col h-full z-10 absolute md:relative inset-0">
-            <!-- Controls -->
-            <div class="p-3 border-b bg-slate-50 shrink-0 flex justify-between items-center">
-                <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
-                    <input type="checkbox" id="hide-visited" checked class="w-4 h-4 text-blue-600 rounded">
-                    <span id="txt-hide">Verberg afgevinkt</span>
-                </label>
-                <div id="ocr-status" class="text-xs text-blue-600 font-medium hidden">
-                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> <span id="txt-scanning">Scannen...</span>
+            
+            <!-- Controls (Restored & Enhanced) -->
+            <div class="p-3 border-b bg-slate-100 shrink-0 flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="hide-visited" checked class="w-4 h-4 text-blue-600 rounded">
+                        <span id="txt-hide">Verberg afgevinkt</span>
+                    </label>
+                    <div id="ocr-status" class="text-xs text-blue-600 font-bold hidden bg-blue-100 px-2 py-1 rounded">
+                        <i class="fa-solid fa-spinner fa-spin mr-1"></i> <span id="txt-scanning">OCR: 0%</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                        <input type="checkbox" id="show-all-notes" class="w-4 h-4 text-blue-600 rounded">
+                        <span id="txt-show-notes">Toon alle notities</span>
+                    </label>
+                    <select id="prio-filter" class="text-sm p-1 border rounded bg-white font-medium text-slate-700 outline-none">
+                        <option value="All" id="txt-prio-all">Alle Prioriteiten</option>
+                        <option value="Need">Need</option>
+                        <option value="Want">Want</option>
+                        <option value="Like">Like</option>
+                        <option value="Maybe">Maybe</option>
+                    </select>
                 </div>
             </div>
 
             <!-- Hall Tabs -->
-            <div class="flex overflow-x-auto border-b bg-slate-100 shrink-0 scrollbar-hide text-sm" id="hall-tabs">
+            <div class="flex overflow-x-auto border-b bg-slate-50 shrink-0 scrollbar-hide text-sm" id="hall-tabs">
                 <!-- Tabs generated by JS -->
             </div>
 
             <!-- List -->
-            <ul id="game-list" class="overflow-y-auto flex-1 p-2 space-y-2 pb-20 md:pb-2">
+            <ul id="game-list" class="overflow-y-auto flex-1 p-2 space-y-2 pb-24 md:pb-2">
                 <!-- List items generated by JS -->
             </ul>
         </div>
@@ -100,7 +115,7 @@
                 <div id="panzoom-element" class="relative w-full h-full origin-top-left">
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none shadow-lg border bg-white hidden" style="transform-origin: top left;">
                     <canvas id="map-overlay" class="absolute top-0 left-0 pointer-events-none"></canvas>
-                    <div id="pulse-marker" class="absolute w-10 h-10 border-4 border-blue-500 rounded-full pulse hidden pointer-events-none" style="transform: translate(-50%, -50%);"></div>
+                    <div id="pulse-marker" class="absolute w-12 h-12 border-4 border-red-500 rounded-full pulse hidden pointer-events-none" style="transform: translate(-50%, -50%);"></div>
                 </div>
             </div>
             
@@ -114,12 +129,12 @@
 
     </main>
 
-    <!-- File Upload Fallback (If data.csv is missing) -->
+    <!-- File Upload Fallback -->
     <div id="upload-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
             <i class="fa-solid fa-file-csv text-5xl text-blue-500 mb-4"></i>
             <h2 class="text-xl font-bold mb-2">CSV Upload</h2>
-            <p class="text-sm text-slate-600 mb-4" id="txt-upload-desc">Sleep je data.csv hierheen of selecteer het bestand.</p>
+            <p class="text-sm text-slate-600 mb-4" id="txt-upload-desc">Sleep je CSV bestand hierheen of selecteer het bestand.</p>
             <input type="file" id="csv-file" accept=".csv" class="hidden">
             <label for="csv-file" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium cursor-pointer hover:bg-blue-700 block">Kies Bestand</label>
         </div>
@@ -143,18 +158,21 @@
         const i18n = {
             'nl': {
                 title: "SPIEL Navigator", tabList: "Lijst", tabMap: "Kaart", hideVisited: "Verberg afgevinkt",
-                scanning: "Scannen...", hall: "Hal", uploadDesc: "Kon data.csv niet automatisch inladen. Upload handmatig.",
-                notes: "Notities...", preorder: "Preorder", noGames: "Geen spellen in deze hal."
+                showNotes: "Toon alle notities", prioAll: "Alle Prioriteiten",
+                scanning: "OCR Bezig...", hall: "Hal", uploadDesc: "Kon data.csv niet automatisch inladen. Upload handmatig.",
+                notes: "Notities...", preorder: "Preorder", noGames: "Geen spellen in deze weergave."
             },
             'en': {
                 title: "SPIEL Navigator", tabList: "List", tabMap: "Map", hideVisited: "Hide visited",
-                scanning: "Scanning...", hall: "Hall", uploadDesc: "Could not auto-load data.csv. Please upload manually.",
-                notes: "Notes...", preorder: "Preorder", noGames: "No games in this hall."
+                showNotes: "Show all notes", prioAll: "All Priorities",
+                scanning: "OCR Running...", hall: "Hall", uploadDesc: "Could not auto-load data.csv. Please upload manually.",
+                notes: "Notes...", preorder: "Preorder", noGames: "No games in this view."
             },
             'de': {
-                title: "SPIEL Navigator", tabList: "Liste", tabMap: "Karte", hideVisited: "Besuchte ausb.",
-                scanning: "Scannen...", hall: "Halle", uploadDesc: "data.csv konnte nicht geladen werden. Bitte manuell hochladen.",
-                notes: "Notizen...", preorder: "Vorbestellung", noGames: "Keine Spiele in dieser Halle."
+                title: "SPIEL Navigator", tabList: "Liste", tabMap: "Karte", hideVisited: "Besuchte ausblenden",
+                showNotes: "Alle Notizen anzeigen", prioAll: "Alle Prioritäten",
+                scanning: "OCR läuft...", hall: "Halle", uploadDesc: "data.csv konnte nicht geladen werden. Bitte manuell hochladen.",
+                notes: "Notizen...", preorder: "Vorbestellung", noGames: "Keine Spiele in dieser Ansicht."
             }
         };
 
@@ -165,19 +183,31 @@
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         let userNotes = JSON.parse(localStorage.getItem('spielNotes') || '{}');
-        let ocrCache = JSON.parse(localStorage.getItem('spielOcrCacheV3') || '{}');
+        let ocrCache = JSON.parse(localStorage.getItem('spielOcrCacheV4') || '{}');
         let currentHall = '1';
         let panzoomInstance = null;
         let isOcrRunning = false;
-
-        // Pointer tracking for map clicks
         let pointerDownPos = { x: 0, y: 0 };
+
+        // 10 OCR Filters for deep scanning
+        const ocrFilters = [
+            'grayscale(100%) contrast(200%)', // Default high contrast
+            'invert(100%) grayscale(100%) contrast(200%)', // Inverted logic
+            'contrast(150%) brightness(90%)',
+            'grayscale(100%) brightness(150%) contrast(250%)',
+            'blur(0.5px) contrast(300%) grayscale(100%)', // Smoothens artifacts
+            'saturate(0) contrast(400%)',
+            'sepia(100%) contrast(200%)',
+            'grayscale(100%) contrast(150%) brightness(120%)',
+            'invert(100%) contrast(300%)',
+            'none' // Raw fallback
+        ];
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             initPanzoom();
             setupEventListeners();
-            setLang('nl'); // Default
+            setLang('nl');
             attemptAutoLoadCSV();
         });
 
@@ -190,6 +220,8 @@
             document.getElementById('txt-tab-list').innerText = i18n[l].tabList;
             document.getElementById('txt-tab-map').innerText = i18n[l].tabMap;
             document.getElementById('txt-hide').innerText = i18n[l].hideVisited;
+            document.getElementById('txt-show-notes').innerText = i18n[l].showNotes;
+            document.getElementById('txt-prio-all').innerText = i18n[l].prioAll;
             document.getElementById('txt-scanning').innerText = i18n[l].scanning;
             document.getElementById('txt-upload-desc').innerText = i18n[l].uploadDesc;
             
@@ -236,14 +268,12 @@
                             publisher: row['publishers'],
                             hall: hall,
                             boothLabel: hall && booth ? `${hall}${booth}` : '',
-                            rawBooth: booth,
                             priority: row['priority'],
                             preorder: row['preorder'] === '1',
                             notes: row['notes'] || ''
                         };
                     });
                     
-                    // Sort: Priority -> Hall -> Booth
                     games.sort((a, b) => {
                         if (prioOrder[a.priority] !== prioOrder[b.priority]) {
                             return (prioOrder[a.priority] || 9) - (prioOrder[b.priority] || 9);
@@ -252,10 +282,7 @@
                         return a.boothLabel.localeCompare(b.boothLabel);
                     });
 
-                    // Start background OCR if not fully cached
-                    checkAndRunOCR();
-                    
-                    // Render UI
+                    checkAndRunAdvancedOCR(); // Start multi-pass OCR
                     currentHall = '1';
                     renderHallTabs();
                     loadMapImage();
@@ -278,19 +305,22 @@
             const tabsContainer = document.getElementById('hall-tabs');
             tabsContainer.innerHTML = '';
             const hideChecked = document.getElementById('hide-visited').checked;
+            const currentPrio = document.getElementById('prio-filter').value;
             
             for (let i = 1; i <= 8; i++) {
                 const hallStr = i.toString();
-                
-                // Calculate count
-                const count = games.filter(g => g.hall === hallStr && (!hideChecked || !visited.includes(g.id))).length;
+                const count = games.filter(g => 
+                    g.hall === hallStr && 
+                    (!hideChecked || !visited.includes(g.id)) &&
+                    (currentPrio === 'All' || g.priority === currentPrio)
+                ).length;
                 
                 const btn = document.createElement('button');
                 btn.className = `flex-none px-4 py-3 font-medium transition-colors border-b-2 ${currentHall === hallStr ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-600 hover:bg-slate-200'}`;
                 btn.innerHTML = `${i18n[lang].hall} ${i} <span class="ml-1 text-xs bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full">${count}</span>`;
                 btn.onclick = () => {
                     currentHall = hallStr;
-                    renderHallTabs(); // Refresh active state & counts
+                    renderHallTabs();
                     loadMapImage();
                 };
                 tabsContainer.appendChild(btn);
@@ -301,8 +331,13 @@
             const list = document.getElementById('game-list');
             list.innerHTML = '';
             const hideChecked = document.getElementById('hide-visited').checked;
+            const showAllNotes = document.getElementById('show-all-notes').checked;
+            const currentPrio = document.getElementById('prio-filter').value;
             
-            const hallGames = games.filter(g => g.hall === currentHall);
+            const hallGames = games.filter(g => 
+                g.hall === currentHall &&
+                (currentPrio === 'All' || g.priority === currentPrio)
+            );
             let visibleCount = 0;
 
             hallGames.forEach(game => {
@@ -311,24 +346,22 @@
                 visibleCount++;
 
                 const styles = getPrioStyles(game.priority);
-                
-                // OCR check for label color
                 const hallOcr = ocrCache[currentHall] || {};
                 let labelStyle = styles.lbl;
                 let found = false;
                 
-                // Check if booth string exists in OCR data
                 if (game.boothLabel) {
                     const searchStr = game.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
-                    for (const [key, val] of Object.entries(hallOcr)) {
+                    for (const key of Object.keys(hallOcr)) {
                         if (key.includes(searchStr) || searchStr.includes(key)) {
                             found = true; break;
                         }
                     }
                 }
                 
+                // Only show red if we have OCR data for this hall but couldn't find the specific booth
                 if (game.boothLabel && !found && Object.keys(hallOcr).length > 0) {
-                    labelStyle = 'lbl-notfound'; // Red if OCR finished but not found
+                    labelStyle = 'lbl-notfound';
                 }
 
                 const savedNote = userNotes[game.id] !== undefined ? userNotes[game.id] : game.notes;
@@ -347,14 +380,14 @@
                             <p class="text-sm text-slate-600 truncate mb-2">${game.publisher || '-'}</p>
                             <div class="flex flex-wrap gap-2">
                                 <button onclick="focusMap('${game.boothLabel}'); event.stopPropagation();" class="text-xs px-2 py-1 rounded font-bold shadow-sm ${labelStyle}">
-                                    <i class="fa-solid fa-location-dot mr-1"></i>${game.boothLabel || '?'}
+                                    <i class="fa-solid fa-location-dot mr-1"></i> ${game.boothLabel || '?'}
                                 </button>
                                 <span class="text-xs bg-white/60 text-slate-700 px-2 py-1 rounded border border-slate-300 font-medium">
                                     ${game.priority}
                                 </span>
                             </div>
                             
-                            <div id="note-${game.id}" class="mt-3 hidden">
+                            <div id="note-${game.id}" class="mt-3 ${showAllNotes ? '' : 'hidden'}">
                                 <textarea onchange="saveNote('${game.id}', this.value)" onclick="event.stopPropagation()" class="w-full text-sm p-2 border rounded bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="${i18n[lang].notes}">${savedNote}</textarea>
                             </div>
                         </div>
@@ -366,8 +399,6 @@
             if (visibleCount === 0) {
                 list.innerHTML = `<li class="p-4 text-center text-slate-500 italic">${i18n[lang].noGames}</li>`;
             }
-            
-            renderHallTabs(); // Update counters
         }
 
         // --- Interactivity ---
@@ -378,13 +409,16 @@
                 visited.push(id);
             }
             localStorage.setItem('spielVisited', JSON.stringify(visited));
+            renderHallTabs();
             renderList();
             drawOverlay();
         }
 
         function toggleNote(id) {
-            const el = document.getElementById(`note-${id}`);
-            el.classList.toggle('hidden');
+            if(!document.getElementById('show-all-notes').checked) {
+                const el = document.getElementById(`note-${id}`);
+                el.classList.toggle('hidden');
+            }
         }
 
         function saveNote(id, val) {
@@ -399,37 +433,32 @@
             const sidebar = document.getElementById('sidebar');
             const mapCont = document.getElementById('map-container');
             
-            if (window.innerWidth < 768) { // Mobile behavior
+            if (window.innerWidth < 768) {
                 if (tab === 'list') {
                     sidebar.style.display = 'flex';
                     mapCont.style.display = 'none';
                 } else {
                     sidebar.style.display = 'none';
                     mapCont.style.display = 'flex';
-                    // Re-calculate panzoom constraints on un-hide
-                    if(panzoomInstance) setTimeout(() => panzoomInstance.pan(0,0), 50);
+                    // Re-calculate bounds slightly after showing
+                    setTimeout(() => { if(panzoomInstance) panzoomInstance.pan(0,0); }, 50);
                 }
             }
         }
 
-        document.getElementById('hide-visited').addEventListener('change', () => {
-            renderList();
-            drawOverlay();
-        });
+        document.getElementById('hide-visited').addEventListener('change', () => { renderHallTabs(); renderList(); drawOverlay(); });
+        document.getElementById('show-all-notes').addEventListener('change', renderList);
+        document.getElementById('prio-filter').addEventListener('change', () => { renderHallTabs(); renderList(); drawOverlay(); });
 
         function setupEventListeners() {
             window.addEventListener('resize', () => {
-                // Reset inline styles on resize to allow CSS media queries to work
                 document.getElementById('sidebar').style.display = '';
                 document.getElementById('map-container').style.display = '';
                 drawOverlay();
             });
 
-            // Map Clicks (differentiate drag vs click)
             const mapWrap = document.getElementById('panzoom-wrapper');
-            mapWrap.addEventListener('pointerdown', e => {
-                pointerDownPos = { x: e.clientX, y: e.clientY };
-            });
+            mapWrap.addEventListener('pointerdown', e => { pointerDownPos = { x: e.clientX, y: e.clientY }; });
             mapWrap.addEventListener('pointerup', e => {
                 const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
                 if (dist < 5) handleMapClick(e);
@@ -450,17 +479,12 @@
 
         function zoomIn() { panzoomInstance.zoomIn(); }
         function zoomOut() { panzoomInstance.zoomOut(); }
-        function resetZoom() { 
-            panzoomInstance.reset(); 
-            setTimeout(drawOverlay, 50);
-        }
+        function resetZoom() { panzoomInstance.reset(); setTimeout(drawOverlay, 50); }
 
         function loadMapImage() {
             const img = document.getElementById('map-image');
             img.onload = () => {
                 img.classList.remove('hidden');
-                
-                // Setup canvas dimensions
                 const cvs = document.getElementById('map-overlay');
                 cvs.width = img.naturalWidth;
                 cvs.height = img.naturalHeight;
@@ -478,7 +502,7 @@
             img.src = `hal${currentHall}.png`;
         }
 
-        // --- Focus & Highlight (Pulse) ---
+        // --- Focus Fix ---
         function focusMap(boothLabel) {
             if(!boothLabel) return;
             const searchStr = boothLabel.replace(/[^a-zA-Z0-9]/g, '');
@@ -493,82 +517,73 @@
 
             if(target) {
                 switchTab('map');
-                const img = document.getElementById('map-image');
-                const pxX = (target.x / 100) * img.naturalWidth;
-                const pxY = (target.y / 100) * img.naturalHeight;
                 
-                // Move pulse marker
-                const pulse = document.getElementById('pulse-marker');
-                pulse.style.left = `${pxX}px`;
-                pulse.style.top = `${pxY}px`;
-                pulse.classList.remove('hidden');
-                
-                // Pan to center
-                const wrapperRect = document.getElementById('panzoom-wrapper').getBoundingClientRect();
-                const scale = 2; // Zoom in
-                panzoomInstance.zoom(scale, { animate: true });
-                setTimeout(() => {
-                    panzoomInstance.pan(
-                        (wrapperRect.width / 2) - (pxX * scale),
-                        (wrapperRect.height / 2) - (pxY * scale),
-                        { animate: true }
-                    );
-                }, 100);
+                // Allow DOM to update (display:flex on map container) before measuring
+                requestAnimationFrame(() => {
+                    const img = document.getElementById('map-image');
+                    const wrapper = document.getElementById('panzoom-wrapper');
+                    const wrapperRect = wrapper.getBoundingClientRect();
+                    
+                    const pxX = (target.x / 100) * img.naturalWidth;
+                    const pxY = (target.y / 100) * img.naturalHeight;
+                    
+                    // Show pulse
+                    const pulse = document.getElementById('pulse-marker');
+                    pulse.style.left = `${pxX}px`;
+                    pulse.style.top = `${pxY}px`;
+                    pulse.classList.remove('hidden');
+                    
+                    // Correct Panzoom Centering Logic
+                    const scale = 2.5; // Zoom depth
+                    
+                    // We want point (pxX * scale, pxY * scale) to be in the middle of wrapperRect
+                    const panX = (wrapperRect.width / 2) - (pxX * scale);
+                    const panY = (wrapperRect.height / 2) - (pxY * scale);
 
-                setTimeout(() => { pulse.classList.add('hidden'); }, 4000);
+                    panzoomInstance.zoom(scale, { animate: true });
+                    setTimeout(() => {
+                        panzoomInstance.pan(panX, panY, { animate: true });
+                    }, 50);
+
+                    setTimeout(() => { pulse.classList.add('hidden'); }, 3000);
+                });
             } else {
-                alert(`Locatie '${boothLabel}' (nog) niet gevonden op de kaart.`);
+                alert(`Locatie '${boothLabel}' (nog) niet gevonden. OCR zoekt mogelijk nog op de achtergrond.`);
             }
         }
 
-        // --- Map Interaction ---
         function handleMapClick(e) {
             const img = document.getElementById('map-image');
             if(img.classList.contains('hidden')) return;
 
             const rect = img.getBoundingClientRect();
-            // Calculate coordinates relative to intrinsic image size
             const scaleX = img.naturalWidth / rect.width;
             const scaleY = img.naturalHeight / rect.height;
-            
             const clickX = (e.clientX - rect.left) * scaleX;
             const clickY = (e.clientY - rect.top) * scaleY;
-
-            // Convert to percentage
             const pctX = (clickX / img.naturalWidth) * 100;
             const pctY = (clickY / img.naturalHeight) * 100;
 
             const hallOcr = ocrCache[currentHall] || {};
             let clickedLabel = null;
 
-            // Check if click falls within padded bounding box
             for (const [text, box] of Object.entries(hallOcr)) {
-                // Apply padding logic here too
                 const padW = box.w * 0.4; 
                 const padH = box.h * 0.4;
-                const minX = box.x - padW;
-                const maxX = box.x + box.w + padW;
-                const minY = box.y - padH;
-                const maxY = box.y + box.h + padH;
-
-                if (pctX >= minX && pctX <= maxX && pctY >= minY && pctY <= maxY) {
+                if (pctX >= (box.x - padW) && pctX <= (box.x + box.w + padW) && 
+                    pctY >= (box.y - padH) && pctY <= (box.y + box.h + padH)) {
                     clickedLabel = text;
                     break;
                 }
             }
 
             if (clickedLabel) {
-                // Find matching games
                 const matchedGames = games.filter(g => 
-                    g.hall === currentHall && 
-                    g.boothLabel && 
+                    g.hall === currentHall && g.boothLabel && 
                     (clickedLabel.includes(g.boothLabel.replace(/[^a-zA-Z0-9]/g, '')) || 
                      g.boothLabel.replace(/[^a-zA-Z0-9]/g, '').includes(clickedLabel))
                 );
-
-                if(matchedGames.length > 0) {
-                    showModal(matchedGames);
-                }
+                if(matchedGames.length > 0) showModal(matchedGames);
             }
         }
 
@@ -597,35 +612,27 @@
                 `;
                 content.appendChild(div);
             });
-
             document.getElementById('booth-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('booth-modal').classList.add('hidden');
-        }
-
+        function closeModal() { document.getElementById('booth-modal').classList.add('hidden'); }
         function toggleVisitedModal(id) {
             toggleVisited(id);
             const isVis = visited.includes(id);
             const titleEl = document.getElementById(`mod-title-${id}`);
             const parentEl = titleEl.closest('.p-3');
-            
             if(isVis) {
-                titleEl.classList.add('strike');
-                parentEl.classList.add('opacity-50', 'grayscale', 'bg-white');
+                titleEl.classList.add('strike'); parentEl.classList.add('opacity-50', 'grayscale', 'bg-white');
             } else {
-                titleEl.classList.remove('strike');
-                parentEl.classList.remove('opacity-50', 'grayscale', 'bg-white');
+                titleEl.classList.remove('strike'); parentEl.classList.remove('opacity-50', 'grayscale', 'bg-white');
             }
         }
 
-        // --- Background OCR & Drawing ---
-        async function checkAndRunOCR() {
+        // --- Multi-Pass Deep OCR ---
+        async function checkAndRunAdvancedOCR() {
             if (isOcrRunning) return;
             isOcrRunning = true;
-            document.getElementById('ocr-status').classList.remove('hidden');
-
+            
             const worker = await Tesseract.createWorker('eng');
             await worker.setParameters({
                 tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-',
@@ -634,53 +641,77 @@
 
             for (let i = 1; i <= 8; i++) {
                 const hId = i.toString();
-                // Check if we have games in this hall to justify scanning
-                const hasGames = games.some(g => g.hall === hId);
+                // Get unique required booth strings for this hall
+                const requiredBooths = [...new Set(games.filter(g => g.hall === hId && g.boothLabel)
+                                       .map(g => g.boothLabel.replace(/[^a-zA-Z0-9]/g, '')))];
                 
-                if (hasGames && !ocrCache[hId]) {
+                if (requiredBooths.length === 0) continue; // Skip empty halls
+                if (!ocrCache[hId]) ocrCache[hId] = {};
+
+                let methodsTried = 0;
+                
+                // Advanced loop up to 10 filters
+                while (methodsTried < ocrFilters.length) {
+                    // Calculate success rate
+                    let foundCount = 0;
+                    for (const reqBooth of requiredBooths) {
+                        for (const key of Object.keys(ocrCache[hId])) {
+                            if (key.includes(reqBooth) || reqBooth.includes(key)) {
+                                foundCount++; break;
+                            }
+                        }
+                    }
+                    
+                    const successRate = foundCount / requiredBooths.length;
+                    document.getElementById('ocr-status').classList.remove('hidden');
+                    document.getElementById('txt-scanning').innerText = `OCR Hal ${hId}: ${Math.round(successRate * 100)}% (poging ${methodsTried+1})`;
+
+                    if (successRate >= 0.90) break; // 90% reached! Stop processing this hall.
+
                     try {
-                        console.log(`Scanning Hall ${hId}...`);
-                        // Create a temporary off-screen canvas to enhance the image for OCR
                         const tempImg = new Image();
                         tempImg.src = `hal${hId}.png`;
                         await new Promise(resolve => tempImg.onload = resolve);
                         
                         const cvs = document.createElement('canvas');
-                        // Scale up by 2x for better small text recognition
-                        cvs.width = tempImg.width * 2;
+                        cvs.width = tempImg.width * 2; // Upscale 2x
                         cvs.height = tempImg.height * 2;
                         const ctx = cvs.getContext('2d');
                         
-                        // Enhance contrast
-                        ctx.filter = 'grayscale(100%) contrast(200%)';
+                        // Apply iterative filter
+                        ctx.filter = ocrFilters[methodsTried];
                         ctx.drawImage(tempImg, 0, 0, cvs.width, cvs.height);
 
                         const ret = await worker.recognize(cvs);
                         
-                        ocrCache[hId] = {};
+                        // Merge new findings
                         ret.data.words.forEach(word => {
                             const text = word.text.replace(/[^A-Z0-9]/g, '');
-                            // Looking for pattern like D450, 2D450, etc.
                             if (text.length >= 2 && /[A-Z]/.test(text) && /\d/.test(text)) {
-                                ocrCache[hId][text] = {
-                                    // Scale back coordinates to percentages
-                                    x: (word.bbox.x0 / cvs.width) * 100,
-                                    y: (word.bbox.y0 / cvs.height) * 100,
-                                    w: ((word.bbox.x1 - word.bbox.x0) / cvs.width) * 100,
-                                    h: ((word.bbox.y1 - word.bbox.y0) / cvs.height) * 100
-                                };
+                                // Only save if we don't have it, or overwrite if confidence might be better (simplified to just append)
+                                if (!ocrCache[hId][text]) {
+                                    ocrCache[hId][text] = {
+                                        x: (word.bbox.x0 / cvs.width) * 100,
+                                        y: (word.bbox.y0 / cvs.height) * 100,
+                                        w: ((word.bbox.x1 - word.bbox.x0) / cvs.width) * 100,
+                                        h: ((word.bbox.y1 - word.bbox.y0) / cvs.height) * 100
+                                    };
+                                }
                             }
                         });
 
-                        localStorage.setItem('spielOcrCacheV3', JSON.stringify(ocrCache));
+                        localStorage.setItem('spielOcrCacheV4', JSON.stringify(ocrCache));
                         
+                        // Redraw if this is the current active hall
                         if (currentHall === hId) {
-                            renderList(); // Update missing labels
+                            renderList(); 
                             drawOverlay();
                         }
                     } catch (err) {
-                        console.error(`OCR failed for Hall ${hId}`, err);
+                        console.error(`OCR Filter error on Hall ${hId}`, err);
                     }
+                    
+                    methodsTried++;
                 }
             }
 
@@ -698,7 +729,13 @@
             ctx.clearRect(0, 0, cvs.width, cvs.height);
             
             const hideChecked = document.getElementById('hide-visited').checked;
-            const hallGames = games.filter(g => g.hall === currentHall && (!hideChecked || !visited.includes(g.id)));
+            const currentPrio = document.getElementById('prio-filter').value;
+            
+            const hallGames = games.filter(g => 
+                g.hall === currentHall && 
+                (!hideChecked || !visited.includes(g.id)) &&
+                (currentPrio === 'All' || g.priority === currentPrio)
+            );
 
             hallGames.forEach(game => {
                 if (!game.boothLabel) return;
@@ -711,14 +748,12 @@
                         const pxW = (box.w / 100) * cvs.width;
                         const pxH = (box.h / 100) * cvs.height;
 
-                        // Padding to fill the booth area visually (heuristic)
                         const padW = pxW * 0.4;
                         const padH = pxH * 0.4;
 
                         ctx.fillStyle = getPrioStyles(game.priority).hex;
                         ctx.fillRect(pxX - padW, pxY - padH, pxW + (padW*2), pxH + (padH*2));
                         
-                        // Border
                         ctx.strokeStyle = getPrioStyles(game.priority).hex.replace('0.4', '1.0');
                         ctx.lineWidth = 2;
                         ctx.strokeRect(pxX - padW, pxY - padH, pxW + (padW*2), pxH + (padH*2));
