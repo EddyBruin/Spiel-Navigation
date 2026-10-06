@@ -46,22 +46,38 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         
         .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+
+        /* Pulse Animation for Focus */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .pulse-target {
+            position: absolute;
+            border: 4px solid #ef4444;
+            background: rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            animation: pulse-ring 2s infinite;
+            pointer-events: none;
+            z-index: 50;
+        }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-slate-100 text-slate-800 view-list">
 
-    <!-- HEADER & DROP ZONE -->
-    <header id="drop-header" class="bg-white border-b border-slate-200 shadow-sm z-30 shrink-0">
+    <!-- FALLBACK DROP ZONE -->
+    <header id="drop-header" class="hidden bg-white border-b border-slate-200 shadow-sm z-30 shrink-0">
         <div id="drop-zone" class="m-4 p-8 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer text-slate-500 bg-slate-50 hover:bg-slate-100 transition-colors">
             <i class="fa-solid fa-file-csv text-4xl mb-3 text-indigo-400"></i>
-            <h2 class="text-lg font-bold text-slate-700">Sleep data.csv hierheen</h2>
-            <p class="text-sm mt-1">of klik om je CSV-bestand te selecteren</p>
-            <input type="file" id="file-input" accept=".csv" class="hidden">
+            <h2 class="text-lg font-bold text-slate-700">Kan data.csv niet automatisch vinden</h2>
+            <p class="text-sm mt-1">Sleep je CSV-bestand hierheen of klik om te selecteren</p>
+            <input type="file" id="file-input" accept=".csv, .txt" class="hidden">
         </div>
     </header>
 
     <!-- LOADED HEADER -->
-    <header id="loaded-header" class="hidden bg-slate-900 text-white shadow-md z-30 shrink-0">
+    <header id="loaded-header" class="bg-slate-900 text-white shadow-md z-30 shrink-0 flex flex-col">
         <div class="px-4 py-3 flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
                 <i class="fa-solid fa-map-location-dot text-indigo-400"></i> SPIEL Navigator
@@ -72,37 +88,32 @@
         </div>
         
         <!-- MOBILE TABS -->
-        <div id="mobile-view-tabs" class="flex bg-slate-800 p-1 m-2 mt-0 rounded-lg">
-            <button id="btn-view-list" class="flex-1 py-2 px-3 text-sm font-semibold rounded bg-indigo-600 text-white shadow transition-all">Lijst Weergave</button>
-            <button id="btn-view-map" class="flex-1 py-2 px-3 text-sm font-semibold rounded text-slate-300 hover:text-white transition-all">Kaart Weergave</button>
+        <div id="mobile-view-tabs" class="flex bg-slate-800 p-1 mx-2 mb-2 rounded-lg">
+            <button id="btn-view-list" class="flex-1 py-2 px-3 text-sm font-semibold rounded bg-indigo-600 text-white shadow transition-all">Lijst</button>
+            <button id="btn-view-map" class="flex-1 py-2 px-3 text-sm font-semibold rounded text-slate-300 hover:text-white transition-all">Kaart</button>
         </div>
     </header>
 
-    <div id="app-content" class="hidden flex-1 flex flex-col md:flex-row overflow-hidden relative">
+    <div id="app-content" class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
         
-        <!-- PANEEL 1: Filters & Lijst -->
+        <!-- PANEL 1: List & Filters -->
         <aside id="panel-list" class="w-full md:w-[26rem] lg:w-[30rem] bg-white border-r border-slate-200 flex flex-col shadow-lg z-20 shrink-0 h-full">
             
-            <!-- Hallen (Nu inclusief 1 t/m 8) -->
+            <!-- Hallen (1-8) -->
             <div class="p-2 border-b border-slate-200 bg-slate-50">
                 <p class="text-xs font-bold text-slate-500 mb-2 uppercase px-1">Selecteer Hal</p>
-                <div class="flex flex-wrap gap-1" id="hall-tabs">
-                    <!-- Javascript genereert knoppen -->
-                </div>
+                <div class="flex flex-wrap gap-1" id="hall-tabs"></div>
             </div>
 
             <!-- Priority Filters -->
             <div class="p-2 border-b border-slate-200 bg-white">
                 <p class="text-xs font-bold text-slate-500 mb-2 uppercase px-1">Categorieën</p>
-                <div class="flex flex-wrap gap-1" id="priority-filters">
-                    <!-- Javascript genereert knoppen -->
-                </div>
+                <div class="flex flex-wrap gap-1" id="priority-filters"></div>
             </div>
 
-            <!-- Globale Toggles -->
+            <!-- Global Toggles -->
             <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-3 text-sm font-medium">
                 <label class="flex items-center cursor-pointer">
-                    <!-- hideVisited staat standaard AAN, checkbox ook -->
                     <input type="checkbox" id="toggle-hide-visited" class="sr-only custom-toggle" checked>
                     <div class="w-9 h-5 bg-slate-300 rounded-full relative transition-colors duration-200 toggle-bg">
                         <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-200 toggle-dot shadow"></div>
@@ -119,16 +130,15 @@
                 </label>
             </div>
 
-            <!-- Lijst met games -->
+            <!-- List Container -->
             <div class="flex-1 overflow-y-auto p-3 bg-slate-100 space-y-2 relative" id="games-container">
-                <!-- Javascript genereert de lijst -->
+                <div class="text-center p-6 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2 block"></i>Laden...</div>
             </div>
         </aside>
 
-        <!-- PANEEL 2: Map -->
+        <!-- PANEL 2: Map -->
         <main id="panel-map" class="flex-1 flex flex-col bg-slate-200 relative overflow-hidden h-full">
             
-            <!-- Map Toolbar -->
             <div class="absolute top-4 right-4 z-20 flex gap-2">
                 <div class="bg-white rounded-lg shadow-lg flex flex-col border border-slate-200">
                     <button id="btn-zoom-in" class="p-3 hover:bg-slate-100 rounded-t-lg border-b border-slate-200"><i class="fa-solid fa-plus text-slate-700"></i></button>
@@ -139,37 +149,36 @@
             <!-- OCR Progress Widget -->
             <div id="ocr-progress-widget" class="absolute bottom-4 left-4 right-4 md:right-auto md:w-80 bg-slate-900 text-white rounded-lg shadow-2xl p-4 z-20 transition-transform duration-300 transform translate-y-full opacity-0 hidden">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-bold text-sm"><i class="fa-solid fa-microchip fa-spin text-indigo-400 mr-2"></i>Automatische Scan</h4>
-                    <span id="ocr-progress-count" class="text-xs bg-slate-700 px-2 py-0.5 rounded">0/8 Hallen</span>
+                    <h4 class="font-bold text-sm"><i class="fa-solid fa-microchip fa-spin text-indigo-400 mr-2"></i>Slimme Scan</h4>
+                    <span id="ocr-progress-count" class="text-xs bg-slate-700 px-2 py-0.5 rounded">0/8</span>
                 </div>
                 <div class="w-full bg-slate-700 rounded-full h-2 mb-1 overflow-hidden">
                     <div id="ocr-progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <p id="ocr-progress-text" class="text-[10px] text-slate-400 font-mono truncate">Initialiseren...</p>
+                <p id="ocr-progress-text" class="text-[10px] text-slate-400 font-mono truncate">Voorbereiden...</p>
             </div>
 
             <!-- Map Viewport -->
             <div class="flex-1 relative overflow-hidden" id="map-viewport">
-                <!-- Foutmelding -->
                 <div id="map-error" class="hidden absolute inset-0 m-auto flex-col items-center justify-center text-slate-500 z-10 p-4">
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 text-center max-w-sm w-full">
                         <i class="fa-solid fa-image-slash text-4xl mb-3 text-slate-300"></i>
-                        <p class="font-bold text-slate-700 text-lg mb-2">Plattegrond niet gevonden</p>
-                        <p class="text-sm">Plaats het bestand in dezelfde map en noem het exact:</p>
+                        <p class="font-bold text-slate-700 text-lg mb-2">Plattegrond mist</p>
+                        <p class="text-sm">Bestand lokaal niet gevonden:</p>
                         <p class="text-sm mt-3 font-mono bg-slate-100 p-2 rounded text-indigo-600 font-bold" id="error-file-name">hal1.png</p>
                     </div>
                 </div>
 
-                <!-- Panzoom Container -->
                 <div id="map-wrapper" class="hidden">
                     <img id="map-img" alt="Map">
                     <canvas id="map-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
                     <div id="map-click-layer" class="absolute top-0 left-0 w-full h-full"></div>
+                    <div id="map-pulse-layer" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
                 </div>
             </div>
         </main>
         
-        <!-- Modal / Popup -->
+        <!-- Modal -->
         <div id="info-modal" class="hidden fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
             <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform translate-y-4 transition-transform duration-200" id="info-modal-content">
                 <div class="bg-slate-900 p-4 flex justify-between items-center text-white">
@@ -179,16 +188,14 @@
                     </h3>
                     <button id="modal-close" class="text-slate-300 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
                 </div>
-                <div class="p-4 max-h-[60vh] overflow-y-auto space-y-3 bg-slate-50" id="modal-games-list">
-                    <!-- Gevuld via JS -->
-                </div>
+                <div class="p-4 max-h-[60vh] overflow-y-auto space-y-3 bg-slate-50" id="modal-games-list"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_VISITED = 'spiel_visited_v3';
-        const STORAGE_NOTES = 'spiel_notes_v3';
+        const STORAGE_VISITED = 'spiel_visited_v4';
+        const STORAGE_NOTES = 'spiel_notes_v4';
 
         const AppState = {
             games: [],
@@ -202,42 +209,35 @@
             },
             activePriorities: new Set(['Need', 'Want', 'Like', 'Maybe']),
             
-            // Toggles
             hideVisited: true,
             showAllNotes: false,
-            expandedNotes: new Set(), // IDs of games where notes are manually opened
+            expandedNotes: new Set(),
             
-            // Data stores
             savedVisited: JSON.parse(localStorage.getItem(STORAGE_VISITED)) || {},
             savedNotes: JSON.parse(localStorage.getItem(STORAGE_NOTES)) || {},
-            ocrData: {}, // { '1': [{text, x, y, w, h}], ... }
+            ocrData: {}, 
             
-            // Map Control
-            panzoomInstance: null
+            panzoomInstance: null,
+            focusTarget: null 
         };
 
         const Elements = {
-            dropZone: document.getElementById('drop-zone'),
-            fileInput: document.getElementById('file-input'),
             dropHeader: document.getElementById('drop-header'),
-            loadedHeader: document.getElementById('loaded-header'),
+            fileInput: document.getElementById('file-input'),
             appContent: document.getElementById('app-content'),
-            
             hallTabs: document.getElementById('hall-tabs'),
             priorityFilters: document.getElementById('priority-filters'),
             gameList: document.getElementById('games-container'),
-            
             mapWrapper: document.getElementById('map-wrapper'),
             mapImg: document.getElementById('map-img'),
             mapCanvas: document.getElementById('map-canvas'),
             mapClickLayer: document.getElementById('map-click-layer'),
+            mapPulseLayer: document.getElementById('map-pulse-layer'),
             mapError: document.getElementById('map-error'),
-            
             ocrWidget: document.getElementById('ocr-progress-widget'),
             ocrProgressCount: document.getElementById('ocr-progress-count'),
             ocrProgressBar: document.getElementById('ocr-progress-bar'),
             ocrProgressText: document.getElementById('ocr-progress-text'),
-            
             modal: document.getElementById('info-modal'),
             modalContent: document.getElementById('info-modal-content'),
             modalClose: document.getElementById('modal-close'),
@@ -245,19 +245,26 @@
             modalGames: document.getElementById('modal-games-list')
         };
 
-        // --- INIT & FILE HANDLING ---
         function initApp() {
-            // Drag and drop events
-            Elements.dropZone.addEventListener('dragover', e => { e.preventDefault(); Elements.dropZone.classList.add('bg-indigo-50', 'border-indigo-400'); });
-            Elements.dropZone.addEventListener('dragleave', () => Elements.dropZone.classList.remove('bg-indigo-50', 'border-indigo-400'));
-            Elements.dropZone.addEventListener('drop', e => {
-                e.preventDefault();
-                if (e.dataTransfer.files.length) parseFile(e.dataTransfer.files[0]);
-            });
-            Elements.dropZone.addEventListener('click', () => Elements.fileInput.click());
-            Elements.fileInput.addEventListener('change', e => {
-                if (e.target.files.length) parseFile(e.target.files[0]);
-            });
+            // Auto fetch CSV
+            fetch('data.csv')
+                .then(response => {
+                    if (!response.ok) throw new Error('File not found');
+                    return response.text();
+                })
+                .then(text => {
+                    Papa.parse(text, { header: true, skipEmptyLines: true, complete: results => processCSVData(results.data) });
+                })
+                .catch(() => {
+                    // Fallback to manual upload
+                    Elements.dropHeader.classList.remove('hidden');
+                    document.getElementById('drop-zone').addEventListener('click', () => Elements.fileInput.click());
+                    Elements.fileInput.addEventListener('change', e => {
+                        if (e.target.files.length) {
+                            Papa.parse(e.target.files[0], { header: true, skipEmptyLines: true, complete: results => processCSVData(results.data) });
+                        }
+                    });
+                });
 
             // Mobile Tabs
             document.getElementById('btn-view-list').addEventListener('click', () => setMobileView('list'));
@@ -266,12 +273,10 @@
             // Toggles
             document.getElementById('toggle-hide-visited').addEventListener('change', (e) => {
                 AppState.hideVisited = e.target.checked;
-                renderGames();
-                drawMap();
+                renderGames(); drawMap();
             });
             document.getElementById('toggle-notes').addEventListener('change', (e) => {
                 AppState.showAllNotes = e.target.checked;
-                // Als we globaal toggelen, wissen we individuele keuzes
                 AppState.expandedNotes.clear();
                 renderGames();
             });
@@ -302,16 +307,8 @@
             }
         }
 
-        function parseFile(file) {
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: results => { processCSVData(results.data); launchApp(); },
-                error: err => alert("Fout: " + err.message)
-            });
-        }
-
         function processCSVData(data) {
+            Elements.dropHeader.classList.add('hidden'); // hide fallback if active
             AppState.games = [];
             data.forEach(row => {
                 const keys = Object.keys(row).reduce((acc, k) => { acc[k.toLowerCase().trim()] = k; return acc; }, {});
@@ -332,32 +329,20 @@
                 const uid = `${name}_${combinedBooth}`.replace(/[^a-zA-Z0-9]/g, '_');
 
                 AppState.games.push({
-                    uid, name, publisher,
-                    hall: hallRaw, booth: boothRaw, combinedBooth,
-                    priority: finalCategory,
-                    isPreorder: getValue('preorder') == '1',
-                    csvNotes: getValue('notes', 'notities')
+                    uid, name, publisher, hall: hallRaw, booth: boothRaw, combinedBooth,
+                    priority: finalCategory, isPreorder: getValue('preorder') == '1', csvNotes: getValue('notes', 'notities')
                 });
             });
 
-            // Sorteren alfabetisch op gecombineerde hal+booth (bijv. 2D450)
+            // Sorteer op combinedBooth
             AppState.games.sort((a, b) => a.combinedBooth.localeCompare(b.combinedBooth));
-        }
-
-        function launchApp() {
-            Elements.dropHeader.classList.add('hidden');
-            Elements.loadedHeader.classList.remove('hidden');
-            Elements.appContent.classList.remove('hidden');
             
             buildFilters();
             buildHallTabs();
             loadHall('1');
-            
-            // Kick off background OCR process for all halls
             runBackgroundOCR();
         }
 
-        // --- UI BUILDING ---
         function buildFilters() {
             Elements.priorityFilters.innerHTML = '';
             Object.keys(AppState.priorities).forEach(key => {
@@ -379,10 +364,9 @@
 
         function buildHallTabs() {
             Elements.hallTabs.innerHTML = '';
+            // Altijd 1 t/m 8 renderen
             AppState.halls.forEach(hall => {
                 const count = AppState.games.filter(g => g.hall === hall).length;
-                if(count === 0) return;
-                
                 const btn = document.createElement('button');
                 const isActive = AppState.currentHall === hall;
                 
@@ -395,22 +379,17 @@
             });
         }
 
-        // --- LIST RENDERING ---
         function renderGames() {
             Elements.gameList.innerHTML = '';
-            
             const filtered = AppState.games.filter(g => {
                 if (g.hall !== AppState.currentHall) return false;
                 if (!AppState.activePriorities.has(g.priority)) return false;
-                
-                const isVisited = AppState.savedVisited[g.uid] || false;
-                if (AppState.hideVisited && isVisited) return false;
-                
+                if (AppState.hideVisited && AppState.savedVisited[g.uid]) return false;
                 return true;
             });
 
             if (filtered.length === 0) {
-                Elements.gameList.innerHTML = `<div class="text-center p-6 text-slate-400"><i class="fa-solid fa-ghost text-3xl mb-2 opacity-50 block"></i>Geen games gevonden</div>`;
+                Elements.gameList.innerHTML = `<div class="text-center p-6 text-slate-400"><i class="fa-solid fa-ghost text-3xl mb-2 opacity-50 block"></i>Geen games gevonden in Hal ${AppState.currentHall}</div>`;
                 return;
             }
 
@@ -419,11 +398,9 @@
                 const userNotes = AppState.savedNotes[game.uid] !== undefined ? AppState.savedNotes[game.uid] : game.csvNotes;
                 const pColor = AppState.priorities[game.priority].solid;
                 
-                // Style modifiers for visited items
                 const cardClass = isVisited ? 'border-slate-200 opacity-50 bg-slate-100 grayscale-[50%]' : `border-l-4 shadow-sm bg-white`;
                 const textClass = isVisited ? 'line-through text-slate-500' : 'text-slate-900';
                 const borderColor = isVisited ? '' : `border-left-color: ${pColor};`;
-                
                 const isExpanded = AppState.showAllNotes || AppState.expandedNotes.has(game.uid);
 
                 const div = document.createElement('div');
@@ -432,30 +409,25 @@
 
                 div.innerHTML = `
                     <div class="flex gap-3 items-start">
-                        <!-- Checkbox Area (Stop propagation so we don't trigger row click) -->
                         <div class="mt-0.5 relative flex items-center justify-center shrink-0 cursor-pointer w-6 h-6" onclick="event.stopPropagation(); window.toggleVisited('${game.uid}')">
                             <div class="w-5 h-5 border-2 rounded transition-colors text-white flex items-center justify-center ${isVisited ? 'bg-slate-500 border-transparent' : 'bg-white border-slate-300'}">
                                 <svg class="w-3.5 h-3.5 ${isVisited ? 'block' : 'hidden'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                         </div>
-                        
-                        <!-- Text Area (Clickable to toggle notes) -->
                         <div class="flex-1 min-w-0 cursor-pointer" onclick="window.toggleCardNote('${game.uid}')">
                             <div class="flex justify-between items-start gap-2">
                                 <h3 class="font-bold text-sm leading-tight ${textClass}">
                                     ${game.name} ${game.isPreorder ? '<i class="fa-solid fa-sack-dollar text-green-600 ml-1" title="Preorder"></i>' : ''}
                                 </h3>
-                                <span class="bg-slate-200 border border-slate-300 text-[10px] font-bold px-1.5 py-0.5 rounded text-slate-700 shrink-0">
-                                    ${game.combinedBooth || '???'}
-                                </span>
+                                <button onclick="event.stopPropagation(); window.focusOnMap('${game.hall}', '${game.combinedBooth}')" class="bg-slate-200 hover:bg-indigo-100 hover:text-indigo-700 border border-slate-300 transition-colors text-[10px] font-bold px-1.5 py-0.5 rounded text-slate-700 shrink-0 shadow-sm flex items-center gap-1">
+                                    <i class="fa-solid fa-crosshairs"></i> ${game.combinedBooth || '???'}
+                                </button>
                             </div>
                             <p class="text-xs mt-1 truncate ${isVisited ? 'text-slate-400' : 'text-slate-500'}">
                                 <i class="fa-solid fa-industry mr-1 opacity-70"></i>${game.publisher}
                             </p>
                         </div>
                     </div>
-                    
-                    <!-- Notes Area -->
                     <div class="note-body ${isExpanded ? 'open' : ''}">
                         <textarea class="w-full text-xs p-2 bg-yellow-50 border border-yellow-200 rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-400 resize-none h-20" 
                             placeholder="Schrijf hier notities..." oninput="window.saveNote('${game.uid}', this.value)" onclick="event.stopPropagation()">${userNotes}</textarea>
@@ -468,12 +440,11 @@
         window.toggleVisited = function(uid) {
             AppState.savedVisited[uid] = !AppState.savedVisited[uid];
             localStorage.setItem(STORAGE_VISITED, JSON.stringify(AppState.savedVisited));
-            renderGames();
-            drawMap(); // Direct map updaten zodat de groen/blauwe blokken verdwijnen!
+            renderGames(); drawMap(); 
         };
 
         window.toggleCardNote = function(uid) {
-            if (AppState.showAllNotes) return; // Doet niks als alles open staat
+            if (AppState.showAllNotes) return; 
             if (AppState.expandedNotes.has(uid)) AppState.expandedNotes.delete(uid);
             else AppState.expandedNotes.add(uid);
             renderGames();
@@ -488,16 +459,16 @@
             }, 300);
         };
 
-        // --- MAP & OCR ---
-        function loadHall(hall) {
+        function loadHall(hall, keepFocus = false) {
             AppState.currentHall = hall;
             buildHallTabs();
             renderGames();
             
+            if(!keepFocus) AppState.focusTarget = null;
+
             const filename = `hal${hall}.png`;
             document.getElementById('error-file-name').innerText = filename;
             
-            // Verberg wrapper, toon indien succesvol geladen
             Elements.mapWrapper.style.display = 'none';
             Elements.mapError.classList.add('hidden');
             
@@ -512,6 +483,8 @@
                 
                 initPanzoom();
                 drawMap();
+                
+                if(AppState.focusTarget) executeFocus();
             };
             
             Elements.mapImg.onerror = () => {
@@ -534,100 +507,88 @@
 
         function fitMapToScreen() {
             if(!AppState.panzoomInstance || !Elements.mapImg.complete || Elements.mapImg.naturalWidth === 0) return;
-            const vw = Elements.mapViewport.clientWidth;
-            const vh = Elements.mapViewport.clientHeight;
-            const iw = Elements.mapImg.naturalWidth;
-            const ih = Elements.mapImg.naturalHeight;
-            const scale = Math.min(vw / iw, vh / ih) * 0.95; 
+            const vw = document.getElementById('map-viewport').clientWidth;
+            const vh = document.getElementById('map-viewport').clientHeight;
+            const scale = Math.min(vw / Elements.mapImg.naturalWidth, vh / Elements.mapImg.naturalHeight) * 0.95; 
             AppState.panzoomInstance.zoomAbs(0, 0, scale);
-            AppState.panzoomInstance.moveTo((vw - iw * scale) / 2, (vh - ih * scale) / 2);
+            AppState.panzoomInstance.moveTo((vw - Elements.mapImg.naturalWidth * scale) / 2, (vh - Elements.mapImg.naturalHeight * scale) / 2);
         }
 
-        // De background OCR functie
         async function runBackgroundOCR() {
             Elements.ocrWidget.classList.remove('hidden');
-            setTimeout(() => {
-                Elements.ocrWidget.classList.remove('translate-y-full', 'opacity-0');
-            }, 100);
+            setTimeout(() => Elements.ocrWidget.classList.remove('translate-y-full', 'opacity-0'), 100);
 
+            // Highly optimized Tesseract setup
             const worker = await Tesseract.createWorker("eng", 1, {
-                logger: m => {
-                    if(m.status === 'recognizing text') {
-                        Elements.ocrProgressText.innerText = `Analyse bezig: ${Math.floor(m.progress * 100)}%`;
-                    }
-                }
+                logger: m => { if(m.status === 'recognizing text') Elements.ocrProgressText.innerText = `Scannen... ${Math.floor(m.progress * 100)}%`; }
+            });
+            
+            await worker.setParameters({
+                tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+                tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, // PSM 11 is excellent for finding scattered text
             });
 
-            const hallsToProcess = AppState.halls.filter(h => AppState.games.some(g => g.hall === h));
+            const hallsToProcess = AppState.halls;
             let completedCount = 0;
 
             for (let hall of hallsToProcess) {
-                Elements.ocrProgressCount.innerText = `${completedCount}/${hallsToProcess.length} Hallen`;
+                Elements.ocrProgressCount.innerText = `${completedCount}/8 Hallen`;
                 Elements.ocrProgressText.innerText = `Voorbereiden Hal ${hall}...`;
-                Elements.ocrProgressBar.style.width = `${(completedCount / hallsToProcess.length) * 100}%`;
+                Elements.ocrProgressBar.style.width = `${(completedCount / 8) * 100}%`;
 
                 try {
                     const img = new Image();
                     img.src = `hal${hall}.png`;
                     await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
                     
-                    // Upscale op hidden canvas
+                    // Upscale 3x AND apply contrast filter for much better OCR on small booth numbers
                     const cvs = document.createElement('canvas');
                     cvs.width = img.naturalWidth * 3;
                     cvs.height = img.naturalHeight * 3;
                     const ctx = cvs.getContext('2d');
+                    ctx.filter = 'contrast(200%) grayscale(100%)';
                     ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
                     
                     const { data } = await worker.recognize(cvs);
                     
-                    // Bounding boxes in % filteren op stands patronen
                     AppState.ocrData[hall] = data.words.map(w => ({
-                        text: w.text.replace(/[^A-Za-z0-9]/g, '').toUpperCase(),
+                        text: w.text.replace(/[^A-Z0-9]/g, '').toUpperCase(),
                         xPct: w.bbox.x0 / cvs.width,
                         yPct: w.bbox.y0 / cvs.height,
                         wPct: (w.bbox.x1 - w.bbox.x0) / cvs.width,
                         hPct: (w.bbox.y1 - w.bbox.y0) / cvs.height
-                    })).filter(w => w.text.length >= 2 && /[A-Z]\d{2,3}/.test(w.text) || w.text.length > 3);
+                    })).filter(w => w.text.length >= 2 && /[A-Z]\d{2,4}/.test(w.text) || w.text.length >= 3);
                     
-                    if (AppState.currentHall === hall) drawMap(); // live update as they finish
+                    // Live draw update if looking at the hall currently being processed
+                    if (AppState.currentHall === hall) drawMap(); 
                     
                 } catch(e) {
-                    console.log(`Geen map of OCR fout voor hal ${hall}`);
+                    console.warn(`Hal ${hall} overgeslagen: Afbeelding niet lokaal gevonden.`);
                 }
                 completedCount++;
             }
             
             await worker.terminate();
-            
-            // Hide widget
-            Elements.ocrProgressText.innerText = "Klaar!";
+            Elements.ocrProgressText.innerText = "Alle hallen gescand!";
             Elements.ocrProgressBar.style.width = '100%';
-            Elements.ocrProgressCount.innerText = `${completedCount}/${hallsToProcess.length} Hallen`;
-            
+            Elements.ocrProgressCount.innerText = `8/8`;
             setTimeout(() => {
                 Elements.ocrWidget.classList.add('translate-y-full', 'opacity-0');
                 setTimeout(() => Elements.ocrWidget.classList.add('hidden'), 300);
-            }, 1500);
+            }, 2000);
         }
 
         function drawMap() {
             const canvas = Elements.mapCanvas;
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            Elements.mapClickLayer.innerHTML = ''; // reset interactieve knoppen
+            Elements.mapClickLayer.innerHTML = ''; 
             
             const hallWords = AppState.ocrData[AppState.currentHall];
-            if (!hallWords || hallWords.length === 0) return;
+            if (!hallWords) return; // Wait for OCR
 
-            // Filter games: correcte hal, prioriteit, en niet bezocht
-            const gamesToDraw = AppState.games.filter(g => {
-                if(g.hall !== AppState.currentHall) return false;
-                if(!AppState.activePriorities.has(g.priority)) return false;
-                if(AppState.savedVisited[g.uid]) return false; 
-                return true;
-            });
-
-            // Groepeer op combinedBooth
+            const gamesToDraw = AppState.games.filter(g => g.hall === AppState.currentHall && AppState.activePriorities.has(g.priority) && !AppState.savedVisited[g.uid]);
+            
             const boothGroups = {};
             gamesToDraw.forEach(g => {
                 if(!boothGroups[g.combinedBooth]) boothGroups[g.combinedBooth] = [];
@@ -635,13 +596,10 @@
             });
 
             for (const [booth, gamesInBooth] of Object.entries(boothGroups)) {
-                // Exacte match, of een match waar de booth inzit (bijv 2D450 in tekst D450 of andersom)
-                const boothPure = booth.replace(/^\d+/, ''); // strip leading hall number
-                
+                const boothPure = booth.replace(/^\d+/, ''); // strip prefix
                 const match = hallWords.find(w => w.text === booth || w.text === boothPure || w.text.includes(boothPure));
                 
                 if (match) {
-                    // Pak hoogste priority voor highlight kleur (volgorde keys: Need, Want, Like, Maybe)
                     const pOrder = {'Need':1, 'Want':2, 'Like':3, 'Maybe':4};
                     gamesInBooth.sort((a,b) => pOrder[a.priority] - pOrder[b.priority]);
                     const dominantCat = AppState.priorities[gamesInBooth[0].priority];
@@ -655,40 +613,77 @@
                     const dX = x - pad; const dY = y - pad;
                     const dW = w + (pad * 2); const dH = h + (pad * 2);
 
-                    // Teken Canvas (kleur en rand)
                     ctx.fillStyle = dominantCat.color;
                     ctx.fillRect(dX, dY, dW, dH);
                     ctx.strokeStyle = dominantCat.solid;
                     ctx.lineWidth = 4;
                     ctx.strokeRect(dX, dY, dW, dH);
                     
-                    // Teken Label
-                    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-                    const textWidth = ctx.measureText(booth).width;
-                    ctx.fillRect(x - 5, y - 25, textWidth + 10, 22);
-                    ctx.fillStyle = dominantCat.solid;
-                    ctx.font = 'bold 18px Arial';
-                    ctx.fillText(booth, x, y - 8);
-
-                    // Maak clickable overlay div voor interactie
                     const clickDiv = document.createElement('div');
                     clickDiv.className = 'absolute cursor-pointer hover:bg-white/30 transition-colors z-10';
                     clickDiv.style.left = `${(dX / canvas.width) * 100}%`;
                     clickDiv.style.top = `${(dY / canvas.height) * 100}%`;
                     clickDiv.style.width = `${(dW / canvas.width) * 100}%`;
                     clickDiv.style.height = `${(dH / canvas.height) * 100}%`;
-                    
-                    // Sla data op in div
-                    clickDiv.onclick = (e) => {
-                        e.stopPropagation(); // prevent panzoom conflict
-                        openModal(booth, gamesInBooth);
-                    };
+                    clickDiv.onclick = (e) => { e.stopPropagation(); openModal(booth, gamesInBooth); };
                     Elements.mapClickLayer.appendChild(clickDiv);
                 }
             }
         }
 
-        // --- MODAL ---
+        window.focusOnMap = function(hall, booth) {
+            setMobileView('map');
+            AppState.focusTarget = booth; 
+            
+            if (AppState.currentHall !== hall) {
+                loadHall(hall, true);
+            } else {
+                executeFocus();
+            }
+        };
+
+        function executeFocus() {
+            if(!AppState.focusTarget || !AppState.ocrData[AppState.currentHall] || !AppState.panzoomInstance) return;
+            
+            const booth = AppState.focusTarget;
+            const boothPure = booth.replace(/^\d+/, '');
+            const hallWords = AppState.ocrData[AppState.currentHall];
+            const match = hallWords.find(w => w.text === booth || w.text === boothPure || w.text.includes(boothPure));
+            
+            if(match) {
+                const imgW = Elements.mapImg.naturalWidth;
+                const imgH = Elements.mapImg.naturalHeight;
+                
+                const cX = (match.xPct + match.wPct/2) * imgW;
+                const cY = (match.yPct + match.hPct/2) * imgH;
+                
+                // Zoom in and move center to viewport center
+                const zoomLvl = 1.5;
+                const vw = document.getElementById('map-viewport').clientWidth;
+                const vh = document.getElementById('map-viewport').clientHeight;
+                
+                AppState.panzoomInstance.zoomAbs(0, 0, zoomLvl);
+                AppState.panzoomInstance.moveTo((vw/2) - (cX * zoomLvl), (vh/2) - (cY * zoomLvl));
+
+                // Pulsate animation layer
+                Elements.mapPulseLayer.innerHTML = '';
+                const pulse = document.createElement('div');
+                pulse.className = 'pulse-target';
+                const pW = (match.wPct * imgW) + 60;
+                const pH = (match.hPct * imgH) + 60;
+                pulse.style.left = `${(match.xPct * imgW) - 30}px`;
+                pulse.style.top = `${(match.yPct * imgH) - 30}px`;
+                pulse.style.width = `${pW}px`;
+                pulse.style.height = `${pH}px`;
+                
+                Elements.mapPulseLayer.appendChild(pulse);
+                setTimeout(() => { if(pulse.parentNode) pulse.remove(); }, 6000); // clear after 6s
+            } else {
+                alert(`Kan locatie voor ${booth} nog niet vinden. Is de slimme scan al klaar voor deze hal?`);
+            }
+            AppState.focusTarget = null;
+        }
+
         function openModal(boothId, games) {
             Elements.modalTitle.innerText = `Stand ${boothId}`;
             Elements.modalGames.innerHTML = '';
@@ -720,7 +715,6 @@
             setTimeout(() => Elements.modal.classList.add('hidden'), 200);
         }
 
-        // Init
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
