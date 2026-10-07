@@ -12,16 +12,16 @@
         body { overscroll-behavior-y: contain; }
         .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; font-weight: bold; }
         
-        /* Split-screen voor desktop én landscape mobiel */
+        /* Split-screen voor desktop én landscape telefoons */
         @media (min-width: 768px), (max-height: 600px) and (orientation: landscape) {
             .mobile-tabs { display: none !important; }
-            #sidebar { display: flex !important; width: 35% !important; position: relative !important; }
-            #map-container { display: flex !important; width: 65% !important; position: relative !important; }
+            #sidebar { display: block !important; width: 40% !important; position: relative !important; }
+            #map-container { display: flex !important; width: 60% !important; position: relative !important; }
         }
 
         .strike { text-decoration: line-through; opacity: 0.5; }
         
-        /* Map Markers & Animations */
+        /* Pulse animatie op de map */
         .pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse-ring { 
             0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
@@ -36,7 +36,7 @@
             accent-color: #3b82f6;
         }
 
-        /* Map Interaction CSS */
+        /* Panzoom interactie styling */
         #panzoom-wrapper { cursor: grab; }
         #panzoom-wrapper:active { cursor: grabbing; }
         
@@ -49,7 +49,7 @@
         }
         .game-label { display: none; }
         
-        /* Bij inzoomen: switch van 3x3 grid naar een lijst met namen */
+        /* Bij ver inzoomen: switch van 3x3 grid naar lijst met namen */
         .show-labels .booth-group { grid-template-columns: 1fr; gap: 3px; }
         .show-labels .game-label { display: block; }
     </style>
@@ -65,12 +65,12 @@
         </h1>
         
         <!-- Toggle Pills in Header -->
-        <div class="flex items-center gap-2 text-xs">
-            <button onclick="toggleHideVisited()" id="btn-hide-visited" class="flex items-center gap-1 px-3 py-1.5 rounded-full font-bold transition-colors bg-blue-600 text-white border border-blue-500 shadow-sm whitespace-nowrap">
+        <div class="flex items-center gap-2 text-[10px] md:text-xs">
+            <button onclick="toggleHideVisited()" id="btn-hide-visited" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-colors shadow-sm whitespace-nowrap">
                 <i class="fa-solid fa-eye-slash" id="icon-hide"></i> <span id="txt-hide" class="hidden sm:inline">Verberg afgevinkt</span><span class="sm:hidden">Verberg</span>
             </button>
-            <button onclick="toggleShowNotes()" id="btn-show-notes" class="flex items-center gap-1 px-3 py-1.5 rounded-full font-bold transition-colors bg-slate-700 text-slate-300 border border-slate-600 shadow-sm whitespace-nowrap">
-                <i class="fa-solid fa-comment" id="icon-notes"></i> <span id="txt-show-notes" class="hidden sm:inline">Toon notities</span><span class="sm:hidden">Notities</span>
+            <button onclick="toggleShowNotes()" id="btn-show-notes" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-colors shadow-sm whitespace-nowrap">
+                <i class="fa-solid fa-comment-slash" id="icon-notes"></i> <span id="txt-show-notes" class="hidden sm:inline">Toon notities</span><span class="sm:hidden">Notities</span>
             </button>
         </div>
 
@@ -95,31 +95,28 @@
     <!-- Main Content -->
     <main class="flex-1 flex overflow-hidden relative">
         
-        <!-- Sidebar / List -->
-        <!-- Alles in de sidebar zit nu in 1 scrollbare container -->
-        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 flex flex-col">
-            <div class="flex-1 overflow-y-auto w-full h-full pb-24 md:pb-0">
-                
-                <!-- Priority Filters -->
-                <div class="p-4 border-b bg-white shadow-sm">
-                    <div class="flex gap-2 text-xs font-bold" id="prio-filters">
-                        <button onclick="togglePriority('Need')" id="btn-prio-Need" class="flex-1 p-2 rounded-lg transition shadow-sm border border-green-500 bg-green-100 text-green-800">Need</button>
-                        <button onclick="togglePriority('Want')" id="btn-prio-Want" class="flex-1 p-2 rounded-lg transition shadow-sm border border-blue-500 bg-blue-100 text-blue-800">Want</button>
-                        <button onclick="togglePriority('Like')" id="btn-prio-Like" class="flex-1 p-2 rounded-lg transition shadow-sm border border-yellow-400 bg-yellow-100 text-yellow-800">Like</button>
-                        <button onclick="togglePriority('Maybe')" id="btn-prio-Maybe" class="flex-1 p-2 rounded-lg transition shadow-sm border border-gray-400 bg-gray-100 text-gray-800">Maybe</button>
-                    </div>
+        <!-- Sidebar / List (Volledig scrollbaar, geen sticky onderdelen in lijst) -->
+        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 overflow-y-auto block pb-24 md:pb-0">
+            
+            <!-- Priority Filters -->
+            <div class="p-4 border-b bg-white shadow-sm">
+                <div class="flex gap-2 text-xs font-bold" id="prio-filters">
+                    <button onclick="togglePriority('Need')" id="btn-prio-Need" class="flex-1 p-2 rounded-lg transition shadow-sm border border-green-500 bg-green-100 text-green-800">Need</button>
+                    <button onclick="togglePriority('Want')" id="btn-prio-Want" class="flex-1 p-2 rounded-lg transition shadow-sm border border-blue-500 bg-blue-100 text-blue-800">Want</button>
+                    <button onclick="togglePriority('Like')" id="btn-prio-Like" class="flex-1 p-2 rounded-lg transition shadow-sm border border-yellow-400 bg-yellow-100 text-yellow-800">Like</button>
+                    <button onclick="togglePriority('Maybe')" id="btn-prio-Maybe" class="flex-1 p-2 rounded-lg transition shadow-sm border border-gray-400 bg-gray-100 text-gray-800">Maybe</button>
                 </div>
-
-                <!-- Hall Tabs -->
-                <div class="flex flex-wrap gap-2 p-3 border-b bg-slate-100 shadow-inner" id="hall-tabs">
-                    <!-- Generated by JS -->
-                </div>
-
-                <!-- List -->
-                <ul id="game-list" class="p-3 space-y-3 bg-slate-50 min-h-full">
-                    <!-- Generated by JS -->
-                </ul>
             </div>
+
+            <!-- Hall Tabs -->
+            <div class="flex flex-wrap gap-2 p-3 border-b bg-slate-100 shadow-inner" id="hall-tabs">
+                <!-- Generated by JS -->
+            </div>
+
+            <!-- List -->
+            <ul id="game-list" class="p-3 space-y-3 bg-slate-50">
+                <!-- Generated by JS -->
+            </ul>
         </div>
 
         <!-- Map Area -->
@@ -134,9 +131,10 @@
 
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
                     
-                    <!-- Hierin bouwen we de stippen en labels (HTML) op -->
+                    <!-- Hierin bouwen we de interactieve stippen (HTML) op -->
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
                     
+                    <!-- De Focus Pulse marker -->
                     <div id="pulse-marker" class="absolute border-8 border-blue-500 rounded-full pulse hidden pointer-events-none bg-blue-500/20 flex items-center justify-center z-30" style="width: 150px; height: 150px; transform: translate(-50%, -50%);">
                         <div class="w-4 h-4 bg-blue-700 rounded-full shadow-xl"></div>
                     </div>
@@ -249,14 +247,17 @@
         function toggleShowNotes() {
             showAllNotesState = !showAllNotesState;
             const btn = document.getElementById('btn-show-notes');
+            const icon = document.getElementById('icon-notes');
             if(showAllNotesState) {
                 btn.classList.replace('bg-slate-700', 'bg-blue-600');
                 btn.classList.replace('text-slate-300', 'text-white');
                 btn.classList.replace('border-slate-600', 'border-blue-500');
+                icon.className = "fa-solid fa-comment-slash";
             } else {
                 btn.classList.replace('bg-blue-600', 'bg-slate-700');
                 btn.classList.replace('text-white', 'text-slate-300');
                 btn.classList.replace('border-blue-500', 'border-slate-600');
+                icon.className = "fa-solid fa-comment";
             }
             document.getElementById('show-all-notes').checked = showAllNotesState;
             renderList();
@@ -440,6 +441,7 @@
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
             
+            // Controleer of we op mobiel zijn door de tabs container te checken
             if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'flex' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
@@ -453,13 +455,15 @@
         let isDraggingMap = false;
 
         function setupEventListeners() {
-            document.getElementById('hide-visited').addEventListener('change', () => toggleHideVisited());
-            document.getElementById('show-all-notes').addEventListener('change', () => toggleShowNotes());
+            // Checkbox events fallback voor evt directe kliks via DOM
+            document.getElementById('hide-visited').addEventListener('change', () => { if(document.getElementById('hide-visited').checked !== hideVisitedState) toggleHideVisited(); });
+            document.getElementById('show-all-notes').addEventListener('change', () => { if(document.getElementById('show-all-notes').checked !== showAllNotesState) toggleShowNotes(); });
             
             window.addEventListener('resize', () => {
+                // Split screen modus fix
                 if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display === 'none') {
-                    document.getElementById('sidebar').style.display = '';
-                    document.getElementById('map-container').style.display = '';
+                    document.getElementById('sidebar').style.display = 'flex';
+                    document.getElementById('map-container').style.display = 'flex';
                 } else {
                     const isList = document.getElementById('tab-list').classList.contains('tab-active');
                     document.getElementById('sidebar').style.display = isList ? 'flex' : 'none';
@@ -510,12 +514,10 @@
             const panX = (wrap.clientWidth - (img.naturalWidth * fitScale)) / 2;
             const panY = (wrap.clientHeight - (img.naturalHeight * fitScale)) / 2;
 
-            setTimeout(() => {
-                panzoomInstance.pan(panX, panY, { animate: true, force: true });
-                currentScale = fitScale;
-                updateLabelVisibility();
-                if(callback) callback();
-            }, 10);
+            panzoomInstance.pan(panX, panY, { animate: true, force: true });
+            currentScale = fitScale;
+            updateLabelVisibility();
+            if(callback) callback();
         }
 
         function zoomIn() { panzoomInstance.zoomIn(); }
@@ -572,32 +574,34 @@
                     pulse.style.top = `${centerY}%`;
                     pulse.classList.remove('hidden');
                     
-                    // Zoom uit naar exact de viewport grootte voor maximaal overzicht
+                    // Bereken overzichtelijk uitzoom-niveau dat precies in de viewport past
                     const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight) * 0.98;
                     
+                    // Zoom uit naar de volledige fit 
+                    panzoomInstance.zoom(fitScale, { animate: true });
+                    
+                    // Centreer op de stand in the wrapper viewport
                     const pxX = (centerX / 100) * img.naturalWidth;
                     const pxY = (centerY / 100) * img.naturalHeight;
                     
                     const panX = (wrap.clientWidth / 2) - (pxX * fitScale);
                     const panY = (wrap.clientHeight / 2) - (pxY * fitScale);
 
-                    panzoomInstance.zoom(fitScale, { animate: true });
-                    setTimeout(() => {
-                        panzoomInstance.pan(panX, panY, { animate: true, force: true });
-                        currentScale = fitScale;
-                        updateLabelVisibility();
-                        setTimeout(() => pulse.classList.add('hidden'), 4000);
-                    }, 50);
+                    panzoomInstance.pan(panX, panY, { animate: true, force: true });
+                    currentScale = fitScale;
+                    updateLabelVisibility();
+                    
+                    setTimeout(() => pulse.classList.add('hidden'), 4000);
                 };
                 
-                // 100ms timeout helpt browsers die de tab wissel nog aan het renderen zijn
+                // Super korte pauze om CSS display te laten refreshen
                 setTimeout(executeFocus, 100);
             } else {
                 alert(`Locatie '${boothLabel}' niet gevonden in de PDF data.`);
             }
         }
 
-        // --- HTML DOM OVERLAYS (Grid of Dots) ---
+        // --- HTML DOM OVERLAYS ---
         function renderHTMLOverlays() {
             const container = document.getElementById('html-overlays');
             container.innerHTML = '';
@@ -606,7 +610,6 @@
 
             let boothGroupsMap = {}; 
             
-            // Verberg bezochte spellen van de kaart
             const hGames = games.filter(g => g.hall === currentHall && (!hideVisitedState || !visited.includes(g.id)) && activePriorities.includes(g.priority));
 
             hGames.forEach(g => {
@@ -626,7 +629,6 @@
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'absolute booth-group pointer-events-auto';
                 groupDiv.style.left = `${box.x}%`;
-                // Direct onder het tekstblok
                 groupDiv.style.top = `${box.y + box.h}%`;
                 groupDiv.style.marginTop = '2px'; 
                 
@@ -638,8 +640,8 @@
                     const styles = getPrioStyles(g.priority);
                     htmlContent += `
                         <div class="flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-110" onclick="window.handleOverlayClick('${gameIdsStr}', '${label}', event)">
-                            <div class="w-[18px] h-[18px] rounded-full border border-white shadow-sm flex-shrink-0" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
-                            <span class="game-label text-xs font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300 pointer-events-none">${g.name}</span>
+                            <div class="w-[14px] h-[14px] rounded-full border border-white shadow-sm flex-shrink-0" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-[10px] font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300 pointer-events-none">${g.name}</span>
                         </div>
                     `;
                 });
@@ -661,7 +663,6 @@
             
             const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight);
             
-            // Toon de spellabels als de gebruiker meer dan 3x inzoomt vanaf het basisniveau
             if (currentScale > fitScale * 3.0) {
                 overlays.classList.add('show-labels');
             } else {
