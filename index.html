@@ -15,8 +15,8 @@
         /* Split-screen voor desktop én landscape mobiel */
         @media (min-width: 768px), (max-height: 600px) and (orientation: landscape) {
             .mobile-tabs { display: none !important; }
-            #sidebar { display: block !important; width: 40% !important; position: relative !important; }
-            #map-container { display: flex !important; width: 60% !important; position: relative !important; }
+            #sidebar { display: flex !important; width: 35% !important; position: relative !important; }
+            #map-container { display: flex !important; width: 65% !important; position: relative !important; }
         }
 
         .strike { text-decoration: line-through; opacity: 0.5; }
@@ -29,6 +29,7 @@
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } 
         }
         
+        /* Custom Checkbox */
         input[type="checkbox"].styled-chk {
             width: 1.25rem; height: 1.25rem;
             cursor: pointer; border-radius: 0.25rem;
@@ -56,7 +57,7 @@
 <body class="bg-slate-50 h-screen flex flex-col font-sans overflow-hidden text-slate-800">
 
     <!-- Header -->
-    <header class="bg-slate-900 text-white p-3 shadow-md flex justify-between items-center z-20 shrink-0 gap-2">
+    <header class="bg-slate-900 text-white p-3 shadow-md flex flex-wrap justify-between items-center z-20 shrink-0 gap-2">
         <h1 class="text-lg md:text-xl font-bold flex items-center gap-2">
             <i class="fa-solid fa-map-location-dot text-blue-400"></i>
             <span id="txt-title" class="hidden sm:inline">SPIEL Navigator</span>
@@ -64,12 +65,12 @@
         </h1>
         
         <!-- Toggle Pills in Header -->
-        <div class="flex items-center gap-2 text-[10px] md:text-xs">
-            <button onclick="toggleHideVisited()" id="btn-hide-visited" class="px-2.5 py-1.5 rounded-full font-bold transition-colors bg-blue-600 text-white border border-blue-500 shadow-sm whitespace-nowrap">
-                <i class="fa-solid fa-eye-slash mr-1"></i> <span id="txt-hide" class="hidden sm:inline">Verberg afgevinkt</span><span class="sm:hidden">Verberg</span>
+        <div class="flex items-center gap-2 text-xs">
+            <button onclick="toggleHideVisited()" id="btn-hide-visited" class="flex items-center gap-1 px-3 py-1.5 rounded-full font-bold transition-colors bg-blue-600 text-white border border-blue-500 shadow-sm whitespace-nowrap">
+                <i class="fa-solid fa-eye-slash" id="icon-hide"></i> <span id="txt-hide" class="hidden sm:inline">Verberg afgevinkt</span><span class="sm:hidden">Verberg</span>
             </button>
-            <button onclick="toggleShowNotes()" id="btn-show-notes" class="px-2.5 py-1.5 rounded-full font-bold transition-colors bg-slate-700 text-slate-300 border border-slate-600 shadow-sm whitespace-nowrap">
-                <i class="fa-solid fa-comment mr-1"></i> <span id="txt-show-notes" class="hidden sm:inline">Toon notities</span><span class="sm:hidden">Notities</span>
+            <button onclick="toggleShowNotes()" id="btn-show-notes" class="flex items-center gap-1 px-3 py-1.5 rounded-full font-bold transition-colors bg-slate-700 text-slate-300 border border-slate-600 shadow-sm whitespace-nowrap">
+                <i class="fa-solid fa-comment" id="icon-notes"></i> <span id="txt-show-notes" class="hidden sm:inline">Toon notities</span><span class="sm:hidden">Notities</span>
             </button>
         </div>
 
@@ -94,28 +95,31 @@
     <!-- Main Content -->
     <main class="flex-1 flex overflow-hidden relative">
         
-        <!-- Sidebar / List (Compleet scrollbaar op mobiel) -->
-        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 overflow-y-auto block pb-24 md:pb-0">
-            
-            <!-- Priority Filters -->
-            <div class="p-4 border-b bg-white shadow-sm">
-                <div class="flex gap-2 text-xs font-bold" id="prio-filters">
-                    <button onclick="togglePriority('Need')" id="btn-prio-Need" class="flex-1 p-2 rounded-lg transition shadow-sm border border-green-500 bg-green-100 text-green-800">Need</button>
-                    <button onclick="togglePriority('Want')" id="btn-prio-Want" class="flex-1 p-2 rounded-lg transition shadow-sm border border-blue-500 bg-blue-100 text-blue-800">Want</button>
-                    <button onclick="togglePriority('Like')" id="btn-prio-Like" class="flex-1 p-2 rounded-lg transition shadow-sm border border-yellow-400 bg-yellow-100 text-yellow-800">Like</button>
-                    <button onclick="togglePriority('Maybe')" id="btn-prio-Maybe" class="flex-1 p-2 rounded-lg transition shadow-sm border border-gray-400 bg-gray-100 text-gray-800">Maybe</button>
+        <!-- Sidebar / List -->
+        <!-- Alles in de sidebar zit nu in 1 scrollbare container -->
+        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 flex flex-col">
+            <div class="flex-1 overflow-y-auto w-full h-full pb-24 md:pb-0">
+                
+                <!-- Priority Filters -->
+                <div class="p-4 border-b bg-white shadow-sm">
+                    <div class="flex gap-2 text-xs font-bold" id="prio-filters">
+                        <button onclick="togglePriority('Need')" id="btn-prio-Need" class="flex-1 p-2 rounded-lg transition shadow-sm border border-green-500 bg-green-100 text-green-800">Need</button>
+                        <button onclick="togglePriority('Want')" id="btn-prio-Want" class="flex-1 p-2 rounded-lg transition shadow-sm border border-blue-500 bg-blue-100 text-blue-800">Want</button>
+                        <button onclick="togglePriority('Like')" id="btn-prio-Like" class="flex-1 p-2 rounded-lg transition shadow-sm border border-yellow-400 bg-yellow-100 text-yellow-800">Like</button>
+                        <button onclick="togglePriority('Maybe')" id="btn-prio-Maybe" class="flex-1 p-2 rounded-lg transition shadow-sm border border-gray-400 bg-gray-100 text-gray-800">Maybe</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Hall Tabs -->
-            <div class="flex flex-wrap gap-2 p-3 border-b bg-slate-100 shadow-inner" id="hall-tabs">
-                <!-- Generated by JS -->
-            </div>
+                <!-- Hall Tabs -->
+                <div class="flex flex-wrap gap-2 p-3 border-b bg-slate-100 shadow-inner" id="hall-tabs">
+                    <!-- Generated by JS -->
+                </div>
 
-            <!-- List -->
-            <ul id="game-list" class="p-3 space-y-3 bg-slate-50">
-                <!-- Generated by JS -->
-            </ul>
+                <!-- List -->
+                <ul id="game-list" class="p-3 space-y-3 bg-slate-50 min-h-full">
+                    <!-- Generated by JS -->
+                </ul>
+            </div>
         </div>
 
         <!-- Map Area -->
@@ -130,7 +134,7 @@
 
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
                     
-                    <!-- Hierin bouwen we de stippen (HTML) op -->
+                    <!-- Hierin bouwen we de stippen en labels (HTML) op -->
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
                     
                     <div id="pulse-marker" class="absolute border-8 border-blue-500 rounded-full pulse hidden pointer-events-none bg-blue-500/20 flex items-center justify-center z-30" style="width: 150px; height: 150px; transform: translate(-50%, -50%);">
@@ -226,16 +230,18 @@
         function toggleHideVisited() {
             hideVisitedState = !hideVisitedState;
             const btn = document.getElementById('btn-hide-visited');
+            const icon = document.getElementById('icon-hide');
             if(hideVisitedState) {
                 btn.classList.replace('bg-slate-700', 'bg-blue-600');
                 btn.classList.replace('text-slate-300', 'text-white');
                 btn.classList.replace('border-slate-600', 'border-blue-500');
+                icon.className = "fa-solid fa-eye-slash";
             } else {
                 btn.classList.replace('bg-blue-600', 'bg-slate-700');
                 btn.classList.replace('text-white', 'text-slate-300');
                 btn.classList.replace('border-blue-500', 'border-slate-600');
+                icon.className = "fa-solid fa-eye";
             }
-            // Houd sidebar checkboxes in sync als fallback
             document.getElementById('hide-visited').checked = hideVisitedState;
             renderHallTabs(); renderList(); renderHTMLOverlays();
         }
@@ -307,11 +313,11 @@
 
         function getPrioStyles(prio) {
             switch(prio) {
-                case 'Need': return { borderClass: 'border-green-500', bgClass: 'bg-green-50', hex: '#22c55e', hexTrans: 'rgba(34, 197, 94, 0.6)' };
-                case 'Want': return { borderClass: 'border-blue-500', bgClass: 'bg-blue-50', hex: '#3b82f6', hexTrans: 'rgba(59, 130, 246, 0.6)' };
-                case 'Like': return { borderClass: 'border-yellow-400', bgClass: 'bg-yellow-50', hex: '#eab308', hexTrans: 'rgba(234, 179, 8, 0.6)' };
-                case 'Maybe': return { borderClass: 'border-gray-400', bgClass: 'bg-gray-50', hex: '#9ca3af', hexTrans: 'rgba(156, 163, 175, 0.6)' };
-                default: return { borderClass: 'border-slate-300', bgClass: 'bg-white', hex: '#94a3b8', hexTrans: 'rgba(148, 163, 184, 0.6)' };
+                case 'Need': return { borderClass: 'border-green-500', bgClass: 'bg-green-50', hex: '#22c55e', hexTrans: 'rgba(34, 197, 94, 0.65)' };
+                case 'Want': return { borderClass: 'border-blue-500', bgClass: 'bg-blue-50', hex: '#3b82f6', hexTrans: 'rgba(59, 130, 246, 0.65)' };
+                case 'Like': return { borderClass: 'border-yellow-400', bgClass: 'bg-yellow-50', hex: '#eab308', hexTrans: 'rgba(234, 179, 8, 0.65)' };
+                case 'Maybe': return { borderClass: 'border-gray-400', bgClass: 'bg-gray-50', hex: '#9ca3af', hexTrans: 'rgba(156, 163, 175, 0.65)' };
+                default: return { borderClass: 'border-slate-300', bgClass: 'bg-white', hex: '#94a3b8', hexTrans: 'rgba(148, 163, 184, 0.65)' };
             }
         }
 
@@ -447,7 +453,6 @@
         let isDraggingMap = false;
 
         function setupEventListeners() {
-            // Keep old checkboxes synced just in case
             document.getElementById('hide-visited').addEventListener('change', () => toggleHideVisited());
             document.getElementById('show-all-notes').addEventListener('change', () => toggleShowNotes());
             
@@ -559,7 +564,6 @@
                         return;
                     }
                     
-                    // Bereken exacte middelpunt van de stand
                     const centerX = target.x + (target.w / 2);
                     const centerY = target.y + (target.h / 2);
                     
@@ -568,26 +572,25 @@
                     pulse.style.top = `${centerY}%`;
                     pulse.classList.remove('hidden');
                     
-                    // Zoom uit naar een overzichtelijk niveau gebaseerd op de schermgrootte
+                    // Zoom uit naar exact de viewport grootte voor maximaal overzicht
                     const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight) * 0.98;
-                    const focusScale = fitScale * 1.8; 
                     
                     const pxX = (centerX / 100) * img.naturalWidth;
                     const pxY = (centerY / 100) * img.naturalHeight;
                     
-                    const panX = (wrap.clientWidth / 2) - (pxX * focusScale);
-                    const panY = (wrap.clientHeight / 2) - (pxY * focusScale);
+                    const panX = (wrap.clientWidth / 2) - (pxX * fitScale);
+                    const panY = (wrap.clientHeight / 2) - (pxY * fitScale);
 
-                    panzoomInstance.zoom(focusScale, { animate: true });
+                    panzoomInstance.zoom(fitScale, { animate: true });
                     setTimeout(() => {
                         panzoomInstance.pan(panX, panY, { animate: true, force: true });
-                        currentScale = focusScale;
+                        currentScale = fitScale;
                         updateLabelVisibility();
                         setTimeout(() => pulse.classList.add('hidden'), 4000);
                     }, 50);
                 };
                 
-                // 100ms wachten zorgt dat de map div display:flex netjes heeft geladen
+                // 100ms timeout helpt browsers die de tab wissel nog aan het renderen zijn
                 setTimeout(executeFocus, 100);
             } else {
                 alert(`Locatie '${boothLabel}' niet gevonden in de PDF data.`);
@@ -603,8 +606,8 @@
 
             let boothGroupsMap = {}; 
             
-            // Only plot UNVISITED items
-            const hGames = games.filter(g => g.hall === currentHall && !visited.includes(g.id) && activePriorities.includes(g.priority));
+            // Verberg bezochte spellen van de kaart
+            const hGames = games.filter(g => g.hall === currentHall && (!hideVisitedState || !visited.includes(g.id)) && activePriorities.includes(g.priority));
 
             hGames.forEach(g => {
                 if (!g.boothLabel) return;
@@ -623,9 +626,9 @@
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'absolute booth-group pointer-events-auto';
                 groupDiv.style.left = `${box.x}%`;
-                // Direct under the text block met minimale marge
+                // Direct onder het tekstblok
                 groupDiv.style.top = `${box.y + box.h}%`;
-                groupDiv.style.marginTop = '1px'; 
+                groupDiv.style.marginTop = '2px'; 
                 
                 const gameIdsStr = group.games.map(g => g.id).join(',');
                 const label = group.games[0].boothLabel;
@@ -634,9 +637,9 @@
                 group.games.forEach(g => {
                     const styles = getPrioStyles(g.priority);
                     htmlContent += `
-                        <div class="flex items-center gap-1 cursor-pointer transition-transform hover:scale-110" onclick="window.handleOverlayClick('${gameIdsStr}', '${label}', event)">
-                            <div class="w-[18px] h-[18px] rounded-full border-2 border-white shadow-sm" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
-                            <span class="game-label text-[11px] font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300">${g.name}</span>
+                        <div class="flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-110" onclick="window.handleOverlayClick('${gameIdsStr}', '${label}', event)">
+                            <div class="w-[18px] h-[18px] rounded-full border border-white shadow-sm flex-shrink-0" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-xs font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300 pointer-events-none">${g.name}</span>
                         </div>
                     `;
                 });
@@ -658,7 +661,7 @@
             
             const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight);
             
-            // Laat namen zien als we ver genoeg zijn ingezoomd
+            // Toon de spellabels als de gebruiker meer dan 3x inzoomt vanaf het basisniveau
             if (currentScale > fitScale * 3.0) {
                 overlays.classList.add('show-labels');
             } else {
