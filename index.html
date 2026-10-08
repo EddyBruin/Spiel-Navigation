@@ -208,6 +208,7 @@
         
         let stateHideVisited = true;
         let stateShowNotes = false;
+        let isDraggingMap = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             initPanzoom();
@@ -442,6 +443,7 @@
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
             
+            // Only apply display overrides if we are in portrait mobile mode
             if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
@@ -450,8 +452,6 @@
                 }
             }
         }
-
-        let isDraggingMap = false;
 
         function setupEventListeners() {
             window.addEventListener('resize', () => {
@@ -467,13 +467,16 @@
                 requestAnimationFrame(fitMap);
             });
 
+            // Map Drag Detection
             const wrap = document.getElementById('panzoom-wrapper');
             wrap.addEventListener('panzoompan', () => { isDraggingMap = true; });
             wrap.addEventListener('pointerdown', () => { isDraggingMap = false; });
         }
 
+        // --- Map Zoom & Focus ---
         function initPanzoom() {
             const el = document.getElementById('panzoom-element');
+            // Cursor set to default so it doesn't force a crosshair/move icon
             panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'none', startScale: 1, cursor: 'default' });
             
             el.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
@@ -632,8 +635,8 @@
                     const styles = getPrioStyles(g.priority);
                     htmlContent += `
                         <div class="flex items-center gap-1 cursor-pointer transition-transform hover:scale-110" onclick="handleOverlayClick('${gameIdsStr}', '${label}', event)">
-                            <div class="dot-marker rounded-full border-2 shadow-md" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
-                            <span class="game-label font-bold text-slate-800 bg-white/95 px-1.5 py-0.5 rounded shadow-md whitespace-nowrap border border-slate-300 ml-1">${g.name}</span>
+                            <div class="dot-marker rounded-full border-2 border-white shadow-sm" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-[11px] font-bold text-slate-800 bg-white/95 px-1.5 py-0.5 rounded shadow-md whitespace-nowrap border border-slate-300 ml-1">${g.name}</span>
                         </div>
                     `;
                 });
@@ -645,16 +648,15 @@
             updateDynamicStyles(); 
         }
 
-        // Dynamically scale dots 
         function updateDynamicStyles() {
             const styleEl = document.getElementById('dynamic-styles');
             const overlays = document.getElementById('html-overlays');
             
             const fitScale = getFitScale();
             
-            // At zoom level 1x (fitScale), we want dots to be visible (e.g. 24px visual)
-            // Slowly reduce visual size as we zoom in
-            let desiredVisualSize = Math.max(14, 24 - ((currentScale - fitScale) * 2));
+            // At zoom level 1x (fitScale), we want dots to be big (e.g. 18px visual)
+            // Visual size = CSS size * currentScale -> CSS size = Visual Size / currentScale
+            let desiredVisualSize = Math.max(10, 18 - ((currentScale - fitScale) * 2));
             let cssSize = desiredVisualSize / currentScale;
             
             let textCss = Math.max(8, 14 / currentScale);
@@ -675,8 +677,7 @@
 
             if (!overlays) return;
             
-            // Switch to list view with text if zoomed in more than 2.8x the base scale
-            if (currentScale > fitScale * 2.8) {
+            if (currentScale > fitScale * 2.5) {
                 overlays.classList.add('show-labels');
             } else {
                 overlays.classList.remove('show-labels');
