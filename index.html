@@ -271,38 +271,39 @@
             fetchTTTData(url, false);
         }
 
-        async function fetchTTTData(url, isBackground = false) {
+       async function fetchTTTData(url, isBackground = false) {
             if(!isBackground) {
                 document.getElementById('btn-load-url').innerText = 'Laden...';
             }
             
-            // Fallback Proxy System to bypass blocks
+            // Nieuwe proxy lijst (zonder codetabs en corsproxy.io)
+            // We gebruiken /raw voor allorigins zodat de pure HTML direct als tekst doorkomt, 
+            // wat het '200 OK maar geen data' probleem oplost.
+            const encodedUrl = encodeURIComponent(url);
             const proxies = [
-                { url: `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, type: 'json' },
-                { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, type: 'text' },
-                { url: `https://corsproxy.io/?${encodeURIComponent(url)}`, type: 'text' }
+                `https://api.allorigins.win/raw?url=${encodedUrl}`,
+                `https://thingproxy.freeboard.io/fetch/${url}`,
+                `https://api.allorigins.hexona.net/raw?url=${encodedUrl}`
             ];
 
             let htmlText = null;
 
-            for (let proxy of proxies) {
+            for (let proxyUrl of proxies) {
                 try {
-                    const response = await fetch(proxy.url);
+                    const response = await fetch(proxyUrl);
                     if (response.ok) {
-                        if (proxy.type === 'json') {
-                            const data = await response.json();
-                            htmlText = data.contents;
-                        } else {
-                            htmlText = await response.text();
-                        }
+                        htmlText = await response.text();
                         
-                        // Check if we actually got HTML content from TabletopTogether
+                        // Controleer of de TabletopTogether data echt is ingeladen
                         if (htmlText && htmlText.includes('Tabletop Together Tool')) {
-                            break; // Success! Stop trying other proxies.
+                            console.log("Succesvol geladen via proxy:", proxyUrl);
+                            break; // Stop met proberen zodra één proxy werkt
+                        } else {
+                            htmlText = null; // Reset als we een foutpagina van de proxy kregen
                         }
                     }
                 } catch (error) {
-                    console.log(`Proxy gefaald: ${proxy.url}`);
+                    console.log(`Proxy gefaald, probeer de volgende: ${proxyUrl}`);
                 }
             }
 
