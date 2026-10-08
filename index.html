@@ -276,16 +276,41 @@
                 document.getElementById('btn-load-url').innerText = 'Laden...';
             }
             
-            // Using corsproxy.io as requested
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error("Netwerk error");
-                const htmlText = await response.text();
+            // Fallback Proxy System to bypass blocks
+            const proxies = [
+                { url: `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, type: 'json' },
+                { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, type: 'text' },
+                { url: `https://corsproxy.io/?${encodeURIComponent(url)}`, type: 'text' }
+            ];
+
+            let htmlText = null;
+
+            for (let proxy of proxies) {
+                try {
+                    const response = await fetch(proxy.url);
+                    if (response.ok) {
+                        if (proxy.type === 'json') {
+                            const data = await response.json();
+                            htmlText = data.contents;
+                        } else {
+                            htmlText = await response.text();
+                        }
+                        
+                        // Check if we actually got HTML content from TabletopTogether
+                        if (htmlText && htmlText.includes('Tabletop Together Tool')) {
+                            break; // Success! Stop trying other proxies.
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Proxy gefaald: ${proxy.url}`);
+                }
+            }
+
+            if (htmlText && htmlText.includes('Tabletop Together Tool')) {
                 parseTTTHTML(htmlText, url, isBackground);
-            } catch (error) {
+            } else {
                 if(!isBackground) {
-                    alert("Fout bij ophalen van data. Controleer de link of probeer het later opnieuw.");
+                    alert("Fout bij ophalen van data. TabletopTogether blokkeert de verbinding of de link is onjuist. Probeer het later nog eens.");
                     document.getElementById('btn-load-url').innerText = 'Laad Data';
                 }
             }
@@ -314,7 +339,6 @@
                 
                 const nameNode = tds[1].querySelector('strong');
                 let name = nameNode ? nameNode.innerText.trim() : 'Unknown';
-                // Remove trailing labels like EXPANSION / DEMO ONLY if needed, but innerText is fine
 
                 let gameId = bggIdMatch ? `bgg_${bggIdMatch[1]}` : `name_${name.replace(/[^a-zA-Z0-9]/g, '')}`;
 
