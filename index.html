@@ -50,6 +50,13 @@
         
         .show-labels .booth-group { grid-template-columns: 1fr; }
         .show-labels .game-label { display: block; }
+        
+        /* Vertical Text for Hall label */
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-slate-50 h-screen flex flex-col font-sans overflow-hidden text-slate-800">
@@ -201,6 +208,7 @@
         
         let stateHideVisited = true;
         let stateShowNotes = false;
+        let isDraggingMap = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             initPanzoom();
@@ -429,22 +437,35 @@
         }
         function saveNote(id, val) { userNotes[id] = val; localStorage.setItem('spielNotes', JSON.stringify(userNotes)); }
 
-        function switchTab(tab) {
+        function switchTab(tab, skipFit = false) {
             document.getElementById('tab-list').classList.toggle('tab-active', tab === 'list');
             document.getElementById('tab-list').classList.toggle('text-slate-600', tab !== 'list');
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
             
+            // Only toggle display manually if we are on mobile portrait (where tabs are visible)
             if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
-                if(tab === 'map') {
-                    requestAnimationFrame(() => fitMap());
+                
+                if(tab === 'map' && !skipFit) {
+                    const tryFit = () => {
+                        if (document.getElementById('panzoom-wrapper').clientWidth > 0) {
+                            fitMap();
+                        } else {
+                            requestAnimationFrame(tryFit);
+                        }
+                    };
+                    requestAnimationFrame(tryFit);
+                }
+            } else {
+                // Desktop / Landscape mobile: both panes are always visible.
+                // Just let fitMap run if needed.
+                if(tab === 'map' && !skipFit) {
+                    fitMap();
                 }
             }
         }
-
-        let isDraggingMap = false;
 
         function setupEventListeners() {
             window.addEventListener('resize', () => {
@@ -456,7 +477,11 @@
                     document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
                     document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
                 }
-                requestAnimationFrame(() => fitMap());
+                
+                const wrap = document.getElementById('panzoom-wrapper');
+                if (wrap && wrap.clientWidth > 0) {
+                    requestAnimationFrame(() => fitMap());
+                }
             });
 
             const wrap = document.getElementById('panzoom-wrapper');
@@ -464,6 +489,7 @@
             wrap.addEventListener('pointerdown', () => { isDraggingMap = false; });
         }
 
+        // --- Map Zoom & Focus ---
         function initPanzoom() {
             const el = document.getElementById('panzoom-element');
             panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'none', startScale: 1, cursor: 'default' });
@@ -484,15 +510,14 @@
             return Math.min(scaleX, scaleY) * 0.95;
         }
 
+        // FITS THE MAP INSTANTLY TO CENTER WITHOUT ANIMATION
         function fitMap(callback) {
             const img = document.getElementById('map-image');
             const wrap = document.getElementById('panzoom-wrapper');
             
             if(!img || img.classList.contains('hidden')) return;
             
-            // Wacht slim totdat de container echt breedte heeft (bv. net na tab switch)
             if (wrap.clientWidth === 0 || img.naturalWidth === 0) {
-                requestAnimationFrame(() => fitMap(callback));
                 return;
             }
             
@@ -500,14 +525,14 @@
             const panX = (wrap.clientWidth - (img.naturalWidth * fitScale)) / 2;
             const panY = (wrap.clientHeight - (img.naturalHeight * fitScale)) / 2;
 
-            panzoomInstance.zoom(fitScale, { animate: true });
+            // NO animation so it snaps perfectly
+            panzoomInstance.zoom(fitScale, { animate: false });
+            panzoomInstance.pan(panX, panY, { animate: false, force: true });
             
-            setTimeout(() => {
-                panzoomInstance.pan(panX, panY, { animate: true, force: true });
-                currentScale = fitScale;
-                updateDynamicStyles();
-                if(callback) callback(fitScale);
-            }, 50);
+            currentScale = fitScale;
+            updateDynamicStyles();
+            
+            if(callback) callback(fitScale);
         }
 
         function zoomIn() { panzoomInstance.zoomIn(); }
@@ -525,7 +550,7 @@
                 wrap.style.width = `${img.naturalWidth}px`; 
                 wrap.style.height = `${img.naturalHeight}px`;
 
-                // Alleen direct fitten als de kaart zichtbaar is
+                // Alleen direct fitten als de container zichtbaar is
                 if (document.getElementById('panzoom-wrapper').clientWidth > 0) {
                     fitMap();
                 }
@@ -548,7 +573,7 @@
             const target = Object.entries(hallData).find(([k]) => k.includes(searchStr) || searchStr.includes(k))?.[1];
 
             if(target) {
-                switchTab('map');
+                switchTab('map', true); // Switch tab but tell it to SKIP the auto-fit so we can handle it
                 
                 const executeFocus = () => {
                     const wrap = document.getElementById('panzoom-wrapper');
@@ -559,10 +584,10 @@
                         return;
                     }
                     
-                    // Stap 1: Zorg dat de map eerst in z'n geheel mooi gecentreerd staat (voor de context)
+                    // Stap 1: Zorg dat de map eerst in z'n geheel mooi gecentreerd staat (zonder animatie)
                     fitMap((fitScale) => {
                         
-                        // Stap 2: Wacht heel even, en zoom dan in op de target
+                        // Stap 2: Wacht heel even (voor context), en zoom dan in op de target MET animatie
                         setTimeout(() => {
                             const targetScale = fitScale * 3.0; 
                             
@@ -578,17 +603,15 @@
                             const panY = (wrap.clientHeight / 2) - (pxY * targetScale);
 
                             panzoomInstance.zoom(targetScale, { animate: true });
+                            panzoomInstance.pan(panX, panY, { animate: true, force: true });
                             
-                            setTimeout(() => {
-                                panzoomInstance.pan(panX, panY, { animate: true, force: true });
-                                currentScale = targetScale;
-                                updateDynamicStyles();
-                                
-                                pulse.classList.remove('hidden');
-                                setTimeout(() => pulse.classList.add('hidden'), 7000);
-                            }, 50);
+                            currentScale = targetScale;
+                            updateDynamicStyles();
                             
-                        }, 600); // 600ms pauze om de map context te laten zien
+                            pulse.classList.remove('hidden');
+                            setTimeout(() => pulse.classList.add('hidden'), 7000);
+                            
+                        }, 500); // 500ms pauze om de map context te laten zien
                     });
                 };
                 requestAnimationFrame(executeFocus);
@@ -625,7 +648,6 @@
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'absolute booth-group pointer-events-auto';
                 groupDiv.style.left = `${box.x}%`;
-                // Strakke spacing direct onder het nummer
                 groupDiv.style.top = `calc(${box.y + box.h}% + 1px)`;
                 
                 const gameIdsStr = group.games.map(g => g.id).join(',');
@@ -655,7 +677,6 @@
             
             const fitScale = getFitScale();
             
-            // Visual size = CSS size * currentScale -> CSS size = Visual Size / currentScale
             let desiredVisualSize = Math.max(10, 18 - ((currentScale - fitScale) * 2));
             let cssSize = desiredVisualSize / currentScale;
             
