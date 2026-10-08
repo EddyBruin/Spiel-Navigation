@@ -196,6 +196,7 @@
         
         let stateHideVisited = true;
         let stateShowNotes = false;
+        let mapIsDragging = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             initPanzoom();
@@ -274,10 +275,10 @@
 
         function getPrioStyles(prio) {
             switch(prio) {
-                case 'Need': return { borderClass: 'border-green-500', bgClass: 'bg-green-100', hex: '#22c55e', hexTrans: 'rgba(34, 197, 94, 0.6)' };
-                case 'Want': return { borderClass: 'border-blue-500', bgClass: 'bg-blue-100', hex: '#3b82f6', hexTrans: 'rgba(59, 130, 246, 0.6)' };
-                case 'Like': return { borderClass: 'border-yellow-400', bgClass: 'bg-yellow-100', hex: '#eab308', hexTrans: 'rgba(234, 179, 8, 0.6)' };
-                case 'Maybe': return { borderClass: 'border-gray-400', bgClass: 'bg-gray-100', hex: '#9ca3af', hexTrans: 'rgba(156, 163, 175, 0.6)' };
+                case 'Need': return { borderClass: 'border-green-500', bgClass: 'bg-green-50', hex: '#22c55e', hexTrans: 'rgba(34, 197, 94, 0.6)' };
+                case 'Want': return { borderClass: 'border-blue-500', bgClass: 'bg-blue-50', hex: '#3b82f6', hexTrans: 'rgba(59, 130, 246, 0.6)' };
+                case 'Like': return { borderClass: 'border-yellow-400', bgClass: 'bg-yellow-50', hex: '#eab308', hexTrans: 'rgba(234, 179, 8, 0.6)' };
+                case 'Maybe': return { borderClass: 'border-gray-400', bgClass: 'bg-gray-50', hex: '#9ca3af', hexTrans: 'rgba(156, 163, 175, 0.6)' };
                 default: return { borderClass: 'border-slate-300', bgClass: 'bg-white', hex: '#94a3b8', hexTrans: 'rgba(148, 163, 184, 0.6)' };
             }
         }
@@ -431,7 +432,6 @@
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
             
-            // Apply overrides only if mobile mode
             if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
@@ -440,8 +440,6 @@
                 }
             }
         }
-
-        let isDraggingMap = false;
 
         function setupEventListeners() {
             window.addEventListener('resize', () => {
@@ -453,20 +451,18 @@
                     document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
                     document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
                 }
-                
-                requestAnimationFrame(() => fitMap());
+                requestAnimationFrame(fitMap);
             });
 
-            // Map Drag Detection
             const wrap = document.getElementById('panzoom-wrapper');
-            wrap.addEventListener('panzoompan', () => { isDraggingMap = true; });
-            wrap.addEventListener('pointerdown', () => { isDraggingMap = false; });
+            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; });
+            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
         }
 
         // --- Map Zoom & Focus ---
         function initPanzoom() {
             const el = document.getElementById('panzoom-element');
-            panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1 });
+            panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1, cursor: 'default' });
             
             el.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
             el.addEventListener('panzoomzoom', (e) => {
@@ -600,7 +596,7 @@
                 groupDiv.className = 'absolute booth-group pointer-events-auto';
                 groupDiv.style.left = `${box.x}%`;
                 groupDiv.style.top = `${box.y + box.h}%`;
-                groupDiv.style.marginTop = '2px'; 
+                groupDiv.style.marginTop = '1px'; 
                 
                 const gameIdsStr = group.games.map(g => g.id).join(',');
                 const label = group.games[0].boothLabel;
@@ -610,8 +606,8 @@
                     const styles = getPrioStyles(g.priority);
                     htmlContent += `
                         <div class="flex items-center gap-1 cursor-pointer transition-transform hover:scale-110" onclick="handleOverlayClick('${gameIdsStr}', '${label}', event)">
-                            <div class="dot-marker rounded-full border shadow-sm" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
-                            <span class="game-label font-bold text-slate-800 bg-white/90 rounded shadow-sm whitespace-nowrap border border-slate-300 ml-1">${g.name}</span>
+                            <div class="dot-marker rounded-full border-2 border-white shadow-sm" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-[11px] font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300">${g.name}</span>
                         </div>
                     `;
                 });
@@ -627,18 +623,23 @@
             const styleEl = document.getElementById('dynamic-styles');
             const overlays = document.getElementById('html-overlays');
             
-            // Dynamic sizing logic for dots and fonts
-            let desiredVisualSize = Math.max(16, 40 - (currentScale * 5));
+            // Fixed visual size logic: 12 is the base visual size on screen
+            let desiredVisualSize = 12;
             let cssSize = desiredVisualSize / currentScale;
             
-            let textCss = Math.max(10, 14 / currentScale);
-            let borderCss = Math.max(0.5, 2 / currentScale);
-            let padY = Math.max(1, 2 / currentScale);
-            let padX = Math.max(2, 4 / currentScale);
+            let textCss = 11 / currentScale; 
+            let borderCss = 1.5 / currentScale; 
+            let padY = 2 / currentScale;
+            let padX = 4 / currentScale;
+            let radiusCSS = 4 / currentScale;
+            let gapCss = 2 / currentScale;
+            let marginCss = 1 / currentScale;
 
             styleEl.innerHTML = `
                 .dot-marker { width: ${cssSize}px; height: ${cssSize}px; border-width: ${borderCss}px; }
-                .game-label { font-size: ${textCss}px; padding: ${padY}px ${padX}px; border-width: ${borderCss}px; border-radius: ${4/currentScale}px; }
+                .game-label { font-size: ${textCss}px; padding: ${padY}px ${padX}px; border-width: ${borderCss}px; border-radius: ${radiusCSS}px; }
+                .booth-group { gap: ${gapCss}px; margin-top: ${marginCss}px; }
+                .show-labels .booth-group { gap: ${gapCss}px; }
             `;
 
             if (!overlays) return;
@@ -657,7 +658,7 @@
 
         window.handleOverlayClick = function(gameIdsStr, boothLabel, event) {
             event.stopPropagation();
-            if (isDraggingMap) return; 
+            if (mapIsDragging) return; 
             
             const ids = gameIdsStr.split(',');
             const matchGames = games.filter(g => ids.includes(g.id));
@@ -678,7 +679,7 @@
                 const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
 
                 content.innerHTML += `
-                    <div class="p-4 rounded-xl border-2 border-l-8 shadow-sm mb-3 ${bgClass}">
+                    <div class="p-3 rounded-xl border-2 border-l-8 shadow-sm mb-3 ${bgClass}">
                         <div class="flex items-start gap-3">
                             <input type="checkbox" ${isVis ? 'checked' : ''} onchange="toggleVis('${game.id}'); closeModal();" class="mt-1 styled-chk">
                             <div class="flex-1">
@@ -686,7 +687,7 @@
                                     <h4 class="font-bold text-lg text-slate-800 pr-10 ${isVis ? 'strike' : ''}">${game.name}</h4>
                                     ${game.preorder ? '<i class="fa-solid fa-money-bill-wave text-green-600 text-xl"></i>' : ''}
                                 </div>
-                                <p class="text-xs text-slate-600 mb-3"><i class="fa-solid fa-building mr-1"></i> ${game.publisher}</p>
+                                <p class="text-xs text-slate-600 mb-2"><i class="fa-solid fa-building mr-1"></i> ${game.publisher}</p>
                                 <textarea onchange="saveNote('${game.id}', this.value)" class="w-full mt-2 text-sm p-3 border border-slate-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" rows="2" placeholder="${i18n[lang].notes}">${note}</textarea>
                             </div>
                         </div>
