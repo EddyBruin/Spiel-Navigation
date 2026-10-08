@@ -432,14 +432,18 @@
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
             document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
             
+            // Apply overrides only if mobile mode (where tabs are visible)
             if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
                 if(tab === 'map') {
-                    requestAnimationFrame(() => fitMap());
+                    // Timeout ensures CSS display:flex has updated the DOM clientWidth
+                    setTimeout(() => fitMap(), 50);
                 }
             }
         }
+
+        let isDraggingMap = false;
 
         function setupEventListeners() {
             window.addEventListener('resize', () => {
@@ -451,17 +455,20 @@
                     document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
                     document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
                 }
+                
                 requestAnimationFrame(fitMap);
             });
 
+            // Map Drag Detection
             const wrap = document.getElementById('panzoom-wrapper');
-            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; });
-            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
+            wrap.addEventListener('panzoompan', () => { isDraggingMap = true; });
+            wrap.addEventListener('pointerdown', () => { isDraggingMap = false; });
         }
 
         // --- Map Zoom & Focus ---
         function initPanzoom() {
             const el = document.getElementById('panzoom-element');
+            // Cursor is default, dragging css is handled via wrapper
             panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1, cursor: 'default' });
             
             el.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
@@ -491,6 +498,7 @@
             const panX = (wrap.clientWidth - (img.naturalWidth * fitScale)) / 2;
             const panY = (wrap.clientHeight - (img.naturalHeight * fitScale)) / 2;
 
+            // Short timeout ensures Panzoom processes the zoom before panning
             setTimeout(() => {
                 panzoomInstance.pan(panX, panY, { animate: true, force: true });
                 currentScale = fitScale;
@@ -552,16 +560,20 @@
                     pulse.style.left = `${pxX}px`; 
                     pulse.style.top = `${pxY}px`;
                     
+                    // Force the map to fit fully in the screen, then pan directly to target
                     fitMap((fitScale) => {
                         const panX = (wrap.clientWidth / 2) - (pxX * fitScale);
                         const panY = (wrap.clientHeight / 2) - (pxY * fitScale);
                         panzoomInstance.pan(panX, panY, { animate: true });
                         
                         pulse.classList.remove('hidden');
-                        setTimeout(() => pulse.classList.add('hidden'), 14000);
+                        
+                        if(window.pulseTimeout) clearTimeout(window.pulseTimeout);
+                        window.pulseTimeout = setTimeout(() => pulse.classList.add('hidden'), 14000);
                     });
                 };
-                requestAnimationFrame(executeFocus);
+                // Ensure layout has updated
+                setTimeout(executeFocus, 50);
             } else {
                 alert(`Locatie '${boothLabel}' niet gevonden in de PDF data.`);
             }
@@ -623,7 +635,7 @@
             const styleEl = document.getElementById('dynamic-styles');
             const overlays = document.getElementById('html-overlays');
             
-            // Fixed visual size logic: 12 is the base visual size on screen
+            // Fixed base visual size (px) divided by currentScale prevents them from inflating on zoom-out
             let desiredVisualSize = 12;
             let cssSize = desiredVisualSize / currentScale;
             
@@ -649,6 +661,7 @@
             
             const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight);
             
+            // Show labels when zoomed in slightly deeper
             if (currentScale > fitScale * 3.0) {
                 overlays.classList.add('show-labels');
             } else {
