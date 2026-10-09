@@ -18,10 +18,10 @@
             #map-container { display: flex !important; width: 65% !important; position: relative !important; }
         }
 
-        /* Smaller pill boxes in mobile landscape mode */
-        @media (max-height: 600px) and (orientation: landscape) {
+        /* Smaller pill boxes in mobile portrait mode */
+        @media (max-width: 767px) and (orientation: portrait) {
             #txt-btn-hide, #txt-btn-notes { display: none; }
-            #btn-toggle-hide, #btn-toggle-notes { padding: 0.35rem 0.65rem !important; }
+            #btn-toggle-hide, #btn-toggle-notes { padding: 0.4rem 0.6rem !important; }
             #btn-toggle-hide i, #btn-toggle-notes i { margin-right: 0 !important; }
         }
 
@@ -54,7 +54,7 @@
         .show-labels .game-label { display: flex; }
     </style>
 </head>
-<body class="bg-slate-50 h-screen flex flex-col font-sans overflow-hidden text-slate-800">
+<body class="bg-slate-50 h-[100dvh] flex flex-col font-sans overflow-hidden text-slate-800">
 
     <!-- Header -->
     <header class="bg-slate-900 text-white p-3 shadow-md flex justify-between items-center z-20 shrink-0">
@@ -166,7 +166,7 @@
 
     <!-- Footer Changelog & Credits -->
     <footer class="bg-slate-900 text-slate-400 text-[10px] py-1.5 text-center flex justify-center items-center gap-3 z-20 shrink-0 border-t border-slate-800">
-        <button onclick="openChangelog()" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.0</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.1</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </footer>
 
@@ -266,7 +266,8 @@
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Directe sync met je TabletopTogether lijst</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactieve plattegrond per hal</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Lokaal afvinken en (hal)notities maken</li>",
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
                 mapHallPrefix: "Hal ", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", 
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Volledige integratie met TabletopTogether lijsten.</li><li>Interactieve kaarten voor alle 8 de hallen.</li><li>Lijst filteren op prioriteit en afvinken van bezochte stands.</li><li>Offline notities per spel én per hal!</li><li>Snel locatie opzoeken met animatie op de kaart.</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visuele labels voor 'Expansion' en 'Demo Only' bij spelnamen.</li><li>Spelnamen op de kaart zijn vergroot en worden eerder zichtbaar.</li><li>Nieuwe 'Hal Notities' feature om notities per hal te bewaren op de kaart.</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Volledige integratie met TabletopTogether lijsten.</li><li>Interactieve kaarten voor alle 8 de hallen.</li><li>Lijst filteren op prioriteit en afvinken van bezochte stands.</li><li>Offline notities per spel én per hal!</li><li>Snel locatie opzoeken met animatie op de kaart.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -277,7 +278,8 @@
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direct sync with your TabletopTogether list</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactive maps per hall</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Track progress and save offline notes</li>",
                 notes: "Notes...", noGames: "No games found.",
                 mapHallPrefix: "Hall ", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", 
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Full integration with TabletopTogether lists.</li><li>Interactive maps for all 8 halls.</li><li>Filter by priority and track visited booths.</li><li>Offline notes per game and per hall!</li><li>Fast location tracking with map animation.</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visual labels for 'Expansion' and 'Demo Only' added to game names.</li><li>Map labels increased in size and render much sooner.</li><li>New 'Hall Notes' feature on the map view!</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Full integration with TabletopTogether lists.</li><li>Interactive maps for all 8 halls.</li><li>Filter by priority and track visited booths.</li><li>Offline notes per game and per hall!</li><li>Fast location tracking with map animation.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -288,7 +290,8 @@
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direkte Synchronisation mit deiner TabletopTogether-Liste</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interaktive Karten pro Halle</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Fortschritt speichern und (Hallen-)Notizen machen</li>",
                 notes: "Notizen...", noGames: "Keine Spiele gefunden.",
                 mapHallPrefix: "Halle ", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", 
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Vollständige Integration mit TabletopTogether-Listen.</li><li>Interaktive Karten für alle 8 Hallen.</li><li>Nach Priorität filtern und besuchte Stände markieren.</li><li>Offline-Notizen pro Spiel und pro Halle!</li><li>Schnelle Standortsuche mit Kartenanimation.</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Spezielle Labels für 'Expansion' und 'Demo Only' hinzugefügt.</li><li>Spielnamen auf der Karte vergrößert und früher sichtbar.</li><li>Neue Hallen-Notizen-Funktion direkt in der Kartenansicht.</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Vollständige Integration mit TabletopTogether-Listen.</li><li>Interaktive Karten für alle 8 Hallen.</li><li>Nach Priorität filtern und besuchte Stände markieren.</li><li>Offline-Notizen pro Spiel und pro Halle!</li><li>Schnelle Standortsuche mit Kartenanimation.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -303,7 +306,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.0';
+        let currentVersion = '1.1';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -337,6 +340,8 @@
             let savedLang = localStorage.getItem('spielLang');
             setLang(savedLang || 'en'); 
             
+            document.getElementById('btn-version').innerText = 'v' + currentVersion;
+
             updateToggleUI();
             checkAndLoadData();
         });
@@ -555,14 +560,12 @@
             }
         }
 
-        // Helper functie om EXPANSION en DEMO ONLY netjes te formatteren
         function formatGameTitle(name) {
             let cleanName = name;
             let titleLabels = '';
             
             if (/expansion/i.test(cleanName)) {
                 titleLabels += `<span class="text-[9px] bg-orange-500 text-white px-1.5 py-0.5 rounded font-bold shadow-sm tracking-wide ml-1 inline-block align-middle mt-0.5">EXPANSION</span>`;
-                // Haal ook eventuele koppeltekens of dubbele punten eromheen weg
                 cleanName = cleanName.replace(/(?:[-:]\s*)?\bexpansion\b(?:\s*[-:])?/i, '').trim();
             }
             if (/demo only/i.test(cleanName)) {
@@ -570,7 +573,6 @@
                 cleanName = cleanName.replace(/(?:[-:]\s*)?\bdemo only\b(?:\s*[-:])?/i, '').trim();
             }
             
-            // Mocht de naam nu compleet leeg zijn (omdat het spel letterlijk 'Expansion' heet), val dan terug op de originele naam.
             if (!cleanName) cleanName = name;
             
             return { cleanName, titleLabels };
@@ -670,7 +672,7 @@
         }
 
         function openChangelog() {
-            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1;
+            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
             document.getElementById('changelog-modal').classList.remove('hidden');
         }
 
@@ -883,11 +885,11 @@
             let desiredVisualSize = 12;
             let cssSize = desiredVisualSize / currentScale;
             
-            let textCss = 14 / currentScale; 
+            let textCss = 18 / currentScale; // Aanzienlijk vergroot van 14 naar 18
             let borderCss = 1.5 / currentScale; 
-            let padY = 2.5 / currentScale; 
-            let padX = 5 / currentScale; 
-            let radiusCSS = 5 / currentScale; 
+            let padY = 3 / currentScale; 
+            let padX = 6 / currentScale; 
+            let radiusCSS = 6 / currentScale; 
             let gapCss = 2 / currentScale;
             let marginCss = 1 / currentScale;
 
