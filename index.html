@@ -107,13 +107,20 @@
     <main class="flex-1 flex overflow-hidden relative">
         
         <!-- Sidebar / List -->
-        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 overflow-y-auto pb-24 md:pb-4 block">
+        <div id="sidebar" class="w-full bg-slate-50 border-r h-full z-10 absolute md:relative inset-0 overflow-y-auto pb-24 md:pb-4 block flex-col">
             
             <!-- Dynamic Priority Filters -->
-            <div class="p-3 border-b bg-white shadow-sm flex gap-2 text-xs font-bold flex-wrap" id="prio-filters-container"></div>
+            <div class="p-3 border-b bg-white shadow-sm flex gap-2 text-xs font-bold flex-wrap shrink-0" id="prio-filters-container"></div>
+
+            <!-- Search Bar -->
+            <div class="px-3 py-1.5 border-b bg-slate-100 flex items-center gap-2 shadow-inner shrink-0">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Zoeken..." class="w-full text-xs py-1 bg-transparent outline-none text-slate-700 placeholder-slate-400 font-medium">
+                <button onclick="clearSearch()" id="btn-clear-search" class="text-slate-400 hover:text-slate-600 hidden transition-colors"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>
 
             <!-- Hall Tabs -->
-            <div class="flex items-stretch border-b bg-slate-100 shadow-inner">
+            <div class="flex items-stretch border-b bg-slate-100 shadow-inner shrink-0">
                 <div class="flex items-center justify-center pl-3 pr-2 border-r border-slate-200">
                     <span id="txt-hall-rotated" class="text-[10px] font-bold text-slate-400 tracking-widest uppercase" style="writing-mode: vertical-rl; transform: rotate(180deg);">HAL</span>
                 </div>
@@ -121,7 +128,7 @@
             </div>
 
             <!-- List -->
-            <ul id="game-list" class="p-2 space-y-2 bg-slate-50"></ul>
+            <ul id="game-list" class="p-2 space-y-2 bg-slate-50 flex-1 overflow-y-auto"></ul>
         </div>
 
         <!-- Map Area -->
@@ -166,7 +173,7 @@
 
     <!-- Footer Changelog & Credits -->
     <footer class="bg-slate-900 text-slate-400 text-[10px] py-1.5 text-center flex justify-center items-center gap-3 z-20 shrink-0 border-t border-slate-800">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.1</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.2</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </footer>
 
@@ -265,9 +272,10 @@
                 featuresTitle: "Wat kan deze app?",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Directe sync met je TabletopTogether lijst</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactieve plattegrond per hal</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Lokaal afvinken en (hal)notities maken</li>",
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
-                mapHallPrefix: "Hal ", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", 
-                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visuele labels voor 'Expansion' en 'Demo Only' bij spelnamen.</li><li>Spelnamen op de kaart zijn vergroot en worden eerder zichtbaar.</li><li>Nieuwe 'Hal Notities' feature om notities per hal te bewaren op de kaart.</li></ul></div>",
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Volledige integratie met TabletopTogether lijsten.</li><li>Interactieve kaarten voor alle 8 de hallen.</li><li>Lijst filteren op prioriteit en afvinken van bezochte stands.</li><li>Offline notities per spel én per hal!</li><li>Snel locatie opzoeken met animatie op de kaart.</li></ul></div>",
+                mapHallPrefix: "Hal ", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
+                changelogV1_2: "<div class='border-l-4 border-purple-500 pl-3 mb-4'><strong>v1.2 - Zoekfunctie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Real-time zoekbalk toegevoegd boven de hallen.</li><li>Hallen tellers updaten direct tijdens het typen.</li><li>Automatische navigatie naar de juiste hal als er exact 1 resultaat is!</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4 opacity-80'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visuele labels voor 'Expansion' en 'Demo Only' bij spelnamen.</li><li>Spelnamen op de kaart zijn vergroot en worden eerder zichtbaar.</li><li>Nieuwe 'Hal Notities' feature om notities per hal te bewaren op de kaart.</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-60'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Volledige integratie met TabletopTogether lijsten.</li><li>Interactieve kaarten voor alle 8 de hallen.</li><li>Lijst filteren op prioriteit en afvinken van bezochte stands.</li><li>Offline notities per spel én per hal!</li><li>Snel locatie opzoeken met animatie op de kaart.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -277,9 +285,10 @@
                 featuresTitle: "App Features:",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direct sync with your TabletopTogether list</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactive maps per hall</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Track progress and save offline notes</li>",
                 notes: "Notes...", noGames: "No games found.",
-                mapHallPrefix: "Hall ", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", 
-                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visual labels for 'Expansion' and 'Demo Only' added to game names.</li><li>Map labels increased in size and render much sooner.</li><li>New 'Hall Notes' feature on the map view!</li></ul></div>",
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Full integration with TabletopTogether lists.</li><li>Interactive maps for all 8 halls.</li><li>Filter by priority and track visited booths.</li><li>Offline notes per game and per hall!</li><li>Fast location tracking with map animation.</li></ul></div>",
+                mapHallPrefix: "Hall ", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
+                changelogV1_2: "<div class='border-l-4 border-purple-500 pl-3 mb-4'><strong>v1.2 - Search Feature</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Real-time search bar added above hall tabs.</li><li>Hall counters update instantly while typing.</li><li>Auto-navigate to the correct hall if there is exactly 1 match!</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4 opacity-80'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Visual labels for 'Expansion' and 'Demo Only' added to game names.</li><li>Map labels increased in size and render much sooner.</li><li>New 'Hall Notes' feature on the map view!</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-60'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Full integration with TabletopTogether lists.</li><li>Interactive maps for all 8 halls.</li><li>Filter by priority and track visited booths.</li><li>Offline notes per game and per hall!</li><li>Fast location tracking with map animation.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -289,9 +298,10 @@
                 featuresTitle: "Was kann diese App?",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direkte Synchronisation mit deiner TabletopTogether-Liste</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interaktive Karten pro Halle</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Fortschritt speichern und (Hallen-)Notizen machen</li>",
                 notes: "Notizen...", noGames: "Keine Spiele gefunden.",
-                mapHallPrefix: "Halle ", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", 
-                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Spezielle Labels für 'Expansion' und 'Demo Only' hinzugefügt.</li><li>Spielnamen auf der Karte vergrößert und früher sichtbar.</li><li>Neue Hallen-Notizen-Funktion direkt in der Kartenansicht.</li></ul></div>",
-                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Vollständige Integration mit TabletopTogether-Listen.</li><li>Interaktive Karten für alle 8 Hallen.</li><li>Nach Priorität filtern und besuchte Stände markieren.</li><li>Offline-Notizen pro Spiel und pro Halle!</li><li>Schnelle Standortsuche mit Kartenanimation.</li></ul></div>",
+                mapHallPrefix: "Halle ", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
+                changelogV1_2: "<div class='border-l-4 border-purple-500 pl-3 mb-4'><strong>v1.2 - Suchfunktion</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Echtzeit-Suchleiste über den Hallen-Tabs hinzugefügt.</li><li>Hallen-Zähler aktualisieren sich beim Tippen.</li><li>Automatische Navigation zur richtigen Halle bei genau 1 Treffer!</li></ul></div>",
+                changelogV1_1: "<div class='border-l-4 border-green-500 pl-3 mb-4 opacity-80'><strong>v1.1 - Map & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Spezielle Labels für 'Expansion' und 'Demo Only' hinzugefügt.</li><li>Spielnamen auf der Karte vergrößert und früher sichtbar.</li><li>Neue Hallen-Notizen-Funktion direkt in der Kartenansicht.</li></ul></div>",
+                changelogV1: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-60'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Vollständige Integration mit TabletopTogether-Listen.</li><li>Interaktive Karten für alle 8 Hallen.</li><li>Nach Priorität filtern und besuchte Stände markieren.</li><li>Offline-Notizen pro Spiel und pro Halle!</li><li>Schnelle Standortsuche mit Kartenanimation.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -306,7 +316,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.1';
+        let currentVersion = '1.2';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -326,6 +336,7 @@
         let activePriorities = []; 
         let dynamicPriorities = []; 
         let currentScale = 1;
+        let searchQuery = '';
         
         let stateHideVisited = true;
         let stateShowNotes = false;
@@ -374,8 +385,43 @@
             document.getElementById('txt-hall-notes-title').innerText = i18n[l].hallNotesTitle + currentHall;
             document.getElementById('txt-btn-save-hall-notes').innerText = i18n[l].saveBtn;
             document.getElementById('txt-changelog-title').innerText = i18n[l].changelogTitle + currentVersion;
+            document.getElementById('search-input').placeholder = i18n[l].searchPlaceholder;
             
             if (games.length > 0) { renderHallTabs(); renderList(); }
+        }
+
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase().trim();
+            
+            const btnClear = document.getElementById('btn-clear-search');
+            if (searchQuery.length > 0) btnClear.classList.remove('hidden');
+            else btnClear.classList.add('hidden');
+
+            if (searchQuery.length > 0) {
+                let globalMatches = games.filter(g => {
+                    if (stateHideVisited && visited.includes(g.id)) return false;
+                    if (!activePriorities.includes(g.priority)) return false;
+                    return g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery);
+                });
+
+                if (globalMatches.length === 1) {
+                    const targetHall = globalMatches[0].hall;
+                    if (currentHall !== targetHall) {
+                        currentHall = targetHall;
+                        document.getElementById('txt-map-hall-indicator').innerText = i18n[lang].mapHallPrefix + currentHall;
+                        loadMapImage();
+                    }
+                }
+            }
+
+            renderHallTabs();
+            renderList();
+            renderHTMLOverlays();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            handleSearch('');
         }
 
         function checkAndLoadData() {
@@ -544,7 +590,13 @@
             
             for (let i = 1; i <= 8; i++) {
                 const hallStr = i.toString();
-                const count = games.filter(g => g.hall === hallStr && (!stateHideVisited || !visited.includes(g.id)) && activePriorities.includes(g.priority)).length;
+                const count = games.filter(g => {
+                    if (g.hall !== hallStr) return false;
+                    if (stateHideVisited && visited.includes(g.id)) return false;
+                    if (!activePriorities.includes(g.priority)) return false;
+                    if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                    return true;
+                }).length;
                 
                 const btn = document.createElement('button');
                 btn.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === hallStr ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
@@ -582,7 +634,12 @@
             const list = document.getElementById('game-list');
             list.innerHTML = '';
             
-            const hallGames = games.filter(g => g.hall === currentHall && activePriorities.includes(g.priority));
+            const hallGames = games.filter(g => {
+                if (g.hall !== currentHall) return false;
+                if (!activePriorities.includes(g.priority)) return false;
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            });
             let count = 0;
 
             hallGames.forEach(game => {
@@ -672,7 +729,7 @@
         }
 
         function openChangelog() {
-            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
+            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_2 + i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
             document.getElementById('changelog-modal').classList.remove('hidden');
         }
 
@@ -832,7 +889,13 @@
 
             let boothGroupsMap = {}; 
             
-            const hGames = games.filter(g => g.hall === currentHall && !visited.includes(g.id) && activePriorities.includes(g.priority));
+            const hGames = games.filter(g => {
+                if (g.hall !== currentHall) return false;
+                if (visited.includes(g.id)) return false;
+                if (!activePriorities.includes(g.priority)) return false;
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            });
 
             hGames.forEach(g => {
                 if (!g.boothLabel) return;
@@ -885,7 +948,7 @@
             let desiredVisualSize = 12;
             let cssSize = desiredVisualSize / currentScale;
             
-            let textCss = 18 / currentScale; // Aanzienlijk vergroot van 14 naar 18
+            let textCss = 18 / currentScale; 
             let borderCss = 1.5 / currentScale; 
             let padY = 3 / currentScale; 
             let padX = 6 / currentScale; 
