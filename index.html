@@ -156,7 +156,7 @@
         </div>
     </header>
 
-    <!-- Mobile View Tabs (Slanker gemaakt) -->
+    <!-- Mobile View Tabs -->
     <div class="mobile-tabs flex bg-white border-b shrink-0 shadow-sm z-10">
         <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-1.5 text-center tab-active text-slate-600 transition-colors text-xs font-bold">
             <i class="fa-solid fa-list mr-1"></i> <span id="txt-tab-list">Lijst</span>
@@ -216,7 +216,7 @@
             </div>
 
             <!-- Mini Map Overview (Top Right - KLIKBAAR om naar overzicht te gaan) -->
-            <div id="mini-map-container" onclick="selectHall('all')" class="absolute top-4 right-4 w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md z-40 p-1 cursor-pointer hover:scale-105 transition-all hidden" title="Klik om naar het overzicht te gaan">
+            <div id="mini-map-container" onclick="selectHall('all'); triggerHallSwitchUI();" class="absolute top-4 right-4 w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md z-40 p-1 cursor-pointer hover:scale-105 transition-all hidden" title="Klik om naar het overzicht te gaan">
                 <div class="relative w-full h-full bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200 pointer-events-none">
                     <img src="overview.jpg" class="w-full h-auto object-cover opacity-70" />
                     <div id="mini-map-dot" class="absolute w-2.5 h-2.5 bg-blue-600 border border-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow flex items-center justify-center">
@@ -406,7 +406,7 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> De overzichtskaart toont nu het gehele beursplaatje op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik rechtsboven om direct naar de overzichtskaart te gaan.</li><li><strong>Auto-Hiding Header & Footer:</strong> Verdwijnen automatisch na 3 seconden voor maximale schermruimte, en komen pas weer terug bij hal-wissel!</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen Ruimte:</strong> Zodra de header/footer inklappen, vult de app direct de volledige hoogte.</li><li><strong>Slimme Auto-Hider:</strong> Blendt na 3 seconden automatisch weg en komt pas terug bij hal-wissel!</li><li><strong>Overview Zoom:</strong> Overzichtskaart netjes op 0.75 gezoomd.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -419,7 +419,7 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> The overview map is now cleanly scaled to 0.75.</li><li><strong>Clickable Mini-Map:</strong> Click top right to instantly open the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Automatically hide after 3 seconds for maximum viewing space, and reappear only on hall switches.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen View:</strong> When header/footer fade out, the app expands to fill the full height.</li><li><strong>Smart Auto-Hider:</strong> Fades out after 3 seconds, only reappearing upon hall switches.</li><li><strong>Overview Zoom:</strong> Overview map fitted nicely at 0.75 scale.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -432,7 +432,7 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Blenden nach 3 Sekunden automatisch aus und erscheinen erst bei Hallenwechsel wieder.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen Ansicht:</strong> App dehnt sich bei versteckter Header/Footer auf die volle Höhe aus.</li><li><strong>Smart Auto-Hider:</strong> Blendet nach 3 Sekunden aus, erscheint nur bei Hallenwechsel.</li><li><strong>Overview Zoom:</strong> Übersicht auf 0.75 gezoomt.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -488,7 +488,7 @@
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
-        // --- Auto-Hiding Header & Footer Logic (Alleen terug bij hal-wissel) ---
+        // --- Auto-Hiding Header & Footer Logic (Alleen bij hal-wissel) ---
         let uiIdleTimer = null;
         function resetUIIdleTimer() {
             if (uiIdleTimer) clearTimeout(uiIdleTimer);
@@ -1234,8 +1234,8 @@
                             document.body.classList.remove('print-preparation-mode');
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
-                        }, 600);
-                    }, 400);
+                        }, 500);
+                    }, 300);
                 }
             };
 
@@ -1584,7 +1584,7 @@
             let fitScale = Math.min(scaleX, scaleY) * 0.95; 
             
             if (currentHall === 'all') {
-                fitScale = fitScale * 0.75;
+                fitScale = fitScale * 0.75; // Zooms out to 0.75 for the overview page
             }
             
             panzoomInstance.setOptions({ minScale: fitScale / 2 });
