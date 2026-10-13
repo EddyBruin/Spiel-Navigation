@@ -181,7 +181,7 @@
                     </div>
                 </div>
 
-                <button onclick="openHallNotes()" class="bg-white/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-200 flex items-center justify-center pointer-events-auto">
+                <button onclick="openHallNotes()" id="btn-map-notes" class="bg-white/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-200 flex items-center justify-center pointer-events-auto">
                     <i class="fa-solid fa-file-pen"></i>
                 </button>
                 <button onclick="openPdfModal()" class="bg-red-50/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-red-600 hover:bg-red-600 hover:text-white transition border border-red-200 flex items-center justify-center pointer-events-auto">
@@ -221,7 +221,7 @@
 
     <!-- Footer Changelog & Credits -->
     <footer class="bg-slate-900 text-slate-400 text-[10px] py-1.5 text-center flex justify-center items-center gap-3 z-20 shrink-0 border-t border-slate-800">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.6</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.7</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </footer>
 
@@ -343,56 +343,58 @@
     </div>
 
     <script>
-        // De variabele is nu leeg, de data komt uit boothdata.json
         let pdfBoothData = {};
+        
+        // Geschatte center-coördinaten per hal op de overview.jpg map (in procenten)
+        const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
 
         const i18n = {
             'nl': { 
-                title: "SPIEL Navigator", tabList: "Lijst", tabMap: "Kaart", hideVisited: "Afgevinkt", showNotes: "Notities", hall: "HAL", 
+                title: "SPIEL Navigator", tabList: "Lijst", tabMap: "Kaart", hideVisited: "Afgevinkt", showNotes: "Notities", hall: "HAL", hallAll: "Alle", 
                 uploadTitle: "Welkom bij SPIEL Navigator!", 
                 uploadDesc: "Vind makkelijk je gewilde spellen terug op de SPIEL beursvloer. Plak hieronder je TabletopTogether 'Share' URL om te beginnen. Dit hoeft maar één keer.", 
                 featuresTitle: "Wat kan deze app?",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Directe sync met je TabletopTogether lijst</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactieve plattegrond per hal</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Lokaal afvinken en (hal)notities maken</li>",
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
-                mapHallPrefix: "Hal ", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
+                mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
-                changelogV1_6: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.6 - Prestatie Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Gescheiden data: Plattegrond-coördinaten zijn afgesplitst naar een los configuratiebestand (boothdata.json) voor snellere laadtijden en makkelijker beheer.</li></ul></div>",
-                changelogV1_5: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Hal-selector is nu een interactieve dropdown op de kaart.</li><li>Printweergave drastisch verbeterd: Spellen staan in de witruimte met lijntjes naar de map.</li><li>Printen pakt uitsluitend de gekozen hallen én prioriteiten op een paginavullend staand formaat.</li></ul></div>",
-                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.4 - Kaart Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Filteren op prioriteit tijdens het printen toegevoegd.</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.3 - PDF Export Introductie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe print-functie toegevoegd om hallen offline op papier mee te kunnen nemen.</li></ul></div>",
-                changelogV1_2: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.2 - Zoekfunctie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Real-time zoekbalk en automatische navigatie toegevoegd.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hal Notities Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie in de hallenkiezer. Op de kaart zie je het complete beursoverzicht inclusief slimme tellers per hal!</li><li>Hal-notities verschijnen nu als <strong>gele blokken</strong> bovenaan je lijstweergave én je kunt ze afvinken!</li><li>Crashes gefixt en de stabiliteit bij het inladen verbeterd.</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Prestatie Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Plattegrond-coördinaten afgesplitst naar een los configuratiebestand (boothdata.json).</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactieve hal-dropdown en PDF renders met slimme verbindingslijnen.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Kaart Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Filteren op prioriteit tijdens het printen toegevoegd.</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introductie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe print-functie via PDF icoon op de kaart toegevoegd.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
-                title: "SPIEL Navigator", tabList: "List", tabMap: "Map", hideVisited: "Visited", showNotes: "Notes", hall: "HALL", 
+                title: "SPIEL Navigator", tabList: "List", tabMap: "Map", hideVisited: "Visited", showNotes: "Notes", hall: "HALL", hallAll: "All",
                 uploadTitle: "Welcome to SPIEL Navigator!", 
                 uploadDesc: "Easily locate your most wanted games on the SPIEL show floor. Paste your TabletopTogether 'Share' URL below to get started. You only need to do this once.", 
                 featuresTitle: "App Features:",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direct sync with your TabletopTogether list</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactive maps per hall</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Track progress and save offline notes</li>",
                 notes: "Notes...", noGames: "No games found.",
-                mapHallPrefix: "Hall ", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
+                mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
-                changelogV1_6: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.6 - Performance Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Separated data: Map coordinates have been moved to a standalone configuration file (boothdata.json) for faster load times and easier management.</li></ul></div>",
-                changelogV1_5: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Map hall indicator is now an interactive dropdown!</li><li>Print view drastically improved: Clean map with lines connecting dots to labels in the margins.</li><li>Prints in portrait mode respecting both hall and priority selections.</li></ul></div>",
-                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New: Filter by priority before printing!</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.3 - PDF Export Introduction</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added the ability to print out maps to take with you offline.</li></ul></div>",
-                changelogV1_2: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.2 - Search Feature</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added real-time search and auto-navigation.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hall Notes Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added! Displays a convention overview map with dynamic counters per hall.</li><li>Hall notes now appear directly at the top of your list view and can be checked off!</li><li>Fixed bugs and improved data loading stability.</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Performance Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Map coordinates moved to a standalone configuration file.</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactive dropdown on the map and smart connecting lines on PDF prints.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New: Filter by priority before printing!</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introduction</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added the ability to print out maps to take with you offline.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
-                title: "SPIEL Navigator", tabList: "Liste", tabMap: "Karte", hideVisited: "Besuchte", showNotes: "Notizen", hall: "HALLE", 
+                title: "SPIEL Navigator", tabList: "Liste", tabMap: "Karte", hideVisited: "Besuchte", showNotes: "Notizen", hall: "HALLE", hallAll: "Alle",
                 uploadTitle: "Willkommen beim SPIEL Navigator!", 
                 uploadDesc: "Finde deine Wunschspiele ganz einfach auf der SPIEL. Füge unten deine TabletopTogether 'Share'-URL ein. Das musst du nur einmal tun.", 
                 featuresTitle: "Was kann diese App?",
                 featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direkte Synchronisation mit deiner TabletopTogether-Liste</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interaktive Karten pro Halle</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Fortschritt speichern und (Hallen-)Notizen machen</li>",
                 notes: "Notizen...", noGames: "Keine Spiele gefunden.",
-                mapHallPrefix: "Halle ", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
+                mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
-                changelogV1_6: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.6 - Leistungs-Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Getrennte Daten: Die Kartenkoordinaten wurden in eine eigenständige Konfigurationsdatei (boothdata.json) ausgelagert, um schnellere Ladezeiten und eine einfachere Verwaltung zu ermöglichen.</li></ul></div>",
-                changelogV1_5: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Hallenindikator ist jetzt ein interaktives Dropdown!</li><li>Druckansicht drastisch verbessert: Labels jetzt außerhalb der Karte mit Verbindungslinien.</li></ul></div>",
-                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neu: Vor dem Drucken nach Priorität filtern!</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Möglichkeit hinzugefügt, Karten auszudrucken.</li></ul></div>",
-                changelogV1_2: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.2 - Suchfunktion</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Echtzeit-Suchleiste und automatische Navigation hinzugefügt.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hallen-Notizen Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan mit dynamischen Zählern pro Halle.</li><li>Hallen-Notizen erscheinen jetzt als abhakkbare Blöcke in der Listenansicht!</li><li>Bugs behoben und Lade-Stabilität verbessert.</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Leistungs-Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Kartenkoordinaten wurden in eine eigenständige Datei ausgelagert.</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interaktives Dropdown und Verbindungslinien auf PDF-Drucken.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neu: Vor dem Drucken nach Priorität filtern!</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Möglichkeit hinzugefügt, Karten auszudrucken.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -407,7 +409,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.6';
+        let currentVersion = '1.7';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -418,9 +420,18 @@
             }
         }
 
-        let hallNotes = JSON.parse(localStorage.getItem('spielHallNotes') || '{}');
+        // Migrate and Load Hall Notes
+        let rawHallNotes = JSON.parse(localStorage.getItem('spielHallNotes') || '{}');
+        let hallNotes = {};
+        for (let key in rawHallNotes) {
+            if (typeof rawHallNotes[key] === 'string') {
+                hallNotes[key] = { text: rawHallNotes[key], checked: false };
+            } else {
+                hallNotes[key] = rawHallNotes[key];
+            }
+        }
 
-        let currentHall = '1';
+        let currentHall = 'all'; // Default openen we nu op het overzicht
         let panzoomInstance = null;
         let activePriorities = []; 
         let dynamicPriorities = []; 
@@ -444,17 +455,18 @@
 
             updateToggleUI();
             
-            // Haal de gesplitste data file op
+            // Haal de gesplitste data file op, vang errors netjes op!
             try {
                 const response = await fetch('boothdata.json');
                 if(response.ok) {
                     pdfBoothData = await response.json();
                 } else {
-                    console.error('Kon boothdata.json niet correct laden (Response not OK)');
+                    console.warn('boothdata.json niet gevonden of niet toegankelijk (gebruik lokaal zonder webserver?). Map-coördinaten fallback wordt leeg.');
                 }
             } catch (e) {
-                console.error('Fout bij het ophalen van boothdata.json', e);
+                console.warn('Fout bij ophalen boothdata.json. Waarschijnlijk een CORS error door lokale bestandsopening.', e);
             }
+            if(!pdfBoothData) pdfBoothData = {};
 
             checkAndLoadData();
         });
@@ -483,8 +495,8 @@
             document.getElementById('btn-save-url').innerText = i18n[l].btnLoadList;
             document.getElementById('btn-cancel-url').innerText = i18n[l].btnCancel;
             
-            document.getElementById('txt-map-hall-indicator').innerText = i18n[l].mapHallPrefix + currentHall;
-            document.getElementById('txt-hall-notes-title').innerText = i18n[l].hallNotesTitle + currentHall;
+            document.getElementById('txt-map-hall-indicator').innerText = currentHall === 'all' ? i18n[l].mapHallAll : i18n[l].mapHallPrefix + currentHall;
+            document.getElementById('txt-hall-notes-title').innerText = i18n[l].hallNotesTitle + (currentHall === 'all' ? '' : currentHall);
             document.getElementById('txt-btn-save-hall-notes').innerText = i18n[l].saveBtn;
             document.getElementById('txt-changelog-title').innerText = i18n[l].changelogTitle + currentVersion;
             document.getElementById('search-input').placeholder = i18n[l].searchPlaceholder;
@@ -695,6 +707,28 @@
             const dropdown = document.getElementById('hall-dropdown');
             if(dropdown) dropdown.innerHTML = '';
             
+            // "Alle" Tab
+            const allCount = games.filter(g => {
+                if (stateHideVisited && visited.includes(g.id)) return false;
+                if (!activePriorities.includes(g.priority)) return false;
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            }).length;
+
+            const btnAll = document.createElement('button');
+            btnAll.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === 'all' ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
+            btnAll.innerHTML = `<span class="text-sm font-bold">${i18n[lang].hallAll}</span> <span class="ml-1 text-[10px] ${currentHall === 'all' ? 'bg-white text-slate-800' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded-full">${allCount}</span>`;
+            btnAll.onclick = () => selectHall('all');
+            container.appendChild(btnAll);
+
+            if(dropdown) {
+                dropdown.innerHTML += `
+                    <button onclick="selectHall('all')" class="px-3 py-2 text-left text-sm font-bold rounded-lg hover:bg-slate-100 ${currentHall === 'all' ? 'bg-slate-100 text-slate-800' : 'text-slate-700'} transition-colors">
+                        ${i18n[lang].mapHallAll} <span class="float-right text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full">${allCount}</span>
+                    </button>
+                `;
+            }
+
             for (let i = 1; i <= 8; i++) {
                 const hallStr = i.toString();
                 const count = games.filter(g => {
@@ -723,13 +757,16 @@
 
         function selectHall(hallStr) {
             currentHall = hallStr; 
-            document.getElementById('txt-map-hall-indicator').innerText = i18n[lang].mapHallPrefix + currentHall;
+            document.getElementById('txt-map-hall-indicator').innerText = currentHall === 'all' ? i18n[lang].mapHallAll : i18n[lang].mapHallPrefix + currentHall;
             
             const dd = document.getElementById('hall-dropdown');
             if (dd) {
                 dd.classList.add('hidden');
                 dd.classList.remove('flex');
             }
+            
+            // Toon/verberg notes knop afhankelijk van hal
+            document.getElementById('btn-map-notes').style.display = currentHall === 'all' ? 'none' : 'flex';
 
             renderHallTabs(); 
             renderList(); 
@@ -752,6 +789,14 @@
                 dd.classList.remove('flex');
             }
         });
+
+        function toggleHallNoteChecked(hall) {
+            if(hallNotes[hall]) {
+                hallNotes[hall].checked = !hallNotes[hall].checked;
+                localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
+                renderList();
+            }
+        }
 
         function formatGameTitle(name, forPrint = false) {
             let cleanName = name;
@@ -776,8 +821,708 @@
         function renderList() {
             const list = document.getElementById('game-list');
             list.innerHTML = '';
+
+            // Render Hall Notes (als we in een specifieke hal zijn OF op 'alle')
+            const hallsToRender = currentHall === 'all' ? Object.keys(hallNotes) : [currentHall];
+            
+            hallsToRender.forEach(hall => {
+                const note = hallNotes[hall];
+                if (note && note.text && note.text.trim() !== '') {
+                    if (stateHideVisited && note.checked) return; // verberg afgevinkte notities
+                    
+                    const li = document.createElement('li');
+                    li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${note.checked ? 'bg-slate-50 border-slate-300 opacity-60 grayscale' : 'bg-yellow-50 border-yellow-400'}`;
+                    li.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleHallNoteChecked('${hall}')" class="mt-1 styled-chk shrink-0 accent-yellow-600">
+                            <div class="flex-1 min-w-0 ${note.checked ? 'strike' : ''}">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h3 class="font-bold text-sm text-yellow-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-file-pen"></i> Notities Hal ${hall}
+                                    </h3>
+                                    <button onclick="selectHall('${hall}'); openHallNotes();" class="text-yellow-600 hover:text-yellow-800 p-1 bg-white rounded shadow-sm border border-yellow-200"><i class="fa-solid fa-edit text-xs"></i></button>
+                                </div>
+                                <p class="text-[12px] text-yellow-800 whitespace-pre-wrap leading-tight">${note.text}</p>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                }
+            });
             
             const hallGames = games.filter(g => {
-                if (g.hall !== currentHall) return false;
+                if (currentHall !== 'all' && g.hall !== currentHall) return false;
                 if (!activePriorities.includes(g.priority)) return false;
-                if (
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            });
+            let count = 0;
+
+            hallGames.forEach(game => {
+                const isVis = visited.includes(game.id);
+                if (stateHideVisited && isVis) return;
+                count++;
+
+                const styles = getPrioStyles(game.priority);
+                const noteText = userNotes[game.id] ? userNotes[game.id].text : '';
+                const { cleanName, titleLabels } = formatGameTitle(game.name);
+                
+                const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
+                
+                let locationBadge = 'bg-white text-slate-700 border-slate-200';
+                if (game.boothLabel && pdfBoothData[game.hall]) {
+                    const search = game.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                    const found = Object.keys(pdfBoothData[game.hall]).some(k => k.includes(search) || search.includes(k));
+                    if (!found && Object.keys(pdfBoothData[game.hall]).length > 0) locationBadge = 'bg-red-500 text-white border-red-600';
+                }
+
+                const bggAnchor = game.bggLink ? '<a href="' + game.bggLink + '" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>' : '';
+                const displayHall = currentHall === 'all' ? `(Hal ${game.hall}) ` : '';
+
+                const li = document.createElement('li');
+                li.className = `relative px-3 py-2 rounded-xl border-2 border-l-[6px] shadow-sm transition-all ${bgClass} cursor-pointer hover:shadow-md`;
+                li.onclick = () => toggleNote(game.id);
+                li.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" ${isVis ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleVis('${game.id}')" class="mt-1 styled-chk shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between mb-0.5">
+                                <h3 class="font-bold text-sm text-slate-800 flex flex-wrap items-center gap-2 pr-16 ${isVis ? 'strike' : ''}">
+                                    ${cleanName}${titleLabels}
+                                    ${bggAnchor}
+                                </h3>
+                                <div class="absolute top-2 right-2 flex gap-1.5 items-center">
+                                    ${game.preorder ? '<i class="fa-solid fa-money-bill-wave text-green-600" title="Preorder"></i>' : ''}
+                                    <button onclick="focusMap('${game.boothLabel}', '${game.hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${locationBadge}">
+                                        <i class="fa-solid fa-location-dot mr-1"></i>${displayHall}${game.boothLabel}
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-slate-600 truncate"><i class="fa-solid fa-building mr-1"></i> ${game.publisher}</p>
+                            
+                            <textarea id="note-${game.id}" onchange="saveNote('${game.id}', this.value)" onclick="event.stopPropagation()" class="w-full mt-2 text-xs p-2 border border-slate-200 rounded-lg bg-white/80 outline-none focus:ring-2 focus:ring-blue-500 transition shadow-inner ${stateShowNotes ? '' : 'hidden'}" rows="2" placeholder="${i18n[lang].notes}">${noteText}</textarea>
+                        </div>
+                    </div>`;
+                list.appendChild(li);
+            });
+            if(count === 0 && hallGames.length === 0 && games.length > 0) list.innerHTML += `<li class="p-6 text-center text-slate-500 italic bg-white rounded-xl border border-slate-200">${i18n[lang].noGames}</li>`;
+        }
+
+        function toggleVis(id) {
+            visited = visited.includes(id) ? visited.filter(v => v !== id) : [...visited, id];
+            localStorage.setItem('spielVisited', JSON.stringify(visited));
+            renderHallTabs(); 
+            renderList(); 
+            renderHTMLOverlays();
+        }
+
+        function toggleNote(id) {
+            if(!stateShowNotes) {
+                document.getElementById(`note-${id}`).classList.toggle('hidden');
+            }
+        }
+        function saveNote(id, val) { 
+            if(!userNotes[id]) userNotes[id] = { text: "", originalTTT: "" };
+            userNotes[id].text = val; 
+            localStorage.setItem('spielNotes', JSON.stringify(userNotes)); 
+        }
+
+        // --- Modals ---
+        function openHallNotes() {
+            if (currentHall === 'all') return;
+            const input = document.getElementById('hall-notes-input');
+            input.value = hallNotes[currentHall] ? hallNotes[currentHall].text : "";
+            document.getElementById('txt-hall-notes-title').innerText = i18n[lang].hallNotesTitle + currentHall;
+            document.getElementById('hall-notes-modal').classList.remove('hidden');
+        }
+        
+        function closeHallNotes() {
+            document.getElementById('hall-notes-modal').classList.add('hidden');
+        }
+        
+        function saveAndCloseHallNotes() {
+            const input = document.getElementById('hall-notes-input');
+            if(!hallNotes[currentHall]) hallNotes[currentHall] = { text: '', checked: false };
+            hallNotes[currentHall].text = input.value;
+            localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
+            closeHallNotes();
+            renderList();
+        }
+
+        function openPdfModal() {
+            const prioContainer = document.getElementById('pdf-prio-checkboxes');
+            prioContainer.innerHTML = '';
+            dynamicPriorities.forEach(prio => {
+                const styles = getPrioStyles(prio);
+                const escapedPrio = prio.replace(/"/g, '&quot;');
+                prioContainer.innerHTML += `
+                    <label class="flex items-center gap-1.5 cursor-pointer p-1">
+                        <input type="checkbox" value="${escapedPrio}" class="styled-chk pdf-prio-chk w-4 h-4" checked>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${styles.borderClass} ${styles.bgClass}">${prio}</span>
+                    </label>
+                `;
+            });
+
+            const hallContainer = document.getElementById('pdf-hall-checkboxes');
+            hallContainer.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                const hallStr = i.toString();
+                const count = games.filter(g => g.hall === hallStr && (!stateHideVisited || !visited.includes(g.id))).length;
+                hallContainer.innerHTML += `
+                    <label class="flex items-center gap-2 cursor-pointer p-1 ${count === 0 ? 'opacity-40' : ''}">
+                        <input type="checkbox" value="${hallStr}" class="styled-chk pdf-hall-chk w-4 h-4" ${count > 0 ? 'checked' : 'disabled'}>
+                        <span class="text-sm font-bold">Hal ${hallStr}</span>
+                    </label>
+                `;
+            }
+            document.getElementById('pdf-modal').classList.remove('hidden');
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdf-modal').classList.add('hidden');
+        }
+
+        function openChangelog() {
+            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_7 + i18n[lang].changelogV1_6 + i18n[lang].changelogV1_5 + i18n[lang].changelogV1_4 + i18n[lang].changelogV1_3 + i18n[lang].changelogV1_2 + i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
+            document.getElementById('changelog-modal').classList.remove('hidden');
+        }
+
+        function closeChangelog() {
+            document.getElementById('changelog-modal').classList.add('hidden');
+        }
+
+        // --- Helper for grouping ---
+        function groupGamesByPublisher(gamesList) {
+            const groups = {};
+            gamesList.forEach(g => {
+                if (!groups[g.publisher]) groups[g.publisher] = [];
+                groups[g.publisher].push(g);
+            });
+            return groups;
+        }
+
+        // --- PDF Generation met Lijnen & Whitespace ---
+        function generatePDF() {
+            const selectedHalls = Array.from(document.querySelectorAll('.pdf-hall-chk:checked')).map(cb => cb.value);
+            const selectedPrios = Array.from(document.querySelectorAll('.pdf-prio-chk:checked')).map(cb => cb.value);
+
+            if(selectedHalls.length === 0) { alert('Selecteer minimaal 1 hal.'); return; }
+            if(selectedPrios.length === 0) { alert('Selecteer minimaal 1 prioriteit.'); return; }
+
+            closePdfModal();
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('txt-loading').innerText = "PDF / Print voorbereiden...";
+
+            const printContainer = document.getElementById('print-container');
+            printContainer.innerHTML = '';
+
+            let imagesToLoad = 0;
+            let imagesLoaded = 0;
+
+            const checkPrintReady = () => {
+                if (imagesLoaded === imagesToLoad) {
+                    document.body.classList.add('print-preparation-mode');
+                    
+                    setTimeout(() => {
+                        drawPrintLines();
+                        
+                        setTimeout(() => {
+                            document.body.classList.remove('print-preparation-mode');
+                            document.getElementById('loading-overlay').classList.add('hidden');
+                            window.print();
+                            printContainer.innerHTML = ''; 
+                        }, 300);
+                    }, 300);
+                }
+            };
+
+            selectedHalls.forEach((hall) => {
+                const hallGames = games.filter(g => g.hall === hall && (!stateHideVisited || !visited.includes(g.id)) && selectedPrios.includes(g.priority));
+                if(hallGames.length === 0) return;
+
+                // Groepeer op booth
+                let boothGroupsMap = {};
+                hallGames.forEach(g => {
+                    if (!g.boothLabel) return;
+                    const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                    const match = Object.entries(pdfBoothData[hall] || {}).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                    if (match) {
+                        const key = match[0];
+                        if (!boothGroupsMap[key]) boothGroupsMap[key] = { key: key, box: match[1], games: [], label: g.boothLabel };
+                        boothGroupsMap[key].games.push(g);
+                    }
+                });
+
+                // Splitsen in links en rechts obv map-X coordinaat en sorteren op Y
+                const allGroups = Object.values(boothGroupsMap);
+                const leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
+                const rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
+
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page-break flex flex-row items-center justify-between p-4 box-border relative mx-auto bg-white'; 
+
+                // SVG Layer
+                const svgNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svgNode.setAttribute("class", "absolute inset-0 w-full h-full z-0");
+                svgNode.setAttribute("id", `svg-${hall}`);
+                pageDiv.appendChild(svgNode);
+
+                // Helper to create label column
+                const createColumn = (groups, idSuffix) => {
+                    let colHtml = `<div class="w-[22%] h-[95%] flex flex-col justify-around py-4 z-10 gap-1 overflow-hidden" id="${idSuffix}">`;
+                    groups.forEach(group => {
+                        const pubs = groupGamesByPublisher(group.games);
+                        colHtml += `
+                            <div class="bg-slate-50 border border-slate-300 rounded p-1 shadow-sm relative print-label shrink-0" data-boothkey="${hall}-${group.key}">
+                                <div class="font-bold border-b border-slate-300 pb-0.5 mb-1 text-center text-[7px]">Booth ${group.label}</div>
+                                ${Object.entries(pubs).map(([pub, gs]) => `
+                                    <div class="font-bold text-[6px] text-slate-600 mt-1 uppercase tracking-wide leading-tight">${pub}</div>${gs.map(g => {
+                                        const styles = getPrioStyles(g.priority);
+                                        const { cleanName, titleLabels } = formatGameTitle(g.name, true);
+                                        return `
+                                        <div class="flex items-start gap-1 mt-0.5 leading-none mb-[2px]">
+                                            <div class="w-1.5 h-1.5 rounded-full shrink-0 border border-black" style="background-color: ${styles.hex}"></div>
+                                            <span class="text-[7px] font-medium text-slate-800">${cleanName}${titleLabels}</span>
+                                        </div>
+                                        `;
+                                    }).join('')}
+                                `).join('')}
+                            </div>
+                        `;
+                    });
+                    colHtml += `</div>`;
+                    return colHtml;
+                };
+
+                // Left Column
+                pageDiv.innerHTML += createColumn(leftGroups, `left-col-${hall}`);
+
+                // Map Wrap
+                const mapWrap = document.createElement('div');
+                mapWrap.className = 'w-[54%] relative flex items-center justify-center z-10';
+
+                const mapInner = document.createElement('div');
+                mapInner.className = 'relative w-full';
+
+                const img = document.createElement('img');
+                img.src = `hal${hall}.png`;
+                img.className = 'w-full h-auto object-contain';
+                
+                imagesToLoad++;
+                img.onload = () => { imagesLoaded++; checkPrintReady(); };
+                img.onerror = () => { imagesLoaded++; checkPrintReady(); };
+                
+                mapInner.appendChild(img);
+
+                const overlaysDiv = document.createElement('div');
+                overlaysDiv.className = 'absolute inset-0';
+                
+                // Plaats alleen stippen op de kaart
+                allGroups.forEach((group) => {
+                    const box = group.box;
+                    
+                    const markerWrap = document.createElement('div');
+                    markerWrap.className = 'absolute flex flex-wrap gap-[1px] transform -translate-x-1/2 -translate-y-1/2 z-20 print-dot-group';
+                    markerWrap.style.left = `${box.x}%`;
+                    markerWrap.style.top = `${box.y}%`;
+                    markerWrap.dataset.boothkey = `${hall}-${group.key}`;
+                    
+                    let dotsHTML = '';
+                    group.games.forEach(g => {
+                        const styles = getPrioStyles(g.priority);
+                        dotsHTML += `<div class="w-1.5 h-1.5 rounded-full border border-black shadow-sm" style="background-color: ${styles.hex}; opacity: 0.85;"></div>`;
+                    });
+                    markerWrap.innerHTML = dotsHTML;
+                    overlaysDiv.appendChild(markerWrap);
+                });
+
+                mapInner.appendChild(overlaysDiv);
+                mapWrap.appendChild(mapInner);
+                pageDiv.appendChild(mapWrap);
+
+                // Right Column
+                pageDiv.innerHTML += createColumn(rightGroups, `right-col-${hall}`);
+
+                printContainer.appendChild(pageDiv);
+            });
+
+            if (imagesToLoad === 0) checkPrintReady(); 
+        }
+
+        // Teken SVG-lijnen tussen stippen en labels
+        function drawPrintLines() {
+            document.querySelectorAll('.print-dot-group').forEach(dotGroup => {
+                const boothKey = dotGroup.dataset.boothkey;
+                const label = document.querySelector(`.print-label[data-boothkey="${boothKey}"]`);
+                if(!label) return;
+
+                const page = dotGroup.closest('.page-break');
+                const svg = page.querySelector('svg');
+                
+                const pageRect = page.getBoundingClientRect();
+                const dotRect = dotGroup.getBoundingClientRect();
+                const labelRect = label.getBoundingClientRect();
+
+                const dotX = dotRect.left + (dotRect.width / 2) - pageRect.left;
+                const dotY = dotRect.top + (dotRect.height / 2) - pageRect.top;
+
+                const labelY = labelRect.top + (labelRect.height / 2) - pageRect.top;
+                
+                let labelX;
+                // Verbind aan dichtsbijzijnde kant van het label
+                if (dotX < (labelRect.left - pageRect.left)) {
+                    labelX = labelRect.left - pageRect.left;
+                } else {
+                    labelX = labelRect.right - pageRect.left;
+                }
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', dotX);
+                line.setAttribute('y1', dotY);
+                line.setAttribute('x2', labelX);
+                line.setAttribute('y2', labelY);
+                line.setAttribute('stroke', '#cbd5e1'); // zachte grijze lijn (slate-300)
+                line.setAttribute('stroke-width', '1');
+                
+                svg.appendChild(line);
+            });
+        }
+
+        // --- Tabs / Panzoom / UI ---
+        function switchTab(tab) {
+            document.getElementById('tab-list').classList.toggle('tab-active', tab === 'list');
+            document.getElementById('tab-list').classList.toggle('text-slate-600', tab !== 'list');
+            document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
+            document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
+            
+            if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
+                document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
+                document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
+                if(tab === 'map') {
+                    setTimeout(() => { if(!mapFitted) fitMap(); }, 50);
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            window.addEventListener('resize', () => {
+                if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display === 'none') {
+                    document.getElementById('sidebar').style.display = '';
+                    document.getElementById('map-container').style.display = '';
+                } else {
+                    const isList = document.getElementById('tab-list').classList.contains('tab-active');
+                    document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
+                    document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
+                }
+                requestAnimationFrame(fitMap);
+            });
+
+            const wrap = document.getElementById('panzoom-wrapper');
+            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; });
+            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
+        }
+
+        let mapFitted = false;
+        function initPanzoom() {
+            const el = document.getElementById('panzoom-element');
+            panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1, cursor: 'default' });
+            
+            el.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
+            el.addEventListener('panzoomzoom', (e) => {
+                currentScale = e.detail.scale;
+                updateDynamicStyles();
+            });
+        }
+
+        function fitMap(callback) {
+            const img = document.getElementById('map-image');
+            const wrap = document.getElementById('panzoom-wrapper');
+            if(!img || img.classList.contains('hidden')) return;
+            
+            if (wrap.clientWidth === 0) {
+                requestAnimationFrame(() => fitMap(callback));
+                return;
+            }
+            
+            const scaleX = wrap.clientWidth / img.naturalWidth;
+            const scaleY = wrap.clientHeight / img.naturalHeight;
+            const fitScale = Math.min(scaleX, scaleY) * 0.95; 
+            
+            panzoomInstance.setOptions({ minScale: fitScale / 2 });
+            panzoomInstance.zoom(fitScale, { animate: true });
+            
+            const panX = (wrap.clientWidth - (img.naturalWidth * fitScale)) / 2;
+            const panY = (wrap.clientHeight - (img.naturalHeight * fitScale)) / 2;
+
+            setTimeout(() => {
+                panzoomInstance.pan(panX, panY, { animate: true, force: true });
+                currentScale = fitScale;
+                mapFitted = true;
+                updateDynamicStyles();
+                if(callback) callback(fitScale);
+            }, 10);
+        }
+
+        function zoomIn() { panzoomInstance.zoomIn(); }
+        function zoomOut() { panzoomInstance.zoomOut(); }
+
+        let imgLoaded = false;
+        function loadMapImage() {
+            const img = document.getElementById('map-image');
+            const err = document.getElementById('map-error');
+            
+            img.onload = () => {
+                imgLoaded = true;
+                img.classList.remove('hidden');
+                err.classList.add('hidden');
+                
+                const wrap = document.getElementById('panzoom-element');
+                wrap.style.width = `${img.naturalWidth}px`; 
+                wrap.style.height = `${img.naturalHeight}px`;
+
+                fitMap();
+                renderHTMLOverlays();
+            };
+            
+            img.onerror = () => {
+                img.classList.add('hidden');
+                err.classList.add('hidden');
+                document.getElementById('html-overlays').innerHTML = '';
+            };
+            
+            img.src = currentHall === 'all' ? 'overview.jpg' : `hal${currentHall}.png`;
+        }
+
+        function focusMap(boothLabel, fallbackHall) {
+            if(!boothLabel) return;
+            
+            // Als we op de "Alle" map staan, switch dan eerst naar de juiste hal
+            if (currentHall === 'all' && fallbackHall) {
+                selectHall(fallbackHall);
+            }
+
+            const searchStr = boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+            const hallData = pdfBoothData[currentHall] || {};
+            
+            const target = Object.entries(hallData).find(([k]) => k.includes(searchStr) || searchStr.includes(k))?.[1];
+
+            if(target) {
+                switchTab('map');
+                
+                const executeFocus = () => {
+                    const wrap = document.getElementById('panzoom-wrapper');
+                    if (wrap.clientWidth === 0) {
+                        requestAnimationFrame(executeFocus);
+                        return;
+                    }
+                    
+                    const img = document.getElementById('map-image');
+                    const pxX = (target.x / 100) * img.naturalWidth;
+                    const pxY = (target.y / 100) * img.naturalHeight;
+                    
+                    const pulse = document.getElementById('pulse-marker');
+                    pulse.style.left = `${pxX}px`; 
+                    pulse.style.top = `${pxY}px`;
+                    
+                    const panX = (wrap.clientWidth / 2) - (pxX * currentScale);
+                    const panY = (wrap.clientHeight / 2) - (pxY * currentScale);
+                    panzoomInstance.pan(panX, panY, { animate: true });
+                    
+                    pulse.classList.remove('hidden');
+                    if(window.pulseTimeout) clearTimeout(window.pulseTimeout);
+                    window.pulseTimeout = setTimeout(() => pulse.classList.add('hidden'), 10000);
+                };
+                
+                setTimeout(executeFocus, 50);
+            } else {
+                alert(`Locatie '${boothLabel}' niet gevonden op de kaart.`);
+            }
+        }
+
+        function renderHTMLOverlays() {
+            const container = document.getElementById('html-overlays');
+            container.innerHTML = '';
+            const img = document.getElementById('map-image');
+            if (img.classList.contains('hidden')) return;
+
+            // Overview Map Logic
+            if (currentHall === 'all') {
+                container.classList.add('show-labels'); // Forceer zichtbaarheid op de overview map
+                for (let i = 1; i <= 8; i++) {
+                    const hallStr = i.toString();
+                    const hGames = games.filter(g => g.hall === hallStr && (!stateHideVisited || !visited.includes(g.id)) && activePriorities.includes(g.priority));
+                    if (hGames.length === 0) continue;
+
+                    const coords = OVERVIEW_COORDS[hallStr];
+                    if (!coords) continue;
+
+                    const prioCounts = {};
+                    hGames.forEach(g => {
+                        prioCounts[g.priority] = (prioCounts[g.priority] || 0) + 1;
+                    });
+
+                    const markerWrap = document.createElement('div');
+                    markerWrap.className = 'absolute bg-white/95 border border-slate-300 rounded shadow-lg p-2 flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer hover:scale-110 transition-transform';
+                    markerWrap.style.left = `${coords.x}%`;
+                    markerWrap.style.top = `${coords.y}%`;
+                    markerWrap.onclick = () => selectHall(hallStr);
+
+                    let html = `<span class="font-bold text-[10px] sm:text-xs text-slate-800 border-b border-slate-200 mb-1.5 w-full text-center pb-0.5">Hal ${hallStr}</span><div class="flex flex-wrap gap-1.5 justify-center max-w-[80px] sm:max-w-[120px]">`;
+                    
+                    dynamicPriorities.forEach(prio => {
+                        if (prioCounts[prio]) {
+                            const styles = getPrioStyles(prio);
+                            html += `<div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border border-black shadow-sm shrink-0" style="background-color: ${styles.hex}"></div><span class="text-[9px] sm:text-[10px] font-bold text-slate-700">${prioCounts[prio]}</span></div>`;
+                        }
+                    });
+                    html += `</div>`;
+                    markerWrap.innerHTML = html;
+                    container.appendChild(markerWrap);
+                }
+                return;
+            }
+
+            // Normal Hall Map Logic
+            if (!pdfBoothData[currentHall]) return;
+
+            let boothGroupsMap = {}; 
+            
+            const hGames = games.filter(g => {
+                if (g.hall !== currentHall) return false;
+                if (visited.includes(g.id)) return false;
+                if (!activePriorities.includes(g.priority)) return false;
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            });
+
+            hGames.forEach(g => {
+                if (!g.boothLabel) return;
+                const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                const match = Object.entries(pdfBoothData[currentHall]).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                if (match) {
+                    const key = match[0];
+                    if (!boothGroupsMap[key]) boothGroupsMap[key] = { box: match[1], games: [] };
+                    boothGroupsMap[key].games.push(g);
+                }
+            });
+
+            Object.entries(boothGroupsMap).forEach(([boothKey, group]) => {
+                const box = group.box;
+                
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'absolute booth-group pointer-events-auto';
+                groupDiv.style.left = `${box.x}%`;
+                groupDiv.style.top = `${box.y + box.h}%`;
+                groupDiv.style.marginTop = '1px'; 
+                
+                const gameIdsStr = group.games.map(g => g.id).join(',');
+                const label = group.games[0].boothLabel;
+
+                let htmlContent = '';
+                group.games.forEach(g => {
+                    const styles = getPrioStyles(g.priority);
+                    const { cleanName, titleLabels } = formatGameTitle(g.name);
+                    htmlContent += `
+                        <div class="flex items-center gap-1 cursor-pointer transition-transform hover:scale-110" onclick="handleOverlayClick('${gameIdsStr}', '${label}', event)">
+                            <div class="dot-marker rounded-full border-2 border-white shadow-sm shrink-0" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-[11px] font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300 items-center">
+                                ${cleanName}${titleLabels}
+                            </span>
+                        </div>
+                    `;
+                });
+
+                groupDiv.innerHTML = htmlContent;
+                container.appendChild(groupDiv);
+            });
+
+            updateDynamicStyles(); 
+        }
+
+        function updateDynamicStyles() {
+            if (currentHall === 'all') return; // Geen dynamische scaling nodig voor de overview map
+            
+            const styleEl = document.getElementById('dynamic-styles');
+            const overlays = document.getElementById('html-overlays');
+            
+            let desiredVisualSize = 12;
+            let cssSize = desiredVisualSize / currentScale;
+            
+            let textCss = 18 / currentScale; 
+            let borderCss = 1.5 / currentScale; 
+            let padY = 3 / currentScale; 
+            let padX = 6 / currentScale; 
+            let radiusCSS = 6 / currentScale; 
+            let gapCss = 2 / currentScale;
+            let marginCss = 1 / currentScale;
+
+            styleEl.innerHTML = `
+                .dot-marker { width: ${cssSize}px; height: ${cssSize}px; border-width: ${borderCss}px; }
+                .game-label { font-size: ${textCss}px; padding: ${padY}px ${padX}px; border-width: ${borderCss}px; border-radius: ${radiusCSS}px; }
+                .booth-group { gap: ${gapCss}px; margin-top: ${marginCss}px; }
+                .show-labels .booth-group { gap: ${gapCss}px; }
+            `;
+
+            if (!overlays) return;
+            const img = document.getElementById('map-image');
+            const wrap = document.getElementById('panzoom-wrapper');
+            if (!img || !wrap || wrap.clientWidth === 0) return;
+            
+            const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight);
+            
+            if (currentScale > fitScale * 1.5) {
+                overlays.classList.add('show-labels');
+            } else {
+                overlays.classList.remove('show-labels');
+            }
+        }
+
+        window.handleOverlayClick = function(gameIdsStr, boothLabel, event) {
+            event.stopPropagation();
+            if (mapIsDragging) return; 
+            
+            const ids = gameIdsStr.split(',');
+            const matchGames = games.filter(g => ids.includes(g.id));
+            if(matchGames.length > 0) {
+                showModal(matchGames, boothLabel);
+            }
+        };
+
+        function showModal(matchGames, boothLabel) {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
+            document.getElementById('modal-title').innerText = `${boothLabel}`;
+
+            matchGames.forEach(game => {
+                const isVis = visited.includes(game.id);
+                const noteText = userNotes[game.id] ? userNotes[game.id].text : '';
+                const styles = getPrioStyles(game.priority);
+                const { cleanName, titleLabels } = formatGameTitle(game.name);
+                const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
+
+                const bggAnchor = game.bggLink ? '<a href="' + game.bggLink + '" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>' : '';
+
+                content.innerHTML += `
+                    <div class="p-3 rounded-xl border-2 border-l-8 shadow-sm mb-3 ${bgClass}">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${isVis ? 'checked' : ''} onchange="toggleVis('${game.id}'); closeModal();" class="mt-1 styled-chk">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h4 class="font-bold text-lg text-slate-800 pr-10 flex flex-wrap items-center gap-2 ${isVis ? 'strike' : ''}">
+                                        ${cleanName}${titleLabels}
+                                        ${bggAnchor}
+                                    </h4>
+                                    ${game.preorder ? '<i class="fa-solid fa-money-bill-wave text-green-600 text-xl"></i>' : ''}
+                                </div>
+                                <p class="text-xs text-slate-600 mb-2"><i class="fa-solid fa-building mr-1"></i> ${game.publisher}</p>
+                                <textarea onchange="saveNote('${game.id}', this.value)" class="w-full mt-2 text-sm p-3 border border-slate-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" rows="2" placeholder="${i18n[lang].notes}">${noteText}</textarea>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('booth-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('booth-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
