@@ -92,6 +92,7 @@
         .print-preparation-mode .page-landscape { width: 297mm; height: 210mm; position: relative; overflow: hidden; }
         .print-preparation-mode .page-portrait { width: 210mm; height: 297mm; position: relative; overflow: hidden; }
 
+        /* Daadwerkelijke Print Styles */
         @media print {
             @page print-landscape { size: A4 landscape; margin: 0; }
             @page print-portrait { size: A4 portrait; margin: 0; }
@@ -381,12 +382,14 @@
     <script>
         if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
         
+        // Configuratie print-schaal en orientatie per hal.
+        // Hal 5 is nu op 0.70 geschaald zodat deze zeker op het vel past.
         const HALL_CONFIG = {
             '1': { dir: 'tb', scale: 0.95, orient: 'landscape' },
             '2': { dir: 'tb', scale: 0.95, orient: 'landscape' },
             '3': { dir: 'lr', scale: 0.95, orient: 'portrait' },
             '4': { dir: 'lr', scale: 0.90, orient: 'portrait' },
-            '5': { dir: 'tb', scale: 0.80, orient: 'landscape' },
+            '5': { dir: 'tb', scale: 0.70, orient: 'landscape' },
             '6': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '7': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '8': { dir: 'lr', scale: 0.90, orient: 'portrait' },
@@ -406,7 +409,7 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen Ruimte:</strong> Zodra de header/footer inklappen, vult de app direct de volledige hoogte.</li><li><strong>Slimme Auto-Hider:</strong> Blendt na 3 seconden automatisch weg en komt pas terug bij hal-wissel!</li><li><strong>Overview Zoom:</strong> Overzichtskaart netjes op 0.75 gezoomd.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> De overzichtskaart toont nu het gehele beursplaatje op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik rechtsboven om direct naar de overzichtskaart te gaan.</li><li><strong>Auto-Hiding Header & Footer:</strong> Verdwijnen automatisch na 3 seconden voor maximale schermruimte, en komen pas weer terug bij hal-wissel!</li><li><strong>Print Updates:</strong> Marges zijn op 5mm vastgezet, dots zijn iets groter en hal 5 past er nu netjes op.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -419,7 +422,7 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen View:</strong> When header/footer fade out, the app expands to fill the full height.</li><li><strong>Smart Auto-Hider:</strong> Fades out after 3 seconds, only reappearing upon hall switches.</li><li><strong>Overview Zoom:</strong> Overview map fitted nicely at 0.75 scale.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> The overview map is now cleanly scaled to 0.75.</li><li><strong>Clickable Mini-Map:</strong> Click top right to instantly open the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Automatically hide after 3 seconds for maximum viewing space, and reappear only on hall switches.</li><li><strong>Print Updates:</strong> Margins fixed at 5mm, map dots slightly larger, and hall 5 fits perfectly now.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -432,7 +435,7 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Fullscreen & Auto-Hiding UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fullscreen Ansicht:</strong> App dehnt sich bei versteckter Header/Footer auf die volle Höhe aus.</li><li><strong>Smart Auto-Hider:</strong> Blendet nach 3 Sekunden aus, erscheint nur bei Hallenwechsel.</li><li><strong>Overview Zoom:</strong> Übersicht auf 0.75 gezoomt.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Blenden nach 3 Sekunden automatisch aus und erscheinen erst bei Hallenwechsel wieder.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -488,7 +491,6 @@
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
-        // --- Auto-Hiding Header & Footer Logic (Alleen bij hal-wissel) ---
         let uiIdleTimer = null;
         function resetUIIdleTimer() {
             if (uiIdleTimer) clearTimeout(uiIdleTimer);
@@ -944,7 +946,7 @@
                         const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
                         if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
                         
-                        locBadge = '<button onclick="focusMap(\'' + note.location + '\', \'' + hall + '\'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ' + badgeColor + ' ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ' + hall + ') ' + note.location + '</button>';
+                        locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
                     }
 
                     const li = document.createElement('li');
@@ -1183,7 +1185,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_13', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_2', 'V1_0'];
+            const versions = ['V1_13', 'V1_12', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_2', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1227,6 +1229,7 @@
                 if (imagesLoaded === imagesToLoad) {
                     document.body.classList.add('print-preparation-mode');
                     
+                    // Laat de DOM goed renderen
                     setTimeout(() => {
                         resolveCollisions();
                         
@@ -1235,7 +1238,7 @@
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
                         }, 500);
-                    }, 300);
+                    }, 500);
                 }
             };
 
@@ -1257,7 +1260,8 @@
                 const isTB = config.dir === 'tb';
 
                 const pageDiv = document.createElement('div');
-                pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto box-border overflow-hidden w-full h-full`;
+                // No padding, making max use of printable edge
+                pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto overflow-hidden block`;
 
                 if (isOverview) {
                     const mapWrap = document.createElement('div');
@@ -1341,10 +1345,10 @@
                         rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
                     }
 
-                    // Strak tot aan de uiterste printranden (0px)
+                    // Strak tot aan de uiterste printranden (5mm padding op de container div)
                     const createColumnHTML = (groups, isLeft) => {
                         if(isLR) {
-                            let colHtml = `<div class="absolute ${isLeft ? 'left-0' : 'right-0'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'left-[5mm]' : 'right-[5mm]'} top-[5mm] bottom-[5mm] w-[18%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
@@ -1371,7 +1375,7 @@
                             colHtml += `</div>`;
                             return colHtml;
                         } else {
-                            let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'top-[5mm]' : 'bottom-[5mm]'} left-[5mm] right-[5mm] flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
@@ -1403,6 +1407,7 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
+                    // Schaalcontainer op de inner wrapper zodat de markeringen perfect meestemmen met x/y%
                     const mapScaler = document.createElement('div');
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
@@ -1437,7 +1442,8 @@
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
-                            markerHTML += `<div class="w-[11px] h-[11px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
+                            // Vergroot naar 15px zoals gevraagd (tussen 11 en 20 in)
+                            markerHTML += `<div class="w-[15px] h-[15px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
                         });
                         markerWrap.innerHTML = markerHTML;
                         overlaysDiv.appendChild(markerWrap);
@@ -1478,8 +1484,8 @@
                             if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) {
                                 overlaps = true;
                                 
-                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.9);
-                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.9);
+                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.92);
+                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.92);
                                 markers[i].dataset.scale = s1;
                                 markers[j].dataset.scale = s2;
 
@@ -1495,8 +1501,8 @@
 
                                 let dist = Math.sqrt(dx*dx + dy*dy);
                                 
-                                let pushX = (dx / dist) * 6; 
-                                let pushY = (dy / dist) * 6;
+                                let pushX = (dx / dist) * 8; 
+                                let pushY = (dy / dist) * 8;
 
                                 let ox1 = parseFloat(markers[i].dataset.offx) + pushX;
                                 let oy1 = parseFloat(markers[i].dataset.offy) + pushY;
@@ -1584,7 +1590,7 @@
             let fitScale = Math.min(scaleX, scaleY) * 0.95; 
             
             if (currentHall === 'all') {
-                fitScale = fitScale * 0.75; // Zooms out to 0.75 for the overview page
+                fitScale = fitScale * 0.75;
             }
             
             panzoomInstance.setOptions({ minScale: fitScale / 2 });
