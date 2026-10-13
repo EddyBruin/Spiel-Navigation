@@ -203,16 +203,12 @@
 
             <div class="absolute inset-0" id="panzoom-wrapper" style="touch-action: none;">
                 <div id="panzoom-element" class="relative w-full h-full" style="transform-origin: 0 0;">
-                    
                     <div id="map-error" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 hidden z-0">
                         <i class="fa-solid fa-image text-4xl mb-2"></i>
                         <p>Afbeelding niet gevonden.</p>
                     </div>
-
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
-                    
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
-                    
                     <div id="pulse-marker" class="absolute border-8 border-red-500 rounded-full pulse hidden pointer-events-none flex items-center justify-center z-30" style="width: 250px; height: 250px; transform: translate(-50%, -50%);">
                         <div class="w-6 h-6 bg-red-700 rounded-full shadow-xl"></div>
                     </div>
@@ -228,7 +224,7 @@
         </div>
     </main>
 
-    <!-- Print Container (verstopt in scherm modus, class="hidden") -->
+    <!-- Print Container -->
     <div id="print-container" class="hidden"></div>
 
     <!-- Footer Changelog & Credits -->
@@ -351,12 +347,25 @@
         </div>
     </div>
 
-    <!-- LAAD HIER DE BOOTHDATA BESTAND IN PLAATS VAN VIA FETCH -->
+    <!-- LAAD BOOTHDATA BESTAND -->
     <script src="boothdata.js"></script>
 
     <script>
         if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
         
+        // Print Orientatie Configuratie
+        const HALL_CONFIG = {
+            '1': { dir: 'tb', scale: 1.0, orient: 'landscape' },
+            '2': { dir: 'tb', scale: 1.0, orient: 'landscape' },
+            '3': { dir: 'lr', scale: 1.0, orient: 'portrait' },
+            '4': { dir: 'lr', scale: 0.9, orient: 'portrait' },
+            '5': { dir: 'tb', scale: 0.8, orient: 'landscape' },
+            '6': { dir: 'lr', scale: 0.9, orient: 'portrait' },
+            '7': { dir: 'lr', scale: 0.9, orient: 'portrait' },
+            '8': { dir: 'lr', scale: 0.9, orient: 'portrait' },
+            'all': { dir: 'none', scale: 1.0, orient: 'landscape' }
+        };
+
         const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
 
         const i18n = {
@@ -389,7 +398,7 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bugfix:</strong> PDF rendering issue resolved (empty pages fixed).</li><li><strong>Maximized Maps:</strong> Printed maps now take up the maximum possible width. Sidebar borders and backgrounds have been removed for a clean look.</li><li><strong>Smart Orientation:</strong> Halls 1, 2, 5 and the Overview map automatically print in landscape mode, while others use portrait!</li><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers instead of letters for easy side-bar lookup.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth and makes it clickable in your list!</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bugfix:</strong> PDF rendering issue resolved (empty pages fixed).</li><li><strong>Maximized Maps:</strong> Printed maps now take up 100% of the page size. Lists float cleanly over the margins.</li><li><strong>Smart Orientation:</strong> Halls 1, 2, 5 and the Overview map automatically print in landscape mode, while others use portrait!</li><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers instead of letters for easy side-bar lookup.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth and makes it clickable in your list!</li></ul></div>",
                 changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-90'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Added a handy mini-map overview in the top right corner!</li><li><strong>Advanced Hall Notes:</strong> Turn hall notes into an action list with location and priority tracking.</li><li><strong>Preorder Filter:</strong> Added a quick toggle button for preorders!</li></ul></div>",
                 changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
                 changelogV1_5: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-70'><strong>v1.5 - Map Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactive dropdown on the map.</li></ul></div>",
@@ -414,7 +423,8 @@
                 changelogV1_5: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-70'><strong>v1.5 - Map Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interaktives Dropdown auf PDF-Drucken.</li></ul></div>",
                 changelogV1_4: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neu: Vor dem Drucken nach Priorität filtern!</li></ul></div>",
                 changelogV1_3: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Druckfunktion hinzugefügt.</li></ul></div>",
-                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
+                changelogV1_2: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.2 - Suchfunktion</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Echtzeit-Suchleiste und automatische Navigation hinzugefügt.</li></ul></div>",
+                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-30'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -898,7 +908,8 @@
                         const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
                         if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
                         
-                        locBadge = '<button onclick="focusMap(\'' + note.location + '\', \'' + hall + '\'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ' + badgeColor + ' ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ' + hall + ') ' + note.location + '</button>';
+                        // Clean Template Literal for location parsing
+                        locBadge = ` <button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
                     }
 
                     const li = document.createElement('li');
@@ -913,7 +924,7 @@
                                     </h3>
                                     <button onclick="selectHall('${hall}'); openHallNotes();" class="text-slate-500 hover:text-slate-800 px-2 py-1 bg-white rounded shadow-sm border border-slate-200"><i class="fa-solid fa-edit text-xs"></i></button>
                                 </div>
-                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider"><i class="fa-solid fa-map"></i> Hal ${hall}</p>` : ''}
+                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider"><i class="fa-solid fa-map"></i> Hal \${hall}</p>` : ''}
                             </div>
                         </div>
                     `;
@@ -948,7 +959,7 @@
                     if (!found && Object.keys(pdfBoothData[game.hall]).length > 0) locationBadge = 'bg-red-500 text-white border-red-600';
                 }
 
-                const bggAnchor = game.bggLink ? '<a href="' + game.bggLink + '" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>' : '';
+                const bggAnchor = game.bggLink ? `<a href="${game.bggLink}" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>` : '';
                 const displayHall = currentHall === 'all' ? `(Hal ${game.hall}) ` : '';
 
                 const li = document.createElement('li');
@@ -1026,19 +1037,21 @@
                 let badge = '';
                 if(note.priority) {
                     const st = getPrioStyles(note.priority);
-                    badge += '<span class="bg-white border ' + st.borderClass + ' ' + st.bgClass + ' px-1.5 py-0.5 rounded font-bold">' + note.priority + '</span>';
+                    badge += `<span class="bg-white border ${st.borderClass} ${st.bgClass} px-1.5 py-0.5 rounded font-bold">${note.priority}</span>`;
                 }
                 
-                list.innerHTML += '<div class="flex justify-between items-center bg-white p-2 border border-slate-200 rounded text-sm shadow-sm ' + (note.checked ? 'opacity-50 grayscale' : '') + '">' +
-                    '<div class="flex flex-col flex-1 min-w-0 pr-2">' +
-                        '<span class="font-bold text-slate-800 ' + (note.checked ? 'strike' : '') + '">' + note.text + '</span>' +
-                        '<div class="flex gap-2 text-[10px] text-slate-500 mt-1">' +
-                            (note.location ? '<span><i class="fa-solid fa-location-dot"></i> ' + note.location + '</span>' : '') +
-                            badge +
-                        '</div>' +
-                    '</div>' +
-                    '<button onclick="deleteHallNote(\'' + note.id + '\')" class="text-red-400 hover:text-red-600 p-2 border border-transparent hover:border-red-200 rounded transition"><i class="fa-solid fa-trash"></i></button>' +
-                '</div>';
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-2 border border-slate-200 rounded text-sm shadow-sm ${note.checked ? 'opacity-50 grayscale' : ''}">
+                        <div class="flex flex-col flex-1 min-w-0 pr-2">
+                            <span class="font-bold text-slate-800 ${note.checked ? 'strike' : ''}">${note.text}</span>
+                            <div class="flex gap-2 text-[10px] text-slate-500 mt-1">
+                                ${note.location ? `<span><i class="fa-solid fa-location-dot"></i> \${note.location}</span>` : ''}
+                                ${badge}
+                            </div>
+                        </div>
+                        <button onclick="deleteHallNote('${note.id}')" class="text-red-400 hover:text-red-600 p-2 border border-transparent hover:border-red-200 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
@@ -1170,10 +1183,8 @@
             document.getElementById('txt-loading').innerText = "PDF / Print voorbereiden...";
 
             const printContainer = document.getElementById('print-container');
-            
-            // Verwijder classList 'hidden' of zet opacity tijdelijk 0
-            // De styling forceert weergave bij @media print, maar sommige browsers hebben DOM render-tijd nodig
-            
+            printContainer.innerHTML = '';
+
             let imagesToLoad = 0;
             let imagesLoaded = 0;
 
@@ -1181,7 +1192,7 @@
                 if (imagesLoaded === imagesToLoad) {
                     document.body.classList.add('print-preparation-mode');
                     
-                    // Laat de DOM renderen en doe collision check
+                    // Laat de DOM goed renderen
                     setTimeout(() => {
                         resolveCollisions();
                         
@@ -1190,12 +1201,9 @@
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
                         }, 500);
-                    }, 300);
+                    }, 500);
                 }
             };
-
-            // Zorg ervoor dat hij opgeruimd is voordat we beginnen
-            printContainer.innerHTML = '';
 
             selectedHalls.forEach((hall) => {
                 const isOverview = hall === 'all';
@@ -1209,24 +1217,30 @@
 
                 if(hallGames.length === 0 && !isOverview) return;
 
-                const isLandscape = ['1','2','5','all'].includes(hall);
-                const orientationClass = isLandscape ? 'page-landscape' : 'page-portrait';
+                const config = HALL_CONFIG[hall] || { dir: 'lr', scale: 1.0, orient: 'portrait' };
+                const orientationClass = config.orient === 'landscape' ? 'page-landscape' : 'page-portrait';
+                const isLR = config.dir === 'lr';
+                const isTB = config.dir === 'tb';
 
                 const pageDiv = document.createElement('div');
                 pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto overflow-hidden block`;
 
                 if (isOverview) {
                     const mapWrap = document.createElement('div');
-                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0';
+                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
+                    
+                    const mapInner = document.createElement('div');
+                    mapInner.className = 'relative inline-block w-full h-full';
                     
                     const img = document.createElement('img');
                     img.src = 'overview.jpg';
-                    img.className = 'print-map-img';
+                    img.className = 'w-full h-full object-contain block';
                     
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
                     img.onerror = () => { imagesLoaded++; checkPrintReady(); };
-                    mapWrap.appendChild(img);
+                    
+                    mapInner.appendChild(img);
 
                     const overlaysDiv = document.createElement('div');
                     overlaysDiv.className = 'absolute inset-0';
@@ -1261,7 +1275,8 @@
                         markerWrap.innerHTML = html;
                         overlaysDiv.appendChild(markerWrap);
                     }
-                    mapWrap.appendChild(overlaysDiv);
+                    mapInner.appendChild(overlaysDiv);
+                    mapWrap.appendChild(mapInner);
                     pageDiv.appendChild(mapWrap);
 
                 } else {
@@ -1284,28 +1299,35 @@
                     });
 
                     const allGroups = Object.values(boothGroupsMap);
-                    const leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
-                    const rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
+                    
+                    let leftGroups = [], rightGroups = [];
+                    if (isLR) {
+                        leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
+                        rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
+                    } else if (isTB) {
+                        leftGroups = allGroups.filter(g => g.box.y < 50).sort((a,b) => a.box.x - b.box.x); // Top
+                        rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); // Bottom
+                    }
 
-                    // Sidebar Maker (Absoluut over de zijkanten gelegd)
-                    const createColumnHTML = (groups, isLeft) => {
-                        let colHtml = `<div class="absolute ${isLeft ? 'left-2' : 'right-2'} top-2 bottom-2 w-[18%] flex flex-col justify-start py-2 z-10 gap-1.5 overflow-hidden">`;
+                    // Dynamische renderer per lay-out
+                    const renderListItems = (groups, isHorizontal) => {
+                        let html = '';
                         groups.forEach(group => {
                             const pubs = groupGamesByPublisher(group.games);
-                            colHtml += `
-                                <div class="mb-2">
-                                    <div class="font-bold text-[10px] mb-0.5">${group.label}</div>
-                                    <div class="w-[50px] border-b-[1.5px] border-slate-800 mb-1.5"></div>
+                            html += `
+                                <div class="mb-1 ${isHorizontal ? 'w-48 shrink-0' : ''}">
+                                    <div class="font-bold text-[8.5px] mb-0.5">${group.label}</div>
+                                    <div class="w-[50px] border-b border-slate-800 mb-1"></div>
                                     ${Object.entries(pubs).map(([pub, gs]) => `
-                                        <div class="font-bold text-[8px] uppercase mt-[4px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
+                                        <div class="font-bold text-[5px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
                                             const styles = getPrioStyles(g.priority);
                                             const { cleanName, titleLabels } = formatGameTitle(g.name, true);
-                                            const truncName = cleanName.length > 30 ? cleanName.substring(0, 30).trim() + '...' : cleanName;
+                                            const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
                                             const num = gameNumbers.get(g.id);
                                             return `
-                                            <div class="flex items-start gap-1.5 mt-1 leading-none mb-[3px]">
-                                                <div class="w-4 h-4 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
-                                                <span class="text-[9.5px] leading-tight text-slate-800 pt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">${truncName}${titleLabels}</span>
+                                            <div class="flex items-center gap-1 mt-0.5 leading-none mb-[1px]">
+                                                <div class="w-[10px] h-[10px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                <span class="text-[8px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-px">${truncName}${titleLabels}</span>
                                             </div>
                                             `;
                                         }).join('')}
@@ -1313,19 +1335,21 @@
                                 </div>
                             `;
                         });
-                        colHtml += `</div>`;
-                        return colHtml;
+                        return html;
                     };
 
                     const mapWrap = document.createElement('div');
-                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0';
+                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
                     const mapInner = document.createElement('div');
-                    mapInner.className = 'relative max-w-full max-h-full inline-block';
+                    mapInner.className = 'relative flex items-center justify-center';
+                    mapInner.style.transform = `scale(${config.scale})`;
+                    mapInner.style.width = '100vw';
+                    mapInner.style.height = '100vh';
 
                     const img = document.createElement('img');
                     img.src = `hal${hall}.png`;
-                    img.className = 'print-map-img block';
+                    img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
                     
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
@@ -1339,7 +1363,7 @@
                     allGroups.forEach((group) => {
                         const box = group.box;
                         const markerWrap = document.createElement('div');
-                        markerWrap.className = 'absolute flex flex-col items-center z-20 print-marker-wrap';
+                        markerWrap.className = 'absolute flex flex-col items-center justify-center z-20 print-marker-wrap';
                         markerWrap.style.left = `${box.x}%`;
                         markerWrap.style.top = `${box.y}%`;
                         markerWrap.dataset.scale = "1";
@@ -1351,7 +1375,7 @@
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
-                            markerHTML += `<div class="w-6 h-6 rounded-full border border-black flex items-center justify-center text-[12px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
+                            markerHTML += `<div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shadow-sm" style="background-color: ${styles.hex}; opacity: 0.7;">${num}</div>`;
                         });
                         markerHTML += `</div>`;
                         markerWrap.innerHTML = markerHTML;
@@ -1360,17 +1384,21 @@
 
                     mapInner.appendChild(overlaysDiv);
                     mapWrap.appendChild(mapInner);
-                    
-                    // Insert safely using insertAdjacentHTML to prevent destroying img.onload
                     pageDiv.appendChild(mapWrap);
-                    pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(leftGroups, true));
-                    pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(rightGroups, false));
+
+                    // Insert lists on top of map
+                    if (isLR) {
+                        pageDiv.insertAdjacentHTML('beforeend', `<div class="absolute left-2 top-2 bottom-2 w-[22%] flex flex-col justify-start z-10 overflow-hidden">${renderListItems(leftGroups, false)}</div>`);
+                        pageDiv.insertAdjacentHTML('beforeend', `<div class="absolute right-2 top-2 bottom-2 w-[22%] flex flex-col justify-start z-10 overflow-hidden">${renderListItems(rightGroups, false)}</div>`);
+                    } else if (isTB) {
+                        pageDiv.insertAdjacentHTML('beforeend', `<div class="absolute top-2 left-2 right-2 flex flex-row flex-wrap justify-between items-start content-start gap-x-2 gap-y-1 z-10">${renderListItems(leftGroups, true)}</div>`);
+                        pageDiv.insertAdjacentHTML('beforeend', `<div class="absolute bottom-2 left-2 right-2 flex flex-row flex-wrap justify-between items-end content-end gap-x-2 gap-y-1 z-10">${renderListItems(rightGroups, true)}</div>`);
+                    }
                 }
 
                 printContainer.appendChild(pageDiv);
             });
 
-            // Fallback als er geen plaatjes zijn ingeladen
             if (imagesToLoad === 0) checkPrintReady(); 
         }
 
@@ -1394,8 +1422,8 @@
                             if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) {
                                 overlaps = true;
                                 
-                                let s1 = Math.max(0.60, parseFloat(markers[i].dataset.scale) * 0.92);
-                                let s2 = Math.max(0.60, parseFloat(markers[j].dataset.scale) * 0.92);
+                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.9);
+                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.9);
                                 markers[i].dataset.scale = s1;
                                 markers[j].dataset.scale = s2;
 
@@ -1434,7 +1462,7 @@
             });
         }
 
-        // Zorgt ervoor dat de DOM van het print container weer leeg is zodra de gebruiker klaar is
+        // Verwijder HTML na printen zodat het geheugen niet volloopt
         window.addEventListener('afterprint', () => {
             document.getElementById('print-container').innerHTML = '';
         });
@@ -1749,7 +1777,7 @@
                 const { cleanName, titleLabels } = formatGameTitle(game.name);
                 const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
 
-                const bggAnchor = game.bggLink ? '<a href="' + game.bggLink + '" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>' : '';
+                const bggAnchor = game.bggLink ? `<a href="${game.bggLink}" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>` : '';
 
                 content.innerHTML += `
                     <div class="p-3 rounded-xl border-2 border-l-8 shadow-sm mb-3 ${bgClass}">
