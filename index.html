@@ -52,28 +52,33 @@
         .show-labels .booth-group { grid-template-columns: 1fr; }
         .show-labels .game-label { display: flex; }
 
-        /* Print Preparatie Simulatie Mode (verborgen voor gebruiker) */
+        /* --- PDF PREPARATIE & PRINT STYLES --- */
+        
+        /* Tijdens het genereren tekenen we de PDF op de achtergrond op werkelijk A4 formaat 
+           zodat de collision detection (getBoundingClientRect) 100% correct werkt. */
+        .print-preparation-mode body { overflow: hidden !important; }
+        .print-preparation-mode header,
+        .print-preparation-mode .mobile-tabs,
+        .print-preparation-mode main,
+        .print-preparation-mode footer,
+        .print-preparation-mode div[id$="-modal"],
+        .print-preparation-mode #url-overlay { display: none !important; }
+
         .print-preparation-mode #print-container {
-            position: absolute !important;
-            top: 0 !important;
-            left: -9999px !important;
             display: block !important;
-            background: white !important;
-            visibility: visible !important;
-            opacity: 0.01 !important;
-            z-index: -9999 !important;
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 10; /* Onder de loading overlay */
+            background: #fff;
         }
 
-        .print-preparation-mode .page-landscape { width: 297mm; height: 210mm; position: relative; overflow: hidden; }
-        .print-preparation-mode .page-portrait { width: 210mm; height: 297mm; position: relative; overflow: hidden; }
-
-        /* Daadwerkelijke Print Styles */
+        /* Daadwerkelijke Print CSS die overneemt bij window.print() */
         @media print {
             @page print-landscape { size: A4 landscape; margin: 0; }
             @page print-portrait { size: A4 portrait; margin: 0; }
             
-            .page-landscape { page: print-landscape; width: 297mm; height: 209mm; }
-            .page-portrait { page: print-portrait; width: 210mm; height: 296mm; }
+            .page-landscape { page: print-landscape; width: 297mm !important; height: 209mm !important; }
+            .page-portrait { page: print-portrait; width: 210mm !important; height: 296mm !important; }
             
             body, html { overflow: visible !important; height: auto !important; width: auto !important; display: block !important; background: white !important; margin: 0; padding: 0; }
             
@@ -87,6 +92,8 @@
                 overflow: hidden;
                 box-sizing: border-box;
                 background: white !important;
+                margin: 0;
+                padding: 0;
             }
 
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -203,16 +210,12 @@
 
             <div class="absolute inset-0" id="panzoom-wrapper" style="touch-action: none;">
                 <div id="panzoom-element" class="relative w-full h-full" style="transform-origin: 0 0;">
-                    
                     <div id="map-error" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 hidden z-0">
                         <i class="fa-solid fa-image text-4xl mb-2"></i>
                         <p>Afbeelding niet gevonden.</p>
                     </div>
-
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
-                    
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
-                    
                     <div id="pulse-marker" class="absolute border-8 border-red-500 rounded-full pulse hidden pointer-events-none flex items-center justify-center z-30" style="width: 250px; height: 250px; transform: translate(-50%, -50%);">
                         <div class="w-6 h-6 bg-red-700 rounded-full shadow-xl"></div>
                     </div>
@@ -228,13 +231,13 @@
         </div>
     </main>
 
-    <!-- Print Container (verstopt in scherm modus) -->
+    <!-- Print Container -->
     <div id="print-container" class="hidden"></div>
 
     <!-- Footer Changelog & Credits -->
     <footer class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.12</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.11</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -357,19 +360,18 @@
     <script>
         if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
         
-        // Configuratie print-schaal per hal.
-        // Omdat portrait kaarten vaak breder zijn dan hun paginaruimte: schaal 0.95.
-        // Landscape kaarten gebruiken de volledige ruimte: schaal 1.0.
+        // Configuratie print-schaal en orientatie per hal.
+        // Schaal map op 0.95 of 0.9 afhankelijk van de ruimte die de teksten aan de zijrand nodig hebben
         const HALL_CONFIG = {
-            '1': { dir: 'tb', scale: 1.0, orient: 'landscape' },
-            '2': { dir: 'tb', scale: 1.0, orient: 'landscape' },
+            '1': { dir: 'tb', scale: 0.95, orient: 'landscape' },
+            '2': { dir: 'tb', scale: 0.95, orient: 'landscape' },
             '3': { dir: 'lr', scale: 0.95, orient: 'portrait' },
-            '4': { dir: 'lr', scale: 0.95, orient: 'portrait' },
-            '5': { dir: 'tb', scale: 1.0, orient: 'landscape' },
-            '6': { dir: 'lr', scale: 0.95, orient: 'portrait' },
-            '7': { dir: 'lr', scale: 0.95, orient: 'portrait' },
-            '8': { dir: 'lr', scale: 0.95, orient: 'portrait' },
-            'all': { dir: 'none', scale: 1.0, orient: 'landscape' }
+            '4': { dir: 'lr', scale: 0.90, orient: 'portrait' },
+            '5': { dir: 'tb', scale: 0.80, orient: 'landscape' },
+            '6': { dir: 'lr', scale: 0.90, orient: 'portrait' },
+            '7': { dir: 'lr', scale: 0.90, orient: 'portrait' },
+            '8': { dir: 'lr', scale: 0.90, orient: 'portrait' },
+            'all': { dir: 'none', scale: 0.95, orient: 'landscape' }
         };
 
         const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
@@ -385,10 +387,13 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.12 - Print Marges & Schaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges:</strong> De zijlijsten en kaarten maken nu maximaal gebruik van de randen van het papier.</li><li><strong>Kaart Scaling:</strong> Zorgt ervoor dat de stippen nu hun exacte locatie behouden wanneer kaarten ietsjes kleiner (95%) worden geprint in portretmodus.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Oriëntatie:</strong> Hallen 1, 2, 5 en de Overzichtskaart printen nu automatisch in landscape, de rest in portrait!</li><li><strong>Slimme Nummering:</strong> Elk spel in de hal krijgt een nummer op de kaart.</li><li><strong>Hal-Notities Fix:</strong> Locatie wordt nu gevalideerd en is klikbaar.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-80'><strong>v1.9 - Actielijsten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Altijd je huidige positie rechtsboven.</li><li><strong>Preorder Filter:</strong> Snelle toggle knop voor preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-70'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie met slimme tellers per hal.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max. Kaartgrootte & Schaling:</strong> De PDF kaart pakt nu de maximale breedte op papier. Scaling (95%) verpest niet langer de positie van de markers!</li><li><strong>Lege Pagina Fix:</strong> Het probleem waarbij de print output leeg bleef is nu opgelost.</li><li><strong>Slimme Oriëntatie:</strong> Hallen 1, 2, 5 en de Overzichtskaart printen nu automatisch in landscape, de rest in portrait.</li><li><strong>Slimme Nummering:</strong> Elk spel in de hal krijgt een getal (i.p.v. een letter) zodat je ze makkelijk op de map terugvindt.</li><li><strong>Hal-Notities Fix:</strong> Locatie (bijv. 1-A000) wordt nu gevalideerd en is als knopje klikbaar.</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-90'><strong>v1.9 - Actielijsten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Rechtsboven in het kaartvenster zie je nu constant een minikaartje.</li><li><strong>Geavanceerde Hal-Notities:</strong> Maak nu meerdere notities per hal met locatie en prioriteit!</li><li><strong>Preorder Filter:</strong> Snelle toggle knop voor preorders.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie met slimme tellers per hal.</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-70'><strong>v1.5 - Map Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactieve hal-dropdown.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-60'><strong>v1.4 - Kaart Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Filteren op prioriteit tijdens het printen toegevoegd.</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introductie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe print-functie via PDF icoon op de kaart toegevoegd.</li></ul></div>",
+                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -401,10 +406,13 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.12 - Print Margins & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> The printed lists now utilize the maximum printable edges of your paper.</li><li><strong>Map Scaling:</strong> Fixes a bug to ensure dots stay perfectly aligned with their booths when a map is scaled down (95%) in portrait mode.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Orientation:</strong> Halls 1, 2, 5 and the Overview map automatically print in landscape mode!</li><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers instead of letters.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-80'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> See your current position in the top right.</li><li><strong>Preorder Filter:</strong> Quick toggle for preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-70'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bugfix:</strong> Empty PDF pages issue resolved.</li><li><strong>Maximized Maps & Fixed Scaling:</strong> Printed maps now take up the maximum possible width. Applying scale (like 95%) no longer misaligns the map markers.</li><li><strong>Smart Orientation:</strong> Halls 1, 2, 5 and the Overview map automatically print in landscape mode, while others use portrait!</li><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers instead of letters.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth and makes it clickable!</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-90'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Added a handy mini-map overview in the top right corner!</li><li><strong>Advanced Hall Notes:</strong> Turn hall notes into an action list with location and priority tracking.</li><li><strong>Preorder Filter:</strong> Added a quick toggle button for preorders!</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-70'><strong>v1.5 - Map Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactive dropdown on the map.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New: Filter by priority before printing!</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introduction</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added the ability to print out maps.</li></ul></div>",
+                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -417,10 +425,13 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.12 - Print Marges & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Die Seitenränder auf dem Ausdruck werden nun maximal genutzt.</li><li><strong>Map Scaling:</strong> Behebt einen Fehler, damit die Punkte beim Skalieren der Karten (95%) exakt an der richtigen Stelle bleiben.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Ausrichtung:</strong> Hallen 1, 2, 5 und die Übersicht werden automatisch im Querformat gedruckt!</li><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben.</li><li><strong>Hallen-Notizen Fix:</strong> Standorte werden validiert.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-80'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts Übersichtskarte.</li><li><strong>Preorder Filter:</strong> Ein Klick für Preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-70'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Fehlerbehebung:</strong> Leere Seiten beim Drucken repariert.</li><li><strong>Maximale Kartengröße:</strong> Gedruckte Karten nehmen nun maximale Breite ein. Die Markierungen bleiben auch beim Skalieren (95%) exakt erhalten.</li><li><strong>Smarte Ausrichtung:</strong> Hallen 1, 2, 5 und die Übersicht werden automatisch im Querformat gedruckt!</li><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben für besseres Finden.</li><li><strong>Hallen-Notizen Fix:</strong> Standorte in Notizen werden jetzt validiert und sind klickbar!</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-90'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts siehst du nun immer eine kleine Übersichtskarte.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Echte Checkliste mit Ort und farblicher Priorität!</li><li><strong>Preorder Filter:</strong> Ein Klick, um nur Preorders anzuzeigen.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li></ul></div>",
+                changelogV1_5: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-70'><strong>v1.5 - Map Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interaktives Dropdown auf PDF-Drucken.</li></ul></div>",
+                changelogV1_4: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neu: Vor dem Drucken nach Priorität filtern!</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Druckfunktion hinzugefügt.</li></ul></div>",
+                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -435,7 +446,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.12';
+        let currentVersion = '1.11';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -904,7 +915,7 @@
                         const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
                         if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
                         
-                        locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
+                        locBadge = '<button onclick="focusMap(\'' + note.location + '\', \'' + hall + '\'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ' + badgeColor + ' ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ' + hall + ') ' + note.location + '</button>';
                     }
 
                     const li = document.createElement('li');
@@ -1187,6 +1198,7 @@
                 if (imagesLoaded === imagesToLoad) {
                     document.body.classList.add('print-preparation-mode');
                     
+                    // Laat de DOM goed renderen
                     setTimeout(() => {
                         resolveCollisions();
                         
@@ -1195,7 +1207,7 @@
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
                         }, 500);
-                    }, 300);
+                    }, 500);
                 }
             };
 
@@ -1211,30 +1223,26 @@
 
                 if(hallGames.length === 0 && !isOverview) return;
 
-                const config = HALL_CONFIG[hall] || { dir: 'lr', scale: 1.0, orient: 'portrait' };
+                const config = HALL_CONFIG[hall] || { dir: 'lr', scale: 0.95, orient: 'portrait' };
                 const orientationClass = config.orient === 'landscape' ? 'page-landscape' : 'page-portrait';
                 const isLR = config.dir === 'lr';
                 const isTB = config.dir === 'tb';
 
                 const pageDiv = document.createElement('div');
-                pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto box-border overflow-hidden w-full h-full`;
+                // No padding, making max use of printable edge
+                pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto overflow-hidden block`;
 
                 if (isOverview) {
                     const mapWrap = document.createElement('div');
-                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
+                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0';
                     
-                    const mapInner = document.createElement('div');
-                    mapInner.className = 'relative inline-block w-full h-full';
-                    
-                    const img = document.createElement('img');
-                    img.src = 'overview.jpg';
-                    img.className = 'w-full h-full object-contain block';
-                    
+                    const img = new Image();
+                    img.className = 'print-map-img block';
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
                     img.onerror = () => { imagesLoaded++; checkPrintReady(); };
-                    
-                    mapInner.appendChild(img);
+                    img.src = 'overview.jpg';
+                    mapWrap.appendChild(img);
 
                     const overlaysDiv = document.createElement('div');
                     overlaysDiv.className = 'absolute inset-0';
@@ -1269,8 +1277,7 @@
                         markerWrap.innerHTML = html;
                         overlaysDiv.appendChild(markerWrap);
                     }
-                    mapInner.appendChild(overlaysDiv);
-                    mapWrap.appendChild(mapInner);
+                    mapWrap.appendChild(overlaysDiv);
                     pageDiv.appendChild(mapWrap);
 
                 } else {
@@ -1303,16 +1310,16 @@
                         rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
                     }
 
-                    // Dynamische renderer per lay-out strak tegen de rand (left-1/right-1/top-1/bottom-1)
+                    // Zorg dat de lijsten tegen de absolute rand aan staan
                     const createColumnHTML = (groups, isLeft) => {
                         if(isLR) {
-                            let colHtml = `<div class="absolute ${isLeft ? 'left-1' : 'right-1'} top-1 bottom-1 w-[20%] flex flex-col justify-start z-10 gap-1 overflow-hidden bg-white/40">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'left-0' : 'right-0'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
                                     <div class="mb-1">
-                                        <div class="font-bold text-[8.5px] mb-0.5">${group.label}</div>
-                                        <div class="w-[50px] border-b border-slate-800 mb-1"></div>
+                                        <div class="font-bold text-[7px] mb-0.5 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b border-slate-800 mb-0.5"></div>
                                         ${Object.entries(pubs).map(([pub, gs]) => `
                                             <div class="font-bold text-[5px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
                                                 const styles = getPrioStyles(g.priority);
@@ -1320,9 +1327,9 @@
                                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
                                                 const num = gameNumbers.get(g.id);
                                                 return `
-                                                <div class="flex items-center gap-1 mt-0.5 leading-none mb-[1px]">
-                                                    <div class="w-[10px] h-[10px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
-                                                    <span class="text-[8px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-px">${truncName}${titleLabels}</span>
+                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
+                                                    <div class="w-[8px] h-[8px] rounded-full border border-black flex items-center justify-center text-[5px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[7px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis">${truncName}${titleLabels}</span>
                                                 </div>
                                                 `;
                                             }).join('')}
@@ -1333,13 +1340,13 @@
                             colHtml += `</div>`;
                             return colHtml;
                         } else {
-                            let colHtml = `<div class="absolute ${isLeft ? 'top-1' : 'bottom-1'} left-1 right-1 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-1 z-10 bg-white/40">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
-                                    <div class="mb-1 w-48 shrink-0">
-                                        <div class="font-bold text-[8.5px] mb-0.5">${group.label}</div>
-                                        <div class="w-[50px] border-b border-slate-800 mb-1"></div>
+                                    <div class="mb-1 w-40 shrink-0">
+                                        <div class="font-bold text-[7px] mb-0.5 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b border-slate-800 mb-0.5"></div>
                                         ${Object.entries(pubs).map(([pub, gs]) => `
                                             <div class="font-bold text-[5px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
                                                 const styles = getPrioStyles(g.priority);
@@ -1347,9 +1354,9 @@
                                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
                                                 const num = gameNumbers.get(g.id);
                                                 return `
-                                                <div class="flex items-center gap-1 mt-0.5 leading-none mb-[1px]">
-                                                    <div class="w-[10px] h-[10px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
-                                                    <span class="text-[8px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-px">${truncName}${titleLabels}</span>
+                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
+                                                    <div class="w-[8px] h-[8px] rounded-full border border-black flex items-center justify-center text-[5px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[7px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis">${truncName}${titleLabels}</span>
                                                 </div>
                                                 `;
                                             }).join('')}
@@ -1365,26 +1372,23 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
-                    const mapInner = document.createElement('div');
-                    mapInner.className = 'relative flex items-center justify-center map-scale-container';
-                    mapInner.style.width = '100vw';
-                    mapInner.style.height = '100vh';
-
-                    // Breng de schaling aan op een div BINNEN de wrap zodat percentages over de w/h meeschalen.
+                    // Breng de schaling aan op een div BINNEN de wrap zodat percentages (x,y) meeschalen met de map.
                     const mapScaler = document.createElement('div');
-                    mapScaler.className = 'relative w-full h-full';
-                    mapScaler.style.transform = `scale(${config.scale})`;
-                    mapScaler.style.transformOrigin = 'center center';
-
-                    const img = document.createElement('img');
-                    img.src = `hal${hall}.png`;
-                    img.className = 'absolute inset-0 w-full h-full object-contain pointer-events-none block';
+                    mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
+                    const mapInner = document.createElement('div');
+                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.style.transform = `scale(${config.scale})`;
+                    mapInner.style.transformOrigin = 'center center';
+
+                    const img = new Image();
+                    img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
                     img.onerror = () => { imagesLoaded++; checkPrintReady(); };
+                    img.src = `hal${hall}.png`;
                     
-                    mapScaler.appendChild(img);
+                    mapInner.appendChild(img);
 
                     const overlaysDiv = document.createElement('div');
                     overlaysDiv.className = 'absolute inset-0';
@@ -1392,31 +1396,28 @@
                     allGroups.forEach((group) => {
                         const box = group.box;
                         const markerWrap = document.createElement('div');
-                        markerWrap.className = 'absolute flex flex-col items-center justify-center z-20 print-marker-wrap';
+                        markerWrap.className = 'absolute flex flex-wrap justify-center gap-[1px] transform -translate-x-1/2 -translate-y-1/2 z-20 print-marker-wrap';
                         markerWrap.style.left = `${box.x}%`;
                         markerWrap.style.top = `${box.y}%`;
                         markerWrap.dataset.scale = "1";
                         markerWrap.dataset.offx = "0";
                         markerWrap.dataset.offy = "0";
-                        markerWrap.style.transform = `translate(-50%, -50%) scale(1)`;
 
-                        let markerHTML = `<div class="flex flex-wrap justify-center gap-[1px]">`;
+                        let markerHTML = '';
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
-                            markerHTML += `<div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
+                            markerHTML += `<div class="w-[11px] h-[11px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
                         });
-                        markerHTML += `</div>`;
                         markerWrap.innerHTML = markerHTML;
                         overlaysDiv.appendChild(markerWrap);
                     });
 
-                    mapScaler.appendChild(overlaysDiv);
-                    mapInner.appendChild(mapScaler);
-                    mapWrap.appendChild(mapInner);
+                    mapInner.appendChild(overlaysDiv);
+                    mapScaler.appendChild(mapInner);
+                    mapWrap.appendChild(mapScaler);
+                    
                     pageDiv.appendChild(mapWrap);
-
-                    // Insert lists on top of map
                     pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(leftGroups, true));
                     pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(rightGroups, false));
                 }
@@ -1442,13 +1443,13 @@
                         for (let j = i + 1; j < markers.length; j++) {
                             const r1 = markers[i].getBoundingClientRect();
                             const r2 = markers[j].getBoundingClientRect();
-                            if (!r1 || !r2) continue;
+                            if (!r1 || !r2 || r1.width === 0) continue;
 
                             if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) {
                                 overlaps = true;
                                 
-                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.9);
-                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.9);
+                                let s1 = Math.max(0.60, parseFloat(markers[i].dataset.scale) * 0.92);
+                                let s2 = Math.max(0.60, parseFloat(markers[j].dataset.scale) * 0.92);
                                 markers[i].dataset.scale = s1;
                                 markers[j].dataset.scale = s2;
 
@@ -1464,8 +1465,8 @@
 
                                 let dist = Math.sqrt(dx*dx + dy*dy);
                                 
-                                let pushX = (dx / dist) * 8; 
-                                let pushY = (dy / dist) * 8;
+                                let pushX = (dx / dist) * 6; 
+                                let pushY = (dy / dist) * 6;
 
                                 let ox1 = parseFloat(markers[i].dataset.offx) + pushX;
                                 let oy1 = parseFloat(markers[i].dataset.offy) + pushY;
@@ -1487,7 +1488,6 @@
             });
         }
 
-        // Verwijder HTML na printen zodat het geheugen niet volloopt
         window.addEventListener('afterprint', () => {
             document.getElementById('print-container').innerHTML = '';
         });
