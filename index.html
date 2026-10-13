@@ -221,7 +221,7 @@
 
     <!-- Footer Changelog & Credits -->
     <footer class="bg-slate-900 text-slate-400 text-[10px] py-1.5 text-center flex justify-center items-center gap-3 z-20 shrink-0 border-t border-slate-800">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.7</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.8</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </footer>
 
@@ -342,8 +342,14 @@
         </div>
     </div>
 
+    <!-- LAAD HIER DE BOOTHDATA BESTAND IN PLAATS VAN VIA FETCH -->
+    <script src="boothdata.js"></script>
+
     <script>
-        let pdfBoothData = {};
+        // Fallback voor als boothdata.js niet goed laadt
+        if (typeof pdfBoothData === 'undefined') {
+            window.pdfBoothData = {};
+        }
         
         // Geschatte center-coördinaten per hal op de overview.jpg map (in procenten)
         const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
@@ -358,11 +364,12 @@
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Notities Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hal Notities Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie in de hallenkiezer. Op de kaart zie je het complete beursoverzicht inclusief slimme tellers per hal!</li><li>Hal-notities verschijnen nu als <strong>gele blokken</strong> bovenaan je lijstweergave én je kunt ze afvinken!</li><li>Crashes gefixt en de stabiliteit bij het inladen verbeterd.</li></ul></div>",
-                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Prestatie Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Plattegrond-coördinaten afgesplitst naar een los configuratiebestand (boothdata.json).</li></ul></div>",
+                changelogV1_8: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.8 - Stabiliteit & GitHub Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Probleem opgelost waarbij kaarten en stippen niet laadden via GitHub Pages door lokale bestand restricties. Plattegronddata wordt nu direct via JavaScript ingeladen.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.7 - Overview Map & Hal Notities</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie in de hallenkiezer met slimme tellers per hal.</li><li>Hal-notities verschijnen nu als <strong>gele blokken</strong> bovenaan je lijstweergave én je kunt ze afvinken!</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Prestatie Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Code opgeschoond en data afgesplitst.</li></ul></div>",
                 changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactieve hal-dropdown en PDF renders met slimme verbindingslijnen.</li></ul></div>",
                 changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Kaart Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Filteren op prioriteit tijdens het printen toegevoegd.</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introductie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe print-functie via PDF icoon op de kaart toegevoegd.</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introductie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe print-functie via PDF icoon.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -374,11 +381,12 @@
                 notes: "Notes...", noGames: "No games found.",
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Notes Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hall Notes Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added! Displays a convention overview map with dynamic counters per hall.</li><li>Hall notes now appear directly at the top of your list view and can be checked off!</li><li>Fixed bugs and improved data loading stability.</li></ul></div>",
-                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Performance Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Map coordinates moved to a standalone configuration file.</li></ul></div>",
+                changelogV1_8: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.8 - Stability & GitHub Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Fixed a major issue where map dots would not load on GitHub Pages due to file fetch restrictions. Map data is now loaded directly via a dedicated JS file.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.7 - Overview Map & Hall Notes</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added! Displays a convention overview map.</li><li>Hall notes now appear directly at the top of your list view and can be checked off!</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Performance Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Separated data structure.</li></ul></div>",
                 changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interactive dropdown on the map and smart connecting lines on PDF prints.</li></ul></div>",
                 changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New: Filter by priority before printing!</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introduction</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added the ability to print out maps to take with you offline.</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Introduction</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Added the ability to print out maps.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -390,11 +398,12 @@
                 notes: "Notizen...", noGames: "Keine Spiele gefunden.",
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Notizen Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.7 - Overview Map & Hallen-Notizen Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan mit dynamischen Zählern pro Halle.</li><li>Hallen-Notizen erscheinen jetzt als abhakkbare Blöcke in der Listenansicht!</li><li>Bugs behoben und Lade-Stabilität verbessert.</li></ul></div>",
-                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Leistungs-Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Kartenkoordinaten wurden in eine eigenständige Datei ausgelagert.</li></ul></div>",
+                changelogV1_8: "<div class='border-l-4 border-yellow-500 pl-3 mb-4'><strong>v1.8 - Stabilität & GitHub Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Problem behoben, durch das Kartenpunkte auf GitHub Pages nicht geladen wurden.</li></ul></div>",
+                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.7 - Overview Map & Hallen-Notizen</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li><li>Hallen-Notizen erscheinen jetzt als abhakkbare Blöcke!</li></ul></div>",
+                changelogV1_6: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-80'><strong>v1.6 - Leistungs-Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Kartenkoordinaten ausgelagert.</li></ul></div>",
                 changelogV1_5: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-70'><strong>v1.5 - Map & Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Interaktives Dropdown und Verbindungslinien auf PDF-Drucken.</li></ul></div>",
                 changelogV1_4: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-60'><strong>v1.4 - Map Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neu: Vor dem Drucken nach Priorität filtern!</li></ul></div>",
-                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Möglichkeit hinzugefügt, Karten auszudrucken.</li></ul></div>",
+                changelogV1_3: "<div class='border-l-4 border-slate-300 pl-3 mb-4 opacity-50'><strong>v1.3 - PDF Export Einführung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Druckfunktion hinzugefügt.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -409,7 +418,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.7';
+        let currentVersion = '1.8';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -431,7 +440,7 @@
             }
         }
 
-        let currentHall = 'all'; // Default openen we nu op het overzicht
+        let currentHall = 'all'; 
         let panzoomInstance = null;
         let activePriorities = []; 
         let dynamicPriorities = []; 
@@ -444,7 +453,7 @@
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             initPanzoom();
             setupEventListeners();
             
@@ -454,20 +463,6 @@
             document.getElementById('btn-version').innerText = 'v' + currentVersion;
 
             updateToggleUI();
-            
-            // Haal de gesplitste data file op, vang errors netjes op!
-            try {
-                const response = await fetch('boothdata.json');
-                if(response.ok) {
-                    pdfBoothData = await response.json();
-                } else {
-                    console.warn('boothdata.json niet gevonden of niet toegankelijk (gebruik lokaal zonder webserver?). Map-coördinaten fallback wordt leeg.');
-                }
-            } catch (e) {
-                console.warn('Fout bij ophalen boothdata.json. Waarschijnlijk een CORS error door lokale bestandsopening.', e);
-            }
-            if(!pdfBoothData) pdfBoothData = {};
-
             checkAndLoadData();
         });
 
@@ -765,7 +760,6 @@
                 dd.classList.remove('flex');
             }
             
-            // Toon/verberg notes knop afhankelijk van hal
             document.getElementById('btn-map-notes').style.display = currentHall === 'all' ? 'none' : 'flex';
 
             renderHallTabs(); 
@@ -822,13 +816,12 @@
             const list = document.getElementById('game-list');
             list.innerHTML = '';
 
-            // Render Hall Notes (als we in een specifieke hal zijn OF op 'alle')
             const hallsToRender = currentHall === 'all' ? Object.keys(hallNotes) : [currentHall];
             
             hallsToRender.forEach(hall => {
                 const note = hallNotes[hall];
                 if (note && note.text && note.text.trim() !== '') {
-                    if (stateHideVisited && note.checked) return; // verberg afgevinkte notities
+                    if (stateHideVisited && note.checked) return; 
                     
                     const li = document.createElement('li');
                     li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${note.checked ? 'bg-slate-50 border-slate-300 opacity-60 grayscale' : 'bg-yellow-50 border-yellow-400'}`;
@@ -983,7 +976,7 @@
         }
 
         function openChangelog() {
-            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_7 + i18n[lang].changelogV1_6 + i18n[lang].changelogV1_5 + i18n[lang].changelogV1_4 + i18n[lang].changelogV1_3 + i18n[lang].changelogV1_2 + i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
+            document.getElementById('changelog-content').innerHTML = i18n[lang].changelogV1_8 + i18n[lang].changelogV1_7 + i18n[lang].changelogV1_6 + i18n[lang].changelogV1_5 + i18n[lang].changelogV1_4 + i18n[lang].changelogV1_3 + i18n[lang].changelogV1_2 + i18n[lang].changelogV1_1 + i18n[lang].changelogV1;
             document.getElementById('changelog-modal').classList.remove('hidden');
         }
 
@@ -1440,7 +1433,7 @@
         }
 
         function updateDynamicStyles() {
-            if (currentHall === 'all') return; // Geen dynamische scaling nodig voor de overview map
+            if (currentHall === 'all') return; 
             
             const styleEl = document.getElementById('dynamic-styles');
             const overlays = document.getElementById('html-overlays');
