@@ -281,7 +281,7 @@
         </div>
     </div>
 
-    <!-- Hall Notes Modal (Advanced) -->
+    <!-- Hall Notes Modal -->
     <div id="hall-notes-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden max-h-[90vh]">
             <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10">
@@ -376,14 +376,14 @@
         </div>
     </div>
 
-    <!-- LAAD HIER DE BOOTHDATA BESTAND -->
+    <!-- VEILIGE LAAD METHODE BOOTHDATA -->
     <script src="boothdata.js"></script>
 
     <script>
-        if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
+        // Voorkom crashes als het bestand mist!
+        const localBoothData = typeof pdfBoothData !== 'undefined' ? pdfBoothData : {};
         
         // Configuratie print-schaal en orientatie per hal.
-        // Hal 5 is nu op 0.70 geschaald zodat deze zeker op het vel past.
         const HALL_CONFIG = {
             '1': { dir: 'tb', scale: 0.95, orient: 'landscape' },
             '2': { dir: 'tb', scale: 0.95, orient: 'landscape' },
@@ -409,7 +409,7 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> De overzichtskaart toont nu het gehele beursplaatje op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik rechtsboven om direct naar de overzichtskaart te gaan.</li><li><strong>Auto-Hiding Header & Footer:</strong> Verdwijnen automatisch na 3 seconden voor maximale schermruimte, en komen pas weer terug bij hal-wissel!</li><li><strong>Print Updates:</strong> Marges zijn op 5mm vastgezet, dots zijn iets groter en hal 5 past er nu netjes op.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> De overzichtskaart toont nu het gehele beursplaatje op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik rechtsboven om direct naar de overzichtskaart te gaan.</li><li><strong>Auto-Hiding Header & Footer:</strong> Verdwijnen automatisch na 3 seconden voor maximale schermruimte, en komen pas weer terug bij hal-wissel!</li><li><strong>Print Updates:</strong> Marges zijn op 5mm vastgezet, dots zijn iets groter (15px) en hal 5 past er nu netjes op. Bugs opgelost rondom het inladen van de dataset.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -422,7 +422,7 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> The overview map is now cleanly scaled to 0.75.</li><li><strong>Clickable Mini-Map:</strong> Click top right to instantly open the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Automatically hide after 3 seconds for maximum viewing space, and reappear only on hall switches.</li><li><strong>Print Updates:</strong> Margins fixed at 5mm, map dots slightly larger, and hall 5 fits perfectly now.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> The overview map is now cleanly scaled to 0.75.</li><li><strong>Clickable Mini-Map:</strong> Click top right to instantly open the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Automatically hide after 3 seconds for maximum viewing space, and reappear only on hall switches.</li><li><strong>Print Updates:</strong> Margins fixed at 5mm, map dots slightly larger (15px), and hall 5 fits perfectly now. Fixed bugs related to dataset loading.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -435,7 +435,7 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Blenden nach 3 Sekunden automatisch aus und erscheinen erst bei Hallenwechsel wieder.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Blenden nach 3 Sekunden automatisch aus und erscheinen erst bei Hallenwechsel wieder.</li><li><strong>Druck Update:</strong> 5mm Ränder, größere Map-Punkte (15px) und Bugfixes.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -528,11 +528,6 @@
             document.getElementById('btn-version').innerText = 'v' + currentVersion;
 
             updateToggleUI();
-            
-            if (typeof pdfBoothData === 'undefined') {
-                window.pdfBoothData = {};
-            }
-
             checkAndLoadData();
             triggerHallSwitchUI();
         });
@@ -909,7 +904,7 @@
                 cleanName = cleanName.replace(/(?:[-:]\s*)?\bexpansion\b(?:\s*[-:])?/i, '').trim();
             }
             if (/demo only/i.test(cleanName)) {
-                if(forPrint) titleLabels += ` [DEMO]`;
+                if(forPrint) titleLabels += ` [DEM]`;
                 else titleLabels += `<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold shadow-sm tracking-wide ml-1 inline-block align-middle mt-0.5">DEMO ONLY</span>`;
                 cleanName = cleanName.replace(/(?:[-:]\s*)?\bdemo only\b(?:\s*[-:])?/i, '').trim();
             }
@@ -943,8 +938,8 @@
                     if (note.location) {
                         let badgeColor = 'bg-white text-slate-700 border-slate-200';
                         const search = note.location.replace(/[^a-zA-Z0-9]/g, '');
-                        const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
-                        if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
+                        const found = Object.keys(localBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
+                        if (!found && Object.keys(localBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
                         
                         locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
                     }
@@ -990,10 +985,10 @@
                 const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
                 
                 let locationBadge = 'bg-white text-slate-700 border-slate-200';
-                if (game.boothLabel && pdfBoothData[game.hall]) {
+                if (game.boothLabel && localBoothData[game.hall]) {
                     const search = game.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
-                    const found = Object.keys(pdfBoothData[game.hall]).some(k => k.includes(search) || search.includes(k));
-                    if (!found && Object.keys(pdfBoothData[game.hall]).length > 0) locationBadge = 'bg-red-500 text-white border-red-600';
+                    const found = Object.keys(localBoothData[game.hall]).some(k => k.includes(search) || search.includes(k));
+                    if (!found && Object.keys(localBoothData[game.hall]).length > 0) locationBadge = 'bg-red-500 text-white border-red-600';
                 }
 
                 const bggAnchor = game.bggLink ? `<a href="${game.bggLink}" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>` : '';
@@ -1047,7 +1042,6 @@
             localStorage.setItem('spielNotes', JSON.stringify(userNotes)); 
         }
 
-        // --- Modals ---
         function openHallNotes() {
             if (currentHall === 'all') return;
             document.getElementById('txt-hall-notes-title').innerText = i18n[lang].hallNotesTitle + currentHall;
@@ -1101,7 +1095,7 @@
             // Validatie Locatie
             if (inputLoc) {
                 const searchStr = inputLoc.replace(/[^a-zA-Z0-9]/g, '');
-                const found = Object.keys(pdfBoothData[currentHall] || {}).some(k => k.includes(searchStr) || searchStr.includes(k));
+                const found = Object.keys(localBoothData[currentHall] || {}).some(k => k.includes(searchStr) || searchStr.includes(k));
                 if (!found) {
                     if (!confirm(`Locatie '${inputLoc}' wordt niet herkend op de plattegrond van Hal ${currentHall}.\nWeet je zeker dat je deze wilt opslaan?`)) {
                         return;
@@ -1185,7 +1179,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_13', 'V1_12', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_2', 'V1_0'];
+            const versions = ['V1_13', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_2', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1229,7 +1223,6 @@
                 if (imagesLoaded === imagesToLoad) {
                     document.body.classList.add('print-preparation-mode');
                     
-                    // Laat de DOM goed renderen
                     setTimeout(() => {
                         resolveCollisions();
                         
@@ -1238,7 +1231,7 @@
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
                         }, 500);
-                    }, 500);
+                    }, 400);
                 }
             };
 
@@ -1260,7 +1253,6 @@
                 const isTB = config.dir === 'tb';
 
                 const pageDiv = document.createElement('div');
-                // No padding, making max use of printable edge
                 pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto overflow-hidden block`;
 
                 if (isOverview) {
@@ -1326,7 +1318,7 @@
                     hallGames.forEach(g => {
                         if (!g.boothLabel) return;
                         const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
-                        const match = Object.entries(pdfBoothData[hall] || {}).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                        const match = Object.entries(localBoothData[hall] || {}).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
                         if (match) {
                             const key = match[0];
                             if (!boothGroupsMap[key]) boothGroupsMap[key] = { key: key, box: match[1], games: [], label: g.boothLabel };
@@ -1345,10 +1337,10 @@
                         rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
                     }
 
-                    // Strak tot aan de uiterste printranden (5mm padding op de container div)
+                    // Strak tot aan de printranden: nu met inline styles voor 5mm margin
                     const createColumnHTML = (groups, isLeft) => {
                         if(isLR) {
-                            let colHtml = `<div class="absolute ${isLeft ? 'left-[5mm]' : 'right-[5mm]'} top-[5mm] bottom-[5mm] w-[18%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden">`;
+                            let colHtml = `<div class="absolute w-[20%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden" style="${isLeft ? 'left: 5mm;' : 'right: 5mm;'} top: 5mm; bottom: 5mm;">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
@@ -1375,7 +1367,7 @@
                             colHtml += `</div>`;
                             return colHtml;
                         } else {
-                            let colHtml = `<div class="absolute ${isLeft ? 'top-[5mm]' : 'bottom-[5mm]'} left-[5mm] right-[5mm] flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10">`;
+                            let colHtml = `<div class="absolute flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10" style="${isLeft ? 'top: 5mm;' : 'bottom: 5mm;'} left: 5mm; right: 5mm;">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
@@ -1407,7 +1399,6 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
-                    // Schaalcontainer op de inner wrapper zodat de markeringen perfect meestemmen met x/y%
                     const mapScaler = document.createElement('div');
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
@@ -1442,7 +1433,7 @@
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
-                            // Vergroot naar 15px zoals gevraagd (tussen 11 en 20 in)
+                            // Vergroot naar 15px (tussen iteratie 1.11 en 1.12 in)
                             markerHTML += `<div class="w-[15px] h-[15px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
                         });
                         markerWrap.innerHTML = markerHTML;
@@ -1484,8 +1475,8 @@
                             if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) {
                                 overlaps = true;
                                 
-                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.92);
-                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.92);
+                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.9);
+                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.9);
                                 markers[i].dataset.scale = s1;
                                 markers[j].dataset.scale = s2;
 
@@ -1501,8 +1492,8 @@
 
                                 let dist = Math.sqrt(dx*dx + dy*dy);
                                 
-                                let pushX = (dx / dist) * 8; 
-                                let pushY = (dy / dist) * 8;
+                                let pushX = (dx / dist) * 6; 
+                                let pushY = (dy / dist) * 6;
 
                                 let ox1 = parseFloat(markers[i].dataset.offx) + pushX;
                                 let oy1 = parseFloat(markers[i].dataset.offy) + pushY;
@@ -1646,7 +1637,7 @@
             }
 
             const searchStr = boothLabel.replace(/[^a-zA-Z0-9]/g, '');
-            const hallData = pdfBoothData[currentHall] || {};
+            const hallData = localBoothData[currentHall] || {};
             
             const target = Object.entries(hallData).find(([k]) => k.includes(searchStr) || searchStr.includes(k))?.[1];
 
@@ -1725,7 +1716,7 @@
                 return;
             }
 
-            if (!pdfBoothData[currentHall]) return;
+            if (!localBoothData[currentHall]) return;
 
             let boothGroupsMap = {}; 
             
@@ -1741,7 +1732,7 @@
             hGames.forEach(g => {
                 if (!g.boothLabel) return;
                 const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
-                const match = Object.entries(pdfBoothData[currentHall]).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                const match = Object.entries(localBoothData[currentHall]).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
                 if (match) {
                     const key = match[0];
                     if (!boothGroupsMap[key]) boothGroupsMap[key] = { box: match[1], games: [] };
