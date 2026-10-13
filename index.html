@@ -14,16 +14,25 @@
         
         /* Vloeiende animaties voor auto-hiding header en footer */
         header, footer {
-            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out, height 0.4s ease-in-out, padding 0.4s ease-in-out;
+            overflow: hidden;
         }
         .hide-header {
             transform: translateY(-100%);
             opacity: 0;
+            height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border: none !important;
             pointer-events: none;
         }
         .hide-footer {
             transform: translateY(100%);
             opacity: 0;
+            height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border: none !important;
             pointer-events: none;
         }
 
@@ -108,7 +117,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 h-[100dvh] flex flex-col font-sans overflow-hidden text-slate-800" onmousemove="resetUIIdleTimer()" ontouchstart="resetUIIdleTimer()" onclick="resetUIIdleTimer()">
+<body class="bg-slate-50 h-[100dvh] flex flex-col font-sans overflow-hidden text-slate-800">
 
     <!-- Header -->
     <header id="main-header" class="bg-slate-900 text-white p-3 shadow-md flex justify-between items-center z-20 shrink-0">
@@ -366,7 +375,7 @@
         </div>
     </div>
 
-    <!-- LAAD BOOTHDATA BESTAND -->
+    <!-- LAAD HIER DE BOOTHDATA BESTAND -->
     <script src="boothdata.js"></script>
 
     <script>
@@ -381,7 +390,7 @@
             '6': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '7': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '8': { dir: 'lr', scale: 0.90, orient: 'portrait' },
-            'all': { dir: 'none', scale: 0.75, orient: 'landscape' } // Uitgezoomd naar 0.75 voor het overzicht!
+            'all': { dir: 'none', scale: 0.75, orient: 'landscape' }
         };
 
         const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
@@ -397,8 +406,7 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Uitgezoomd:</strong> De overzichtskaart toont nu het gehele plaatje netjes op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik op het overzichtje rechtsboven om direct naar de overzichtskaart te springen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Op mobiel en landscape verdwijnen de header en footer automatisch na 3 seconden voor extra werkruimte.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max. Kaartgrootte & Schaling:</strong> De PDF kaart pakt nu de maximale breedte op papier.</li><li><strong>Slimme Oriëntatie & Nummering:</strong> Elk spel krijgt een nummer op de map.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimalisatie</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> De overzichtskaart toont nu het gehele beursplaatje op 0.75 zoom.</li><li><strong>Klikbare Mini-Map:</strong> Klik rechtsboven om direct naar de overzichtskaart te gaan.</li><li><strong>Auto-Hiding Header & Footer:</strong> Verdwijnen automatisch na 3 seconden voor maximale schermruimte, en komen pas weer terug bij hal-wissel!</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -411,8 +419,7 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoomed Out:</strong> The overview map is now cleanly scaled to 0.75 so the full layout fits nicely.</li><li><strong>Clickable Mini-Map:</strong> Click the top-right mini-map to instantly navigate to the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Headers and footers automatically fade out after 3 seconds of inactivity for maximum viewing space.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Maximized Maps & Fixed Scaling:</strong> Printed maps now take up the maximum possible width.</li><li><strong>Smart Orientation & Numbering:</strong> Sequential numbering for easy map lookup.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Print Optimization</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> The overview map is now cleanly scaled to 0.75.</li><li><strong>Clickable Mini-Map:</strong> Click top right to instantly open the overview map.</li><li><strong>Auto-Hiding Header & Footer:</strong> Automatically hide after 3 seconds for maximum viewing space, and reappear only on hall switches.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -425,8 +432,7 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts auf die Mini-Map, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Header und Footer blenden nach 3 Sekunden Inaktivität automatisch aus.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-90'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Maximale Kartengröße:</strong> Gedruckte Karten nehmen nun maximale Breite ein.</li><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern.</li></ul></div>",
+                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - UI & Druck Optimierung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Overview Zoom:</strong> Die Übersichtskarte ist nun auf 0.75 herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Klicke oben rechts, um zur Übersicht zu gelangen.</li><li><strong>Auto-Hiding Header & Footer:</strong> Blenden nach 3 Sekunden automatisch aus und erscheinen erst bei Hallenwechsel wieder.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -482,15 +488,18 @@
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
-        // --- Auto-Hiding Header & Footer Logic ---
+        // --- Auto-Hiding Header & Footer Logic (Alleen terug bij hal-wissel) ---
         let uiIdleTimer = null;
         function resetUIIdleTimer() {
-            showUI();
             if (uiIdleTimer) clearTimeout(uiIdleTimer);
             uiIdleTimer = setTimeout(() => {
-                // Verberg alleen als we op mobiel zijn of in landscape mode
                 hideUI();
             }, 3000);
+        }
+
+        function triggerHallSwitchUI() {
+            showUI();
+            resetUIIdleTimer();
         }
 
         function hideUI() {
@@ -523,7 +532,7 @@
             }
 
             checkAndLoadData();
-            resetUIIdleTimer();
+            triggerHallSwitchUI();
         });
 
         function setLang(l) {
@@ -568,7 +577,6 @@
         }
 
         function handleSearch(val) {
-            resetUIIdleTimer();
             searchQuery = val.toLowerCase().trim();
             
             const btnClear = document.getElementById('btn-clear-search');
@@ -707,7 +715,7 @@
                 const isActive = activePriorities.includes(prio);
                 
                 const btn = document.createElement('button');
-                btn.onclick = () => { togglePriority(prio); resetUIIdleTimer(); };
+                btn.onclick = () => { togglePriority(prio); };
                 
                 if (isActive) {
                     btn.className = `flex-1 py-1.5 px-2 rounded-lg transition shadow-sm border ${styles.borderClass} ${styles.bgClass} font-bold text-slate-800 text-[10px] sm:text-xs whitespace-nowrap text-center`;
@@ -719,7 +727,7 @@
             });
 
             const preBtn = document.createElement('button');
-            preBtn.onclick = () => { togglePreorderFilter(); resetUIIdleTimer(); };
+            preBtn.onclick = () => { togglePreorderFilter(); };
             if (statePreorderOnly) {
                  preBtn.className = `flex-none py-1.5 px-2 rounded-lg transition shadow-sm border border-emerald-600 bg-emerald-600 text-white font-bold text-[10px] sm:text-xs whitespace-nowrap text-center ml-1`;
             } else {
@@ -758,7 +766,6 @@
         }
 
         function toggleHideVisited() {
-            resetUIIdleTimer();
             stateHideVisited = !stateHideVisited;
             updateToggleUI();
             renderHallTabs(); 
@@ -767,7 +774,6 @@
         }
 
         function toggleShowNotes() {
-            resetUIIdleTimer();
             stateShowNotes = !stateShowNotes;
             updateToggleUI();
             renderList();
@@ -806,12 +812,12 @@
             const btnAll = document.createElement('button');
             btnAll.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === 'all' ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
             btnAll.innerHTML = `<span class="text-sm font-bold">${i18n[lang].hallAll}</span> <span class="ml-1 text-[10px] ${currentHall === 'all' ? 'bg-white text-slate-800' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded-full">${allCount}</span>`;
-            btnAll.onclick = () => { selectHall('all'); resetUIIdleTimer(); };
+            btnAll.onclick = () => { selectHall('all'); triggerHallSwitchUI(); };
             container.appendChild(btnAll);
 
             if(dropdown) {
                 dropdown.innerHTML += `
-                    <button onclick="selectHall('all'); resetUIIdleTimer();" class="px-3 py-2 text-left text-sm font-bold rounded-lg hover:bg-slate-100 ${currentHall === 'all' ? 'bg-slate-100 text-slate-800' : 'text-slate-700'} transition-colors">
+                    <button onclick="selectHall('all'); triggerHallSwitchUI();" class="px-3 py-2 text-left text-sm font-bold rounded-lg hover:bg-slate-100 ${currentHall === 'all' ? 'bg-slate-100 text-slate-800' : 'text-slate-700'} transition-colors">
                         ${i18n[lang].mapHallAll} <span class="float-right text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full">${allCount}</span>
                     </button>
                 `;
@@ -831,12 +837,12 @@
                 const btn = document.createElement('button');
                 btn.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === hallStr ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
                 btn.innerHTML = `<span class="text-sm font-bold">${i}</span> <span class="ml-1 text-[10px] ${currentHall === hallStr ? 'bg-white text-blue-700' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded-full">${count}</span>`;
-                btn.onclick = () => { selectHall(hallStr); resetUIIdleTimer(); };
+                btn.onclick = () => { selectHall(hallStr); triggerHallSwitchUI(); };
                 container.appendChild(btn);
 
                 if(dropdown) {
                     dropdown.innerHTML += `
-                        <button onclick="selectHall('${hallStr}'); resetUIIdleTimer();" class="px-3 py-2 text-left text-sm font-bold rounded-lg hover:bg-slate-100 ${currentHall === hallStr ? 'bg-blue-50 text-blue-600' : 'text-slate-700'} transition-colors">
+                        <button onclick="selectHall('${hallStr}'); triggerHallSwitchUI();" class="px-3 py-2 text-left text-sm font-bold rounded-lg hover:bg-slate-100 ${currentHall === hallStr ? 'bg-blue-50 text-blue-600' : 'text-slate-700'} transition-colors">
                             Hal ${hallStr} <span class="float-right text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full">${count}</span>
                         </button>
                     `;
@@ -876,7 +882,6 @@
 
         function toggleHallDropdown(e) {
             e.stopPropagation();
-            resetUIIdleTimer();
             const dd = document.getElementById('hall-dropdown');
             if(dd) {
                 dd.classList.toggle('hidden');
@@ -954,7 +959,7 @@
                                     </h3>
                                     <button onclick="selectHall('${hall}'); openHallNotes();" class="text-slate-500 hover:text-slate-800 px-2 py-1 bg-white rounded shadow-sm border border-slate-200"><i class="fa-solid fa-edit text-xs"></i></button>
                                 </div>
-                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider"><i class="fa-solid fa-map"></i> Hal ${hall}</p>` : ''}
+                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider"><i class="fa-solid fa-map"></i> Hal \${hall}</p>` : ''}
                             </div>
                         </div>
                     `;
@@ -1229,8 +1234,8 @@
                             document.body.classList.remove('print-preparation-mode');
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
-                        }, 500);
-                    }, 300);
+                        }, 600);
+                    }, 400);
                 }
             };
 
@@ -1261,14 +1266,12 @@
                     const mapInner = document.createElement('div');
                     mapInner.className = 'relative inline-block w-full h-full';
                     
-                    const img = document.createElement('img');
-                    img.src = 'overview.jpg';
+                    const img = new Image();
                     img.className = 'w-full h-full object-contain block';
-                    
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
                     img.onerror = () => { imagesLoaded++; checkPrintReady(); };
-                    
+                    img.src = 'overview.jpg';
                     mapInner.appendChild(img);
 
                     const overlaysDiv = document.createElement('div');
@@ -1338,7 +1341,7 @@
                         rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
                     }
 
-                    // Strak tegen de rand (0px afwijking)
+                    // Strak tot aan de uiterste printranden (0px)
                     const createColumnHTML = (groups, isLeft) => {
                         if(isLR) {
                             let colHtml = `<div class="absolute ${isLeft ? 'left-0' : 'right-0'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden">`;
@@ -1400,7 +1403,6 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
-                    // Schaalcontainer op de inner wrapper zodat de markeringen perfect meestemmen met x/y%
                     const mapScaler = document.createElement('div');
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
@@ -1522,7 +1524,7 @@
 
         // --- Tabs / Panzoom / UI ---
         function switchTab(tab) {
-            resetUIIdleTimer();
+            triggerHallSwitchUI();
             document.getElementById('tab-list').classList.toggle('tab-active', tab === 'list');
             document.getElementById('tab-list').classList.toggle('text-slate-600', tab !== 'list');
             document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
@@ -1551,8 +1553,8 @@
             });
 
             const wrap = document.getElementById('panzoom-wrapper');
-            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; resetUIIdleTimer(); });
-            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; resetUIIdleTimer(); });
+            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; });
+            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
         }
 
         let mapFitted = false;
@@ -1581,7 +1583,6 @@
             const scaleY = wrap.clientHeight / img.naturalHeight;
             let fitScale = Math.min(scaleX, scaleY) * 0.95; 
             
-            // Extra uitzoomen als we op de overview pagina zijn
             if (currentHall === 'all') {
                 fitScale = fitScale * 0.75;
             }
@@ -1601,8 +1602,8 @@
             }, 10);
         }
 
-        function zoomIn() { panzoomInstance.zoomIn(); resetUIIdleTimer(); }
-        function zoomOut() { panzoomInstance.zoomOut(); resetUIIdleTimer(); }
+        function zoomIn() { panzoomInstance.zoomIn(); }
+        function zoomOut() { panzoomInstance.zoomOut(); }
 
         let imgLoaded = false;
         function loadMapImage() {
@@ -1701,7 +1702,7 @@
                     markerWrap.className = 'absolute bg-white/95 border border-slate-300 rounded shadow-lg p-2 flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer hover:scale-110 transition-transform';
                     markerWrap.style.left = `${coords.x}%`;
                     markerWrap.style.top = `${coords.y}%`;
-                    markerWrap.onclick = () => selectHall(hallStr);
+                    markerWrap.onclick = () => { selectHall(hallStr); triggerHallSwitchUI(); };
 
                     let html = `<span class="font-bold text-[10px] sm:text-xs text-slate-800 border-b border-slate-200 mb-1.5 w-full text-center pb-0.5">Hal ${hallStr}</span><div class="flex flex-wrap gap-1.5 justify-center max-w-[80px] sm:max-w-[120px]">`;
                     
