@@ -195,7 +195,7 @@
 
             <!-- Toggle UI & Mini Map Overview (Top Right) -->
             <div class="absolute top-4 right-4 flex items-start justify-end gap-2 z-40 pointer-events-none">
-                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto md:hidden">
+                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto hidden md:hidden">
                     <i id="icon-fullscreen" class="fa-solid fa-expand"></i>
                 </button>
                 <div id="mini-map-container" onclick="selectHall('all')" class="cursor-pointer pointer-events-auto w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md p-1 transition-opacity hidden hover:scale-105">
@@ -239,7 +239,7 @@
     <!-- Footer -->
     <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.19</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.20</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -250,7 +250,7 @@
     <!-- Modals -->
     <div id="booth-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden">
-            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0">
+            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10">
                 <h3 class="font-bold text-lg flex items-center gap-2 text-slate-800">
                     <i class="fa-solid fa-store text-blue-500"></i>
                     <span id="modal-title">Stands</span>
@@ -264,7 +264,7 @@
     <!-- Hall Notes Modal (Advanced) -->
     <div id="hall-notes-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden max-h-[90vh]">
-            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0">
+            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10">
                 <h3 class="font-bold text-lg flex items-center gap-2 text-slate-800">
                     <i class="fa-solid fa-list-check text-blue-500"></i>
                     <span id="txt-hall-notes-title">Hal Notities</span>
@@ -288,7 +288,7 @@
     <!-- PDF Modal (Map only) -->
     <div id="pdf-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
-            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0">
+            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10">
                 <h3 class="font-bold text-lg flex items-center gap-2 text-red-600">
                     <i class="fa-solid fa-file-pdf"></i>
                     <span id="txt-pdf-title">Exporteer PDF Kaart</span>
@@ -314,14 +314,14 @@
     <!-- Changelog Modal -->
     <div id="changelog-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden">
-            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0">
+            <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10">
                 <h3 class="font-bold text-lg flex items-center gap-2 text-slate-800">
                     <i class="fa-solid fa-clock-rotate-left text-blue-500"></i>
                     <span id="txt-changelog-title">Changelog</span>
                 </h3>
                 <button onclick="closeChangelog()" class="text-slate-400 hover:text-slate-800 transition"><i class="fa-solid fa-xmark fa-xl"></i></button>
             </div>
-            <div class="p-5 overflow-y-auto flex-1 space-y-4 text-sm text-slate-700 bg-white" id="changelog-content"></div>
+            <div class="p-5 overflow-y-auto space-y-4 text-sm text-slate-700 bg-white" id="changelog-content"></div>
         </div>
     </div>
 
@@ -362,12 +362,13 @@
     <script>
         if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
         
+        // Configuratie print-schaal per hal. Hal 5 is nu teruggezet naar 0.70 (10% extra shrink vergeleken met 0.80)
         const HALL_CONFIG = {
             '1': { dir: 'tb', scale: 1.0, orient: 'landscape' },
             '2': { dir: 'tb', scale: 1.0, orient: 'landscape' },
             '3': { dir: 'lr', scale: 0.95, orient: 'portrait' },
             '4': { dir: 'lr', scale: 0.90, orient: 'portrait' },
-            '5': { dir: 'tb', scale: 0.80, orient: 'landscape' },
+            '5': { dir: 'tb', scale: 0.70, orient: 'landscape' },
             '6': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '7': { dir: 'lr', scale: 0.90, orient: 'portrait' },
             '8': { dir: 'lr', scale: 0.90, orient: 'portrait' },
@@ -386,16 +387,14 @@
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
-                bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000 of A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Hersteld:</strong> De toggle-knop voor Fullscreen (naast de mini-map) werkt weer perfect en blijft altijd bereikbaar op mobiel.</li><li><strong>Scrollbare Historie:</strong> De changelog is nu netjes scrollbaar waardoor je alle updates tot aan v1.0 kunt teruglezen!</li><li><strong>Bugfix Hal Notities:</strong> De onbedoelde code in de locatie-weergave bij hal notities is gerepareerd.</li></ul></div>",
-                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Grotere Fonts:</strong> Het lettertype en de stippen op de PDF-prints zijn vergroot voor optimale leesbaarheid, met behoud van de uiterst compacte lijst-layout en strakke marges!</li></ul></div>",
-                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.17 - Print Marges Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges:</strong> Lijsten zijn nu compacter qua spacing. De rechterlijst in de portrait kaarten is strak weggeschoven over de rand (50px).</li></ul></div>",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-80'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map knopje is nu een strak target icoon.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-70'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Op mobiel verdwijnen header en footer na 5 sec.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-60'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummering:</strong> Spellen krijgen nu een uniek nummer op de kaart.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-50'><strong>v1.9 - Actielijsten & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Altijd je positie in de hoek.</li><li><strong>Preorder Filter:</strong> Snelle preorder filter.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-40'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie met slimme tellers per hal.</li></ul></div>",
-                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-30'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
+                bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
+                changelogV1_20: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.20 - Hal 5 Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Hal 5 Schaling:</strong> Hal 5 wordt nu 10% kleiner afgedrukt in de PDF zodat deze perfect op de pagina past. De stippen schalen exact mee!</li></ul></div>",
+                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4 opacity-95'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Hersteld:</strong> De toggle-knop voor Fullscreen (naast de mini-map) werkt weer perfect.</li><li><strong>Scrollbare Historie:</strong> De changelog is nu netjes scrollbaar waardoor je alle updates kunt teruglezen!</li></ul></div>",
+                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Grotere Fonts:</strong> Het lettertype en de stippen op de PDF-prints zijn vergroot voor optimale leesbaarheid!</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.17 - Print Marges Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges:</strong> De rechterlijst in de portrait kaarten is strak weggeschoven over de rand (50px).</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map knopje is nu een strak target icoon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-60'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Op mobiel verdwijnen header en footer eenmalig na 5 sec voor extra schermruimte.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-50'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummering:</strong> Spellen krijgen nu een uniek nummer op de kaart.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -408,15 +407,13 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Restored:</strong> The fullscreen toggle button (next to the mini-map) works perfectly again on mobile.</li><li><strong>Scrollable History:</strong> The changelog modal is now scrollable, so you can read all updates back to v1.0!</li><li><strong>Hall Notes Fix:</strong> Fixed the display bug that showed raw code instead of the location tag.</li></ul></div>",
-                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Larger Fonts:</strong> Increased font and dot sizes on printed maps for better readability!</li></ul></div>",
-                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.17 - Print Margins Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Removed padding for a tighter layout. Right-side lists in portrait are hard-shifted out.</li></ul></div>",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-80'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map button has a new target icon.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-70'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Header and footer auto-hide on mobile.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-60'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Numbering:</strong> Map markers now use ascending numbers.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-50'><strong>v1.9 - Action Lists & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Top right position indicator.</li><li><strong>Preorder Filter:</strong> Filter preorders instantly.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-40'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
-                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-30'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
+                changelogV1_20: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.20 - Hall 5 Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Hall 5 Scaling:</strong> Hall 5 is now scaled down an additional 10% during printing to fit perfectly on a landscape A4 page. The dots scale automatically with it!</li></ul></div>",
+                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4 opacity-95'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Restored:</strong> The fullscreen toggle button works perfectly again on mobile.</li><li><strong>Scrollable History:</strong> The changelog modal is now scrollable!</li></ul></div>",
+                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Larger Fonts:</strong> Increased font and dot sizes on printed maps for better readability!</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.17 - Print Margins Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Right-side lists in portrait are hard-shifted out for a tighter layout.</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map button has a new target icon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-60'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Header and footer auto-hide on mobile.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-50'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Numbering:</strong> Map markers now use ascending numbers.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -429,15 +426,13 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Der Fullscreen-Button funktioniert jetzt wieder tadellos auf mobilen Geräten!</li><li><strong>Scrollbares Protokoll:</strong> Das Changelog-Fenster ist jetzt scrollbar, sodass alle Updates bis v1.0 gelesen werden können.</li><li><strong>Notizen Fix:</strong> Fehler behoben, durch den reiner Code im Ort-Label der Notizen angezeigt wurde.</li></ul></div>",
-                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Größere Schriften:</strong> Schrift- und Punktgrößen im Ausdruck wurden für bessere Lesbarkeit angehoben!</li></ul></div>",
-                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.17 - Print Marges Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Die Seitenränder auf dem Ausdruck werden nun voll genutzt, in den Hochformat-Karten ist die rechte Liste verschoben.</li></ul></div>",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-80'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map Button mit neuem Icon.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-70'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile nach 5 Sekunden.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-60'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-50'><strong>v1.9 - Aktionslisten & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts kleine Übersichtskarte.</li><li><strong>Preorder Filter:</strong> Ein Klick für Preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-40'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li></ul></div>",
-                changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-30'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
+                changelogV1_20: "<div class='border-l-4 border-slate-800 pl-3 mb-4'><strong>v1.20 - Halle 5 Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Halle 5 Skalierung:</strong> Halle 5 wird beim Drucken nun 10% kleiner skaliert, damit sie perfekt auf eine A4-Querformatseite passt.</li></ul></div>",
+                changelogV1_19: "<div class='border-l-4 border-slate-800 pl-3 mb-4 opacity-95'><strong>v1.19 - Bugfixes & Scroll Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Der Fullscreen-Button funktioniert jetzt wieder tadellos auf mobilen Geräten!</li><li><strong>Scrollbares Protokoll:</strong> Das Changelog-Fenster ist jetzt scrollbar.</li></ul></div>",
+                changelogV1_18: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.18 - PDF Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Größere Schriften:</strong> Schrift- und Punktgrößen im Ausdruck wurden für bessere Lesbarkeit angehoben!</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.17 - Print Marges Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> In den Hochformat-Karten ist die rechte Liste hart um 50px verschoben, um Überschneidungen zu reduzieren.</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-70'><strong>v1.15 - UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map Button mit neuem Icon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-teal-500 pl-3 mb-4 opacity-60'><strong>v1.14 - Full Screen Mobile</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile nach 5 Sekunden.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-50'><strong>v1.11 - Print Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -452,7 +447,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.19';
+        let currentVersion = '1.20';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -1094,7 +1089,7 @@
                 let badge = '';
                 if(note.priority) {
                     const st = getPrioStyles(note.priority);
-                    badge += `<span class="bg-white border ${st.borderClass} ${st.bgClass} px-1.5 py-0.5 rounded font-bold">${note.priority}</span>`;
+                    badge += '<span class="bg-white border ' + st.borderClass + ' ' + st.bgClass + ' px-1.5 py-0.5 rounded font-bold">' + note.priority + '</span>';
                 }
                 
                 list.innerHTML += `
@@ -1205,7 +1200,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_19', 'V1_18', 'V1_17', 'V1_15', 'V1_14', 'V1_11', 'V1_9', 'V1_7', 'V1_0'];
+            const versions = ['V1_20', 'V1_19', 'V1_18', 'V1_17', 'V1_15', 'V1_14', 'V1_11', 'V1_9', 'V1_7', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1422,12 +1417,11 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
-                    // Breng de schaling aan op een div BINNEN de wrap zodat percentages (x,y) meeschalen met de map.
                     const mapScaler = document.createElement('div');
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
                     const mapInner = document.createElement('div');
-                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.className = 'relative inline-block';
                     mapInner.style.transform = `scale(${config.scale})`;
                     mapInner.style.transformOrigin = 'center center';
 
