@@ -226,7 +226,7 @@
                 </div>
             </div>
             
-            <!-- Map Controls (Bottom Right) -->
+            <!-- Map Controls -->
             <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-40">
                 <button onclick="fitMap()" class="bg-white w-12 h-12 rounded-full shadow-xl text-slate-700 hover:text-blue-600 transition border flex items-center justify-center text-xl"><i class="fa-solid fa-location-crosshairs"></i></button>
             </div>
@@ -239,7 +239,7 @@
     <!-- Footer -->
     <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.15</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.17</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -386,11 +386,11 @@
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map knopje is vervangen door een mooier target/locatie icoon. Hal Notities locatie is nu correct klikbaar met Hal weergave.</li><li><strong>PDF Tuning:</strong> De spellen op de plattegrond print en de lijst ernaast hebben nu een groter, beter leesbaar lettertype gekregen, exact afgestemd op 5mm printermarges.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Op mobiel verdwijnen header en footer nu eenmalig na 5 sec. Daarna kun je dit met de knop rechtsboven zelf togglen!</li><li><strong>Overzichtskaart:</strong> Het beursoverzicht opent in eerste instantie nu 50% kleiner.</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het overzicht te gaan!</li><li><strong>Dunnere Tabs:</strong> Het menu op mobiel is compacter gemaakt.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Nummering:</strong> Elk spel krijgt een nummer op de kaart i.p.v. een letter.</li><li><strong>Hal-Notities Fix:</strong> Locatie wordt gevalideerd en is als button klikbaar.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Actielijsten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Altijd je huidige positie rechtsboven.</li><li><strong>Preorder Filter:</strong> Snelle toggle knop voor preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie met slimme tellers per hal.</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.17 - Print Marges & Schaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges & Formaat:</strong> De lijsten zijn nu compacter qua spacing, marges zijn verwijderd, en nummers verkleind, zodat er nog meer op één pagina past.</li><li><strong>Slimme Marges (50px):</strong> De rechterlijst in de portrait kaarten is hard weggeschoven over de rand (50px) voor een perfecte dekking.</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map knopje is vervangen door een mooier target/locatie icoon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Op mobiel verdwijnen header en footer nu eenmalig na 5 sec. Daarna kun je dit met de knop rechtsboven zelf togglen!</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-70'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Nummering:</strong> Elk spel krijgt een nummer op de kaart i.p.v. een letter.</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-60'><strong>v1.9 - Actielijsten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Altijd je huidige positie rechtsboven.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
             'en': { 
@@ -403,11 +403,11 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map button got a sleek new location icon. Hall Notes locations now show correctly with hall numbers and are clickable.</li><li><strong>PDF Tuning:</strong> The font sizes and map markers in the print have been significantly increased for better readability, while respecting the 5mm margins.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> On mobile, header and footer disappear after 5s. Use the persistent toggle button next to the mini-map to bring them back!</li><li><strong>Overview Scale:</strong> The initial overview map now fits perfectly to screen by starting at 50% scale.</li><li><strong>Clickable Mini-Map:</strong> Tapping the mini-map instantly takes you back to the overview!</li><li><strong>Slimmer Tabs:</strong> Mobile tabs are more compact.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> See your current position in the top right.</li><li><strong>Preorder Filter:</strong> Quick toggle for preorders.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.17 - Print Margins & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins & Fits:</strong> The printed lists are now fully compact, padding removed, ensuring even more games fit onto a single page.</li><li><strong>Smart Shift:</strong> For portrait maps, the right list is heavily shifted (50px) to avoid covering the map!</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map button got a sleek new location icon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> On mobile, header and footer disappear after 5s. Use the persistent toggle button next to the mini-map to bring them back!</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-70'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers.</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-60'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> See your current position in the top right.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
             'de': { 
@@ -420,11 +420,11 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map Button mit neuem Icon. Hallen-Notizen haben jetzt den richtigen Namen und sind klickbar.</li><li><strong>PDF Tuning:</strong> Die Schriftgröße und Map-Marker im Druck sind nun deutlich größer und besser lesbar, 5mm Rand bleibt erhalten.</li></ul></div>",
-                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile einmalig nach 5 Sekunden. Zurückholen geht mit dem Schalter neben der Mini-Map!</li><li><strong>Übersicht Zoom:</strong> Die Gesamtübersicht öffnet nun standardmäßig herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Schlankere UI:</strong> Dünnere Tabs.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben für besseres Finden.</li><li><strong>Hallen-Notizen Fix:</strong> Standorte in Notizen werden jetzt validiert und sind klickbar!</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts siehst du nun immer eine kleine Übersichtskarte.</li><li><strong>Preorder Filter:</strong> Ein Klick, um nur Preorders anzuzeigen.</li></ul></div>",
-                changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li></ul></div>",
+                changelogV1_17: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.17 - Print Marges & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Die Seitenränder auf dem Ausdruck werden nun voll genutzt, noch weniger Abstand, damit mehr auf eine Seite passt!</li><li><strong>Map Shift:</strong> In den Hochformat-Karten ist die rechte Liste hart um 50px verschoben, um Überschneidungen zu reduzieren.</li></ul></div>",
+                changelogV1_15: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.15 - UI & PDF Font Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>UI Update:</strong> Fit Map Button mit neuem Icon.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile einmalig nach 5 Sekunden. Zurückholen geht mit dem Schalter neben der Mini-Map!</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-70'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben für besseres Finden.</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-60'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts siehst du nun immer eine kleine Übersichtskarte.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
         };
@@ -439,7 +439,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.15';
+        let currentVersion = '1.17';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -503,7 +503,6 @@
             initAutohide();
         });
 
-        // --- Autohider Logic ---
         function initAutohide() {
             const isMobile = window.matchMedia("(max-width: 1024px)").matches || window.innerHeight <= 600;
             if (isMobile) {
@@ -1193,7 +1192,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_15', 'V1_14', 'V1_12', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_0'];
+            const versions = ['V1_17', 'V1_15', 'V1_14', 'V1_11', 'V1_9', 'V1_7', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1245,7 +1244,7 @@
                             document.getElementById('loading-overlay').classList.add('hidden');
                             window.print();
                         }, 500);
-                    }, 300);
+                    }, 500);
                 }
             };
 
@@ -1267,7 +1266,6 @@
                 const isTB = config.dir === 'tb';
 
                 const pageDiv = document.createElement('div');
-                // No padding, making max use of printable edge
                 pageDiv.className = `page-break ${orientationClass} bg-white relative mx-auto overflow-hidden block`;
 
                 if (isOverview) {
@@ -1348,26 +1346,25 @@
                         rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
                     }
 
-                    // GROTER FONT: Strak tegen de rand (left-0/right-0/top-0/bottom-0)
                     const createColumnHTML = (groups, isLeft) => {
                         if(isLR) {
-                            let colHtml = `<div class="absolute ${isLeft ? 'left-0' : 'right-0'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0.5 overflow-hidden bg-white/40">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'left-0' : 'right-0'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 overflow-hidden bg-white/40" ${!isLeft ? 'style="right: -50px;"' : ''}>`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
-                                    <div class="mb-1.5">
-                                        <div class="font-bold text-[9px] mb-0.5 leading-none">${group.label}</div>
-                                        <div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>
+                                    <div class="mb-0">
+                                        <div class="font-bold text-[6px] mb-0 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b-[1px] border-slate-800 mb-0.5"></div>
                                         ${Object.entries(pubs).map(([pub, gs]) => `
-                                            <div class="font-bold text-[6px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
+                                            <div class="font-bold text-[4.5px] uppercase mt-[1px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
                                                 const styles = getPrioStyles(g.priority);
                                                 const { cleanName, titleLabels } = formatGameTitle(g.name, true);
                                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
                                                 const num = gameNumbers.get(g.id);
                                                 return `
-                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
-                                                    <div class="w-[12px] h-[12px] rounded-full border border-black flex items-center justify-center text-[7px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
-                                                    <span class="text-[9px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>
+                                                <div class="flex items-start gap-1 mt-px leading-none mb-px">
+                                                    <div class="w-[8px] h-[8px] rounded-full border border-black flex items-center justify-center text-[5px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[7px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis">${truncName}${titleLabels}</span>
                                                 </div>
                                                 `;
                                             }).join('')}
@@ -1378,23 +1375,23 @@
                             colHtml += `</div>`;
                             return colHtml;
                         } else {
-                            let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10 bg-white/40">`;
+                            let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0 z-10 bg-white/40">`;
                             groups.forEach(group => {
                                 const pubs = groupGamesByPublisher(group.games);
                                 colHtml += `
-                                    <div class="mb-1 w-44 shrink-0">
-                                        <div class="font-bold text-[9px] mb-0.5 leading-none">${group.label}</div>
-                                        <div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>
+                                    <div class="mb-0 w-40 shrink-0">
+                                        <div class="font-bold text-[6px] mb-0 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b-[1px] border-slate-800 mb-0.5"></div>
                                         ${Object.entries(pubs).map(([pub, gs]) => `
-                                            <div class="font-bold text-[6px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
+                                            <div class="font-bold text-[4.5px] uppercase mt-[1px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
                                                 const styles = getPrioStyles(g.priority);
                                                 const { cleanName, titleLabels } = formatGameTitle(g.name, true);
                                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
                                                 const num = gameNumbers.get(g.id);
                                                 return `
-                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
-                                                    <div class="w-[12px] h-[12px] rounded-full border border-black flex items-center justify-center text-[7px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
-                                                    <span class="text-[9px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>
+                                                <div class="flex items-start gap-1 mt-px leading-none mb-px">
+                                                    <div class="w-[8px] h-[8px] rounded-full border border-black flex items-center justify-center text-[5px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[7px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis">${truncName}${titleLabels}</span>
                                                 </div>
                                                 `;
                                             }).join('')}
@@ -1410,12 +1407,11 @@
                     const mapWrap = document.createElement('div');
                     mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
 
-                    // Breng de schaling aan op een div BINNEN de wrap zodat percentages (x,y) meeschalen met de map.
                     const mapScaler = document.createElement('div');
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
                     const mapInner = document.createElement('div');
-                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.className = 'relative inline-block';
                     mapInner.style.transform = `scale(${config.scale})`;
                     mapInner.style.transformOrigin = 'center center';
 
@@ -1446,7 +1442,7 @@
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
-                            markerHTML += `<div class="w-[18px] h-[18px] rounded-full border border-black flex items-center justify-center text-[10px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
+                            markerHTML += `<div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[7px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
                         });
                         markerHTML += `</div>`;
                         markerWrap.innerHTML = markerHTML;
