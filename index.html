@@ -72,8 +72,8 @@
             @page print-landscape { size: A4 landscape; margin: 0; }
             @page print-portrait { size: A4 portrait; margin: 0; }
             
-            .page-landscape { page: print-landscape; width: 297mm; height: 209mm; }
-            .page-portrait { page: print-portrait; width: 210mm; height: 296mm; }
+            .page-landscape { page: print-landscape; width: 297mm !important; height: 209mm !important; }
+            .page-portrait { page: print-portrait; width: 210mm !important; height: 296mm !important; }
             
             body, html { overflow: visible !important; height: auto !important; width: auto !important; display: block !important; background: white !important; margin: 0; padding: 0; }
             
@@ -87,6 +87,8 @@
                 overflow: hidden;
                 box-sizing: border-box;
                 background: white !important;
+                margin: 0;
+                padding: 0;
             }
 
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -191,12 +193,12 @@
                 </button>
             </div>
 
-            <!-- Mini Map Overview & Restore Button (Top Right) -->
+            <!-- Toggle UI & Mini Map Overview (Top Right) -->
             <div class="absolute top-4 right-4 flex items-start justify-end gap-2 z-40 pointer-events-none">
-                <button id="btn-restore-screen" onclick="restoreScreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto hidden md:hidden">
-                    <i class="fa-solid fa-compress"></i>
+                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto md:hidden">
+                    <i id="icon-fullscreen" class="fa-solid fa-expand"></i>
                 </button>
-                <div id="mini-map-container" class="w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md p-1 transition-opacity hidden pointer-events-none">
+                <div id="mini-map-container" onclick="selectHall('all')" class="cursor-pointer pointer-events-auto w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md p-1 transition-opacity hidden hover:scale-105">
                     <div class="relative w-full h-full bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
                         <img src="overview.jpg" class="w-full h-auto object-cover opacity-70" />
                         <div id="mini-map-dot" class="absolute w-2.5 h-2.5 bg-blue-600 border border-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow flex items-center justify-center">
@@ -208,34 +210,36 @@
 
             <div class="absolute inset-0" id="panzoom-wrapper" style="touch-action: none;">
                 <div id="panzoom-element" class="relative w-full h-full" style="transform-origin: 0 0;">
+                    
                     <div id="map-error" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 hidden z-0">
                         <i class="fa-solid fa-image text-4xl mb-2"></i>
                         <p>Afbeelding niet gevonden.</p>
                     </div>
+
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+                    
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
+                    
                     <div id="pulse-marker" class="absolute border-8 border-red-500 rounded-full pulse hidden pointer-events-none flex items-center justify-center z-30" style="width: 250px; height: 250px; transform: translate(-50%, -50%);">
                         <div class="w-6 h-6 bg-red-700 rounded-full shadow-xl"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Map Controls -->
+            <!-- Map Controls (Bottom Right) -->
             <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-40">
-                <button onclick="zoomIn()" class="bg-white w-12 h-12 rounded-full shadow-xl text-slate-700 hover:text-blue-600 transition border flex items-center justify-center text-lg"><i class="fa-solid fa-plus"></i></button>
-                <button onclick="zoomOut()" class="bg-white w-12 h-12 rounded-full shadow-xl text-slate-700 hover:text-blue-600 transition border flex items-center justify-center text-lg"><i class="fa-solid fa-minus"></i></button>
                 <button onclick="fitMap()" class="bg-white w-12 h-12 rounded-full shadow-xl text-slate-700 hover:text-blue-600 transition border flex items-center justify-center text-lg"><i class="fa-solid fa-expand"></i></button>
             </div>
         </div>
     </main>
 
-    <!-- Print Container (verstopt in scherm modus) -->
+    <!-- Print Container -->
     <div id="print-container" class="hidden"></div>
 
     <!-- Footer -->
     <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.13</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.14</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -272,7 +276,7 @@
                 <div class="flex flex-col gap-2 border-t border-slate-300 pt-4 mt-auto">
                     <input type="text" id="new-hnote-text" placeholder="Nieuwe notitie..." class="w-full text-sm p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
                     <div class="flex gap-2">
-                        <input type="text" id="new-hnote-loc" placeholder="Locatie (bijv. 1-A000)" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
+                        <input type="text" id="new-hnote-loc" placeholder="Locatie (bijv. 1-A000 of A000)" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
                         <select id="new-hnote-prio" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner"></select>
                     </div>
                     <button onclick="addHallNote()" id="txt-btn-add-note" class="w-full bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-slate-700 transition mt-1"><i class="fa-solid fa-plus mr-1"></i> Toevoegen</button>
@@ -352,11 +356,13 @@
         </div>
     </div>
 
+    <!-- LAAD HIER DE BOOTHDATA BESTAND -->
     <script src="boothdata.js"></script>
 
     <script>
         if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
         
+        // Configuratie print-schaal per hal.
         const HALL_CONFIG = {
             '1': { dir: 'tb', scale: 1.0, orient: 'landscape' },
             '2': { dir: 'tb', scale: 1.0, orient: 'landscape' },
@@ -381,10 +387,10 @@
                 notes: "Notities...", noGames: "Geen spellen gevonden.",
                 mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
-                bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Op mobiel verdwijnen header en footer na 5 seconden voor maximale schermruimte. Terughalen doe je met de compress-knop naast de mini-map!</li><li><strong>Dunnere Tabs:</strong> Tab-menu op mobiel is compacter gemaakt.</li></ul></div>",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Marges & Schaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges:</strong> De zijlijsten en kaarten maken nu maximaal gebruik van de randen van het papier.</li><li><strong>Kaart Scaling:</strong> Stippen behouden hun locatie bij verkleinen kaarten.</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Nummering:</strong> Elk spel krijgt een nummer op de kaart.</li><li><strong>Hal-Notities Fix:</strong> Locatie wordt nu gevalideerd en is klikbaar.</li></ul></div>",
+                bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000 of A000)", notePrioNone: "Geen prioriteit",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Op mobiel verdwijnen header en footer nu eenmalig na 5 seconden voor maximaal overzicht. Daarna kun je dit met de expand/compress knop rechtsboven makkelijk zelf togglen!</li><li><strong>Overzichtskaart:</strong> Het beursoverzicht opent in eerste instantie nu de helft kleiner, zodat je de hele beurs makkelijk in één keer kan zien.</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het overzicht te gaan!</li><li><strong>Dunnere Tabs & Geen Zoomknoppen:</strong> Het menu op mobiel is compacter gemaakt, en de plus en min knoppen op de map zijn verwijderd voor een rustiger beeld (je kan natuurlijk nog steeds knijpen om te zoomen).</li></ul></div>",
+                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Marges & Schaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Strakke Marges:</strong> De zijlijsten en kaarten maken nu maximaal gebruik van de randen van het papier.</li><li><strong>Kaart Scaling:</strong> Stippen behouden hun exacte locatie bij verkleinen (95%) van portrait kaarten.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Slimme Markers Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Nummering:</strong> Elk spel krijgt een nummer op de kaart i.p.v. een letter.</li><li><strong>Hal-Notities Fix:</strong> Locatie wordt gevalideerd en is als button klikbaar.</li></ul></div>",
                 changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Actielijsten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Altijd je huidige positie rechtsboven.</li><li><strong>Preorder Filter:</strong> Snelle toggle knop voor preorders.</li></ul></div>",
                 changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Nieuwe <strong>'Alle'</strong> optie met slimme tellers per hal.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
@@ -399,8 +405,8 @@
                 mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> On mobile, header and footer disappear after 5 seconds to maximize screen real estate. Use the compress button next to the mini-map to bring them back!</li><li><strong>Slimmer Tabs:</strong> Mobile tab menu is now more compact.</li></ul></div>",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Margins & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> The printed lists now utilize the maximum printable edges of your paper.</li><li><strong>Map Scaling:</strong> Fixes a bug to ensure dots stay aligned when a map is scaled.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> On mobile, header and footer disappear after 5 seconds to maximize screen real estate. Use the persistent toggle button next to the mini-map to bring them back!</li><li><strong>Overview Scale:</strong> The initial overview map now fits perfectly to screen by starting at 50% scale.</li><li><strong>Clickable Mini-Map:</strong> Tapping the mini-map instantly takes you back to the overview!</li><li><strong>Slimmer Tabs & Less Buttons:</strong> Mobile tabs are more compact, and the +/- zoom buttons have been removed for a cleaner UI (pinch-to-zoom is the way to go).</li></ul></div>",
+                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Margins & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> The printed lists now utilize the maximum printable edges of your paper.</li><li><strong>Map Scaling:</strong> Fixes a bug to ensure dots stay perfectly aligned with their booths.</li></ul></div>",
                 changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Smart Marker Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Sequential Numbering:</strong> Map markers now use ascending numbers.</li><li><strong>Hall Notes Fix:</strong> Adding a location to a note now validates the booth.</li></ul></div>",
                 changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Action Lists, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> See your current position in the top right.</li><li><strong>Preorder Filter:</strong> Quick toggle for preorders.</li></ul></div>",
                 changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>New <strong>'All'</strong> tab added with convention overview map.</li></ul></div>",
@@ -416,10 +422,10 @@
                 mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
-                changelogV1_13: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.13 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile nach 5 Sekunden. Zurückholen geht mit dem Verkleinern-Button neben der Mini-Map!</li><li><strong>Schlankere Tabs:</strong> Das mobile Tab-Menü ist jetzt kompakter.</li></ul></div>",
-                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Marges & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Die Seitenränder auf dem Ausdruck werden nun maximal genutzt.</li><li><strong>Map Scaling:</strong> Behebt einen Fehler beim Skalieren der Karten (95%).</li></ul></div>",
-                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben.</li><li><strong>Hallen-Notizen Fix:</strong> Standorte werden validiert.</li></ul></div>",
-                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts Übersichtskarte.</li><li><strong>Preorder Filter:</strong> Ein Klick für Preorders.</li></ul></div>",
+                changelogV1_14: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.14 - Full Screen Mobile & UI Tweaks</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Autohider Toggle:</strong> Auf dem Handy verschwinden Kopf- und Fußzeile einmalig nach 5 Sekunden. Mit dem Schalter neben der Mini-Map kannst du jederzeit manuell umschalten!</li><li><strong>Übersicht Zoom:</strong> Die Gesamtübersicht öffnet nun standardmäßig herausgezoomt.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Schlankere UI:</strong> Dünnere Tabs und keine störenden Zoom-Buttons mehr (+/-).</li></ul></div>",
+                changelogV1_12: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.12 - Print Marges & Scaling Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Max Margins:</strong> Die Seitenränder auf dem Ausdruck werden nun maximal genutzt.</li><li><strong>Map Scaling:</strong> Behebt einen Fehler, damit die Punkte beim Skalieren der Karten (95%) exakt an der richtigen Stelle bleiben.</li></ul></div>",
+                changelogV1_11: "<div class='border-l-4 border-red-500 pl-3 mb-4 opacity-80'><strong>v1.11 - Print Max & Smarte Marker</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Nummerierung:</strong> Auf der Karte stehen jetzt aufsteigende Nummern statt Buchstaben für besseres Finden.</li><li><strong>Hallen-Notizen Fix:</strong> Standorte in Notizen werden jetzt validiert und sind klickbar!</li></ul></div>",
+                changelogV1_9: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-70'><strong>v1.9 - Aktionslisten, Preorders & Mini-map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Mini-Map:</strong> Oben rechts siehst du nun immer eine kleine Übersichtskarte.</li><li><strong>Preorder Filter:</strong> Ein Klick, um nur Preorders anzuzeigen.</li></ul></div>",
                 changelogV1_7: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-60'><strong>v1.7 - Overview Map</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Neuer <strong>'Alle'</strong> Tab! Zeigt eine Übersichtsplan.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
@@ -435,7 +441,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.13';
+        let currentVersion = '1.14';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -473,7 +479,10 @@
         let stateShowNotes = false;
         let statePreorderOnly = false;
         let mapIsDragging = false;
-        let autohideTimeout;
+
+        // Autohider Variables
+        let hasAutoHidden = false;
+        let isFullscreen = false;
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
@@ -494,41 +503,52 @@
             }
 
             checkAndLoadData();
-            resetAutohideTimer();
+            initAutohide();
         });
 
         // --- Autohider Logic ---
-        function resetAutohideTimer() {
-            clearTimeout(autohideTimeout);
-            if (window.innerWidth < 768) {
-                autohideTimeout = setTimeout(() => {
-                    const header = document.getElementById('main-header');
-                    const footer = document.getElementById('main-footer');
-                    const btnRestore = document.getElementById('btn-restore-screen');
-                    
-                    if(header) header.classList.add('hidden');
-                    if(footer) footer.classList.add('hidden');
-                    if(btnRestore) btnRestore.classList.remove('hidden');
-
-                    if (document.getElementById('tab-map').classList.contains('tab-active')) {
-                        setTimeout(() => { requestAnimationFrame(fitMap); }, 50);
+        function initAutohide() {
+            // Check if mobile or small tablet (portrait or landscape)
+            const isMobile = window.matchMedia("(max-width: 1024px)").matches || window.innerHeight <= 600;
+            
+            if (isMobile) {
+                setTimeout(() => {
+                    if (!hasAutoHidden && !isFullscreen) {
+                        toggleFullscreen(true);
                     }
                 }, 5000);
             }
         }
 
-        function restoreScreen() {
+        function toggleFullscreen(isAuto = false) {
             const header = document.getElementById('main-header');
             const footer = document.getElementById('main-footer');
-            const btnRestore = document.getElementById('btn-restore-screen');
+            const icon = document.getElementById('icon-fullscreen');
             
-            if(header) header.classList.remove('hidden');
-            if(footer) footer.classList.remove('hidden');
-            if(btnRestore) btnRestore.classList.add('hidden');
-
-            resetAutohideTimer();
-
-            if (document.getElementById('tab-map').classList.contains('tab-active')) {
+            if (!isFullscreen) {
+                // Ga naar fullscreen mode
+                if (header) header.classList.add('hidden');
+                if (footer) footer.classList.add('hidden');
+                if (icon) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                }
+                isFullscreen = true;
+                if (isAuto) hasAutoHidden = true;
+            } else {
+                // Sluit fullscreen
+                if (header) header.classList.remove('hidden');
+                if (footer) footer.classList.remove('hidden');
+                if (icon) {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                }
+                isFullscreen = false;
+                hasAutoHidden = true; // Zorg dat hij niet onverwachts wéér inklapt
+            }
+            
+            // Render the map fit directly after animation tick
+            if (document.getElementById('tab-map').classList.contains('tab-active') || window.innerWidth >= 768) {
                 setTimeout(() => { requestAnimationFrame(fitMap); }, 50);
             }
         }
@@ -1181,7 +1201,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_13', 'V1_12', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_0'];
+            const versions = ['V1_14', 'V1_12', 'V1_11', 'V1_9', 'V1_7', 'V1_5', 'V1_4', 'V1_3', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1261,15 +1281,19 @@
 
                 if (isOverview) {
                     const mapWrap = document.createElement('div');
-                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0';
+                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
+                    
+                    const mapInner = document.createElement('div');
+                    mapInner.className = 'relative inline-block w-full h-full';
                     
                     const img = new Image();
-                    img.className = 'print-map-img block';
+                    img.className = 'w-full h-full object-contain block';
                     imagesToLoad++;
                     img.onload = () => { imagesLoaded++; checkPrintReady(); };
                     img.onerror = () => { imagesLoaded++; checkPrintReady(); };
                     img.src = 'overview.jpg';
-                    mapWrap.appendChild(img);
+                    
+                    mapInner.appendChild(img);
 
                     const overlaysDiv = document.createElement('div');
                     overlaysDiv.className = 'absolute inset-0';
@@ -1304,7 +1328,8 @@
                         markerWrap.innerHTML = html;
                         overlaysDiv.appendChild(markerWrap);
                     }
-                    mapWrap.appendChild(overlaysDiv);
+                    mapInner.appendChild(overlaysDiv);
+                    mapWrap.appendChild(mapInner);
                     pageDiv.appendChild(mapWrap);
 
                 } else {
@@ -1404,7 +1429,7 @@
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
                     const mapInner = document.createElement('div');
-                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.className = 'relative inline-block'; 
                     mapInner.style.transform = `scale(${config.scale})`;
                     mapInner.style.transformOrigin = 'center center';
 
@@ -1423,21 +1448,19 @@
                     allGroups.forEach((group) => {
                         const box = group.box;
                         const markerWrap = document.createElement('div');
-                        markerWrap.className = 'absolute flex flex-col items-center justify-center z-20 print-marker-wrap';
+                        markerWrap.className = 'absolute flex flex-wrap justify-center gap-[1px] transform -translate-x-1/2 -translate-y-1/2 z-20 print-marker-wrap';
                         markerWrap.style.left = `${box.x}%`;
                         markerWrap.style.top = `${box.y}%`;
                         markerWrap.dataset.scale = "1";
                         markerWrap.dataset.offx = "0";
                         markerWrap.dataset.offy = "0";
-                        markerWrap.style.transform = `translate(-50%, -50%) scale(1)`;
 
-                        let markerHTML = `<div class="flex flex-wrap justify-center gap-[1px]">`;
+                        let markerHTML = '';
                         group.games.forEach(g => {
                             const styles = getPrioStyles(g.priority);
                             const num = gameNumbers.get(g.id);
                             markerHTML += `<div class="w-[11px] h-[11px] rounded-full border border-black flex items-center justify-center text-[6px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
                         });
-                        markerHTML += `</div>`;
                         markerWrap.innerHTML = markerHTML;
                         overlaysDiv.appendChild(markerWrap);
                     });
@@ -1546,7 +1569,7 @@
                     const btn = document.getElementById('btn-restore-screen');
                     if(btn) btn.classList.add('hidden');
                 } else {
-                    resetAutohideTimer();
+                    initAutohide(); // Reset autohide
                 }
 
                 if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display === 'none') {
@@ -1587,9 +1610,13 @@
                 return;
             }
             
-            const scaleX = wrap.clientWidth / img.naturalWidth;
-            const scaleY = wrap.clientHeight / img.naturalHeight;
-            const fitScale = Math.min(scaleX, scaleY) * 0.95; 
+            let scaleX = wrap.clientWidth / img.naturalWidth;
+            let scaleY = wrap.clientHeight / img.naturalHeight;
+            let fitScale = Math.min(scaleX, scaleY) * 0.95; 
+            
+            if(currentHall === 'all') {
+                fitScale *= 0.5; // Overview 50% kleiner weergeven zodat je hem beter kunt overzien
+            }
             
             panzoomInstance.setOptions({ minScale: fitScale / 2 });
             panzoomInstance.zoom(fitScale, { animate: true });
@@ -1605,9 +1632,6 @@
                 if(callback) callback(fitScale);
             }, 10);
         }
-
-        function zoomIn() { panzoomInstance.zoomIn(); }
-        function zoomOut() { panzoomInstance.zoomOut(); }
 
         let imgLoaded = false;
         function loadMapImage() {
