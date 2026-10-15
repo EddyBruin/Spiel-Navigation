@@ -35,6 +35,21 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 .game-label { display: none; }
 .show-labels .booth-group { grid-template-columns: 1fr; }
 .show-labels .game-label { display: flex; }
+.booth-num-lbl {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    background: transparent;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    overflow: hidden;
+    text-align: center;
+}
 .print-preparation-mode #print-container { position: absolute !important; top: 0 !important; left: -9999px !important; display: block !important; background: white !important; visibility: visible !important; opacity: 0.01 !important; z-index: -9999 !important; }
 .print-preparation-mode .page-landscape { width: 297mm; height: 210mm; position: relative; overflow: hidden; }
 .print-preparation-mode .page-portrait { width: 210mm; height: 297mm; position: relative; overflow: hidden; }
@@ -113,6 +128,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
             <div id="panzoom-element" class="relative w-full h-full" style="transform-origin: 0 0;">
                 <div id="map-error" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 hidden z-0"><i class="fa-solid fa-image text-4xl mb-2"></i><p>Afbeelding niet gevonden.</p></div>
                 <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+                <div id="booth-numbers-overlay" class="absolute top-0 left-0 w-full h-full z-15 pointer-events-none"></div>
                 <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
                 <div id="pulse-marker" class="absolute border-8 border-red-500 rounded-full pulse hidden pointer-events-none flex items-center justify-center z-30" style="width: 250px; height: 250px; transform: translate(-50%, -50%);"><div class="w-6 h-6 bg-red-700 rounded-full shadow-xl"></div></div>
             </div>
@@ -125,7 +141,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 <div id="print-container" class="hidden"></div>
 <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
     <div class="flex items-center gap-3">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.29</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.30</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </div>
     <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -214,11 +230,12 @@ const i18n = {
         loadingData: "Data synchroniseren...", loadingPdf: "PDF / Print voorbereiden...",
         offlineOnMsg: "Offline Modus & Locatie-Backup AAN: Alle spellen en huidige standlocaties zijn veilig lokaal opgeslagen. Als de online bron plotseling geen locaties meer levert, valt de app automatisch terug op deze backup!",
         offlineOffMsg: "Offline Modus UIT.",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.29 - Slimme Offline & Locatie Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Modus & Kluis:</strong> Knop naast de reset-knop waarmee alle data en locaties lokaal worden vastgelegd.</li><li><strong>Automatische Locatie-Fallback:</strong> Als de online bron plotseling geen locaties meer meestuurt bij een update, behoudt de app automatisch je laatst bekende standnummers terwijl nieuwe spellen wel worden bijgewerkt!</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-95'><strong>v1.28 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint! Notities zonder locatie worden bovenaan in een apart \"Overig / Notities\" blok verzameld.</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon (pennetje) in de lijst om ze snel aan te passen.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd en gefilterd met de spellen.</li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-85'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders, Preorders verbergen, of Alles.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer automatisch op mobiel, je kunt dit nu zelf togglen via het icoon!</li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld!</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummer Overlay:</strong> Alle hal-kaarten én de PDF-prints zijn nu voorzien van een schaalbare laag met alle standnummers uit de plattegronddata, exact passend binnen elke standruimte.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.29 - Slimme Offline & Locatie Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Modus & Kluis:</strong> Knop naast de reset-knop waarmee alle data en locaties lokaal worden vastgelegd.</li><li><strong>Automatische Locatie-Fallback:</strong> Als de online bron plotseling geen locaties meer meestuurt bij een update, behoudt de app automatisch je laatst bekende standnummers!</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.28 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint!</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon in de lijst.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd.</li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen.</li><li><strong>Handmatige Fullscreen:</strong> Zelf header/footer in- en uitklappen op mobiel.</li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-75'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering & PDF Export:</strong> Volledig A4-vullende prints en klikbare mini-map.</li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
         btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
     },
@@ -231,11 +248,12 @@ const i18n = {
         loadingData: "Synchronizing data...", loadingPdf: "Preparing PDF / Print...",
         offlineOnMsg: "Offline Mode & Location Backup ON: All games and current booth locations are safely stored locally. If the online source suddenly stops providing locations, the app will automatically fall back to this backup!",
         offlineOffMsg: "Offline Mode OFF.",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.29 - Smart Offline & Location Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Mode & Vault:</strong> Button next to the reset button to lock and save all data and locations locally.</li><li><strong>Automatic Location Fallback:</strong> If the online source suddenly stops providing locations during a sync, the app automatically restores your last known booth numbers while still applying online updates!</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-95'><strong>v1.28 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports. Unlocated notes are pinned to a dedicated section at the top!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved the rendering bug that caused blank pages when generating PDFs.</li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes:</strong> Easily edit your hall notes via the pen icon.</li><li><strong>Note Filters:</strong> Action notes are now filtered along with your games when a priority filter is active.</li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-85'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> 3 states: Only preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Use the expand/compress button on the map view!</li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs use ascending numbers.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area.</li><li><strong>Clickable Mini-map:</strong> Tap to go to the convention overview map!</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are validated and clickable!</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Booth Number Overlay:</strong> All hall maps and PDF printouts now feature a scalable overlay displaying all booth numbers, dynamically sized to fit inside each booth space without overlapping.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.29 - Smart Offline & Location Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Mode & Vault:</strong> Lock and save all data and locations locally.</li><li><strong>Automatic Location Fallback:</strong> Restores last known booth numbers if the online source drops location data!</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.28 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved blank pages when generating PDFs.</li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes & Filters:</strong> Edit hall notes and filter them by priority.</li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> 3 states: Only preorders, Exclude preorders, or Show All.</li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-75'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering, Full-Page PDFs & Mini-map.</strong></li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
         btnLoadList: "Load List", btnCancel: "Cancel"
     },
@@ -248,11 +266,12 @@ const i18n = {
         loadingData: "Daten werden synchronisiert...", loadingPdf: "PDF / Druck wird vorbereitet...",
         offlineOnMsg: "Offline-Modus & Standort-Backup AN: Alle Spiele und aktuellen Standorte sind sicher lokal gespeichert. Falls die Online-Quelle plötzlich keine Standorte mehr liefert, greift die App automatisch auf dieses Backup zurück!",
         offlineOffMsg: "Offline-Modus AUS.",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.29 - Smart Offline & Standort-Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline-Modus & Tresor:</strong> Button neben dem Reset-Knopf, um alle Daten und Standorte lokal zu sichern.</li><li><strong>Automatischer Standort-Fallback:</strong> Wenn die Online-Quelle plötzlich keine Standorte mehr liefert, stellt die App automatisch die letzten bekannten Standnummern wieder her, während Online-Änderungen weiterhin geladen werden!</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-95'><strong>v1.28 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs:</strong> Hallen-Notizen werden im PDF-Druck aufgeführt. Notizen ohne Standort erhalten einen Block oben links!</li><li><strong>iOS / Opera Print Fix:</strong> Das Problem mit leeren Seiten beim PDF-Druck wurde behoben.</li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten:</strong> Hallen-Notizen können über das Stift-Icon bearbeitet werden.</li><li><strong>Notizen Filter:</strong> Hallen-Notizen werden nach Priorität mitsortiert.</li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-85'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> 3 Status (Nur Preorders, Keine Preorders, Alle).</li><li><strong>Manueller Fullscreen:</strong> Nutze den Button neben der Mini-Map!</li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße.</li><li><strong>Klickbare Mini-Map:</strong> Klick führt zur Gesamtübersicht.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und sind klickbar.</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4'><strong>v1.30 - Standnummern-Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummern-Overlay:</strong> Alle Hallenkarten und PDF-Ausdrucke zeigen nun automatisch alle Standnummern passgenau innerhalb der jeweiligen Standflächen an.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.29 - Smart Offline & Standort-Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline-Modus & Tresor:</strong> Daten und Standorte lokal sichern.</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-90'><strong>v1.28 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs & iOS Print Fix.</strong></li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten & Filter.</strong></li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-80'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button (3 Status) & Manueller Fullscreen.</strong></li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-75'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung, Randloser PDF-Export & Mini-Map.</strong></li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
         btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
     }
@@ -271,7 +290,7 @@ function getPrioStyles(prio) {
     if(index === -1) return PRIO_STYLES[0];
     return PRIO_STYLES[index % PRIO_STYLES.length];
 }
-let lang = 'en', currentVersion = '1.29', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
+let lang = 'en', currentVersion = '1.30', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
 let offlineMode = JSON.parse(localStorage.getItem('spielOfflineMode') || 'false');
 let locationVault = JSON.parse(localStorage.getItem('spielLocationVault') || '{}');
 let userNotes = JSON.parse(localStorage.getItem('spielNotes') || '{}');
@@ -295,6 +314,41 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAndLoadData();
     if (window.innerWidth < 1024) { const btn = document.getElementById('btn-fullscreen-toggle'); if(btn) btn.classList.remove('hidden'); }
 });
+
+function formatBoothCode(hall, key) {
+    const hStr = String(hall);
+    if (key.startsWith(hStr + '-')) return key;
+    if (key.startsWith(hStr)) return hStr + '-' + key.slice(hStr.length);
+    return key;
+}
+
+function getBoothFontSize(box, text, refW, refH, maxPx) {
+    const bw = ((box.w || 1.2) / 100) * refW;
+    const bh = ((box.h || 1.2) / 100) * refH;
+    const fitW = (bw * 0.88) / (Math.max(1, text.length) * 0.58);
+    const fitH = bh * 0.72;
+    return Math.max(1.2, Math.min(fitW, fitH, maxPx));
+}
+
+function renderBoothNumbersOverlay(hall, targetContainer, refW, refH, maxPx = 11) {
+    targetContainer.innerHTML = '';
+    if (hall === 'all' || !pdfBoothData[hall]) return;
+    const frag = document.createDocumentFragment();
+    Object.entries(pdfBoothData[hall]).forEach(([key, box]) => {
+        const labelText = formatBoothCode(hall, key);
+        const fontSize = getBoothFontSize(box, labelText, refW, refH, maxPx);
+        const div = document.createElement('div');
+        div.className = 'booth-num-lbl';
+        div.style.left = `${box.x}%`;
+        div.style.top = `${box.y}%`;
+        div.style.width = `${box.w || 1}%`;
+        div.style.height = `${box.h || 1}%`;
+        div.style.fontSize = `${fontSize.toFixed(2)}px`;
+        div.textContent = labelText;
+        frag.appendChild(div);
+    });
+    targetContainer.appendChild(frag);
+}
 
 function saveCurrentToVault(gamesList) {
     let updated = false;
@@ -842,7 +896,7 @@ function openPdfModal() {
 function closePdfModal() { document.getElementById('pdf-modal').classList.add('hidden'); }
 
 function openChangelog() {
-    const versions = ['V1_29', 'V1_28', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
+    const versions = ['V1_30', 'V1_29', 'V1_28', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
     let clHtml = '';
     versions.forEach(v => { if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v]; });
     document.getElementById('changelog-content').innerHTML = clHtml;
@@ -1004,10 +1058,23 @@ function generatePDF() {
             const mapInner = document.createElement('div'); mapInner.className = 'relative inline-block'; mapInner.style.transform = `scale(${config.scale})`; mapInner.style.transformOrigin = 'center center';
             
             const img = new Image(); img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
-            imagesToLoad++; img.onload = () => { imagesLoaded++; checkPrintReady(); }; img.onerror = () => { imagesLoaded++; checkPrintReady(); };
-            img.src = `hal${hall}.png`; mapInner.appendChild(img);
+            const boothLayer = document.createElement('div'); boothLayer.className = 'absolute inset-0 pointer-events-none z-10';
+            imagesToLoad++;
+            img.onload = () => {
+                const pageW = config.orient === 'landscape' ? 1085 : 756;
+                const pageH = config.orient === 'landscape' ? 756 : 1085;
+                const ratio = Math.min(pageW / (img.naturalWidth || 1000), pageH / (img.naturalHeight || 1000));
+                const renderedW = (img.naturalWidth || 1000) * ratio;
+                const renderedH = (img.naturalHeight || 1000) * ratio;
+                renderBoothNumbersOverlay(hall, boothLayer, renderedW, renderedH, 8);
+                imagesLoaded++; checkPrintReady();
+            };
+            img.onerror = () => { imagesLoaded++; checkPrintReady(); };
+            img.src = `hal${hall}.png`;
+            mapInner.appendChild(img);
+            mapInner.appendChild(boothLayer);
 
-            const overlaysDiv = document.createElement('div'); overlaysDiv.className = 'absolute inset-0';
+            const overlaysDiv = document.createElement('div'); overlaysDiv.className = 'absolute inset-0 z-20';
             allGroups.forEach((group) => {
                 if (group.key === 'no_loc') return;
                 const box = group.box, markerWrap = document.createElement('div');
@@ -1122,12 +1189,18 @@ function zoomOut() { panzoomInstance.zoomOut(); }
 let imgLoaded = false;
 function loadMapImage() {
     const img = document.getElementById('map-image'), err = document.getElementById('map-error');
+    const boothOverlay = document.getElementById('booth-numbers-overlay');
     img.onload = () => {
         imgLoaded = true; img.classList.remove('hidden'); err.classList.add('hidden');
         const wrap = document.getElementById('panzoom-element'); wrap.style.width = `${img.naturalWidth}px`; wrap.style.height = `${img.naturalHeight}px`;
+        renderBoothNumbersOverlay(currentHall, boothOverlay, img.naturalWidth, img.naturalHeight, 12);
         fitMap(); renderHTMLOverlays();
     };
-    img.onerror = () => { img.classList.add('hidden'); err.classList.add('hidden'); document.getElementById('html-overlays').innerHTML = ''; };
+    img.onerror = () => {
+        img.classList.add('hidden'); err.classList.add('hidden');
+        document.getElementById('html-overlays').innerHTML = '';
+        if (boothOverlay) boothOverlay.innerHTML = '';
+    };
     img.src = currentHall === 'all' ? 'overview.jpg' : `hal${currentHall}.png`;
 }
 
