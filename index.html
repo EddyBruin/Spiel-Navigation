@@ -210,19 +210,23 @@
 
             <div class="absolute inset-0" id="panzoom-wrapper" style="touch-action: none;">
                 <div id="panzoom-element" class="relative w-full h-full" style="transform-origin: 0 0;">
+                    
                     <div id="map-error" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 hidden z-0">
                         <i class="fa-solid fa-image text-4xl mb-2"></i>
                         <p>Afbeelding niet gevonden.</p>
                     </div>
+
                     <img id="map-image" src="" class="absolute top-0 left-0 max-w-none bg-white hidden z-10" style="box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+                    
                     <div id="html-overlays" class="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"></div>
+                    
                     <div id="pulse-marker" class="absolute border-8 border-red-500 rounded-full pulse hidden pointer-events-none flex items-center justify-center z-30" style="width: 250px; height: 250px; transform: translate(-50%, -50%);">
                         <div class="w-6 h-6 bg-red-700 rounded-full shadow-xl"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Map Controls (Bottom Right) -->
+            <!-- Map Controls -->
             <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-40">
                 <button onclick="fitMap()" class="bg-white w-12 h-12 rounded-full shadow-xl text-slate-700 hover:text-blue-600 transition border flex items-center justify-center text-xl"><i class="fa-solid fa-location-crosshairs"></i></button>
             </div>
@@ -235,7 +239,7 @@
     <!-- Footer -->
     <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.24</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.25</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -352,6 +356,7 @@
         </div>
     </div>
 
+    <!-- LAAD HIER DE BOOTHDATA BESTAND -->
     <script src="boothdata.js"></script>
 
     <script>
@@ -384,9 +389,9 @@
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000 of A000)", notePrioNone: "Geen prioriteit",
                 loadingData: "Data synchroniseren...", loadingPdf: "PDF / Print voorbereiden...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> De fullscreen toggle is nu ook beschikbaar in landscape weergave op mobiel.</li><li><strong>Notitie Filters:</strong> Hal notities met een prioriteit filteren nu correct mee met de spellen. Notities zonder prioriteit blijven altijd bovenaan staan.</li><li><strong>Notitie UI:</strong> De locatie-badge en bewerk-knop in de actielijst zijn omgedraaid voor consistentie met de spellenlijst.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & Map Focus</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders, Preorders verbergen, of Alles.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer automatisch op mobiel, je kunt dit nu zelf togglen via het icoon!</li><li><strong>Map Focus:</strong> Bij het inladen van de plattegrond centreert hij deze nu perfect over het scherm.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld! Hal 5 is omgezet naar portret modus.</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
+                changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon (pennetje) in de lijst om ze snel aan te passen.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd en gefilterd met de spellen (zonder prioriteit blijft bovenaan).</li><li><strong>UI Update:</strong> In de spellenlijst zijn het bewerk-icoon en locatie-label omgedraaid voor consistentie, en is een foutje in de weergave van notitie-labels gefixt.</li><li><strong>Map Focus:</strong> Het automatisch inzoomen/focussen wordt nu exact één keer slim uitgevoerd direct na het inladen van de plattegrond.</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders, Preorders verbergen, of Alles.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer automatisch op mobiel, je kunt dit nu zelf togglen via het icoon! Werkt ook in Landscape.</li><li><strong>Vertalingen:</strong> De laadschermen zijn nu netjes meevertaald.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld!</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
@@ -401,9 +406,9 @@
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
                 loadingData: "Synchronizing data...", loadingPdf: "Preparing PDF / Print...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> The manual fullscreen toggle is now accessible in landscape mode on mobile devices.</li><li><strong>Note Filters:</strong> Action notes are now correctly filtered along with your games when a priority filter is active. Notes without a priority remain pinned at the top.</li><li><strong>Note UI:</strong> Swapped the location badge and edit button on action notes to match the consistency of the games list.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & Map Focus Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> The preorder button now has 3 states: Only preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Header and footer auto-hide is disabled; simply use the expand/compress button on the map view!</li><li><strong>Map Focus:</strong> Swapping halls or loading the map now perfectly centers it automatically.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs now use ascending numbers instead of letters.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area. Hall 5 has been reverted to portrait mode.</li><li><strong>Clickable Mini-map:</strong> Tap it to instantly go to the convention overview map!</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are now validated and clickable to easily locate them!</li></ul></div>",
+                changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes:</strong> You can now easily edit your hall notes via the new pen icon in the action list.</li><li><strong>Note Filters:</strong> Action notes are now correctly filtered along with your games when a priority filter is active. Notes without a priority remain pinned at the top.</li><li><strong>Note UI:</strong> Swapped the location badge and edit button on action notes to match the consistency of the games list.</li><li><strong>Map Focus:</strong> Swapping halls now automatically perfectly centers the map directly after it finishes loading.</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> The preorder button now has 3 states: Only preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Header and footer auto-hide is disabled; simply use the expand/compress button on the map view! (Also works in Landscape).</li><li><strong>Translations:</strong> Loading overlays are properly translated.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs now use ascending numbers instead of letters.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area.</li><li><strong>Clickable Mini-map:</strong> Tap it to instantly go to the convention overview map!</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are now validated and clickable to easily locate them!</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
@@ -418,9 +423,9 @@
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
                 loadingData: "Daten werden synchronisiert...", loadingPdf: "PDF / Druck wird vorbereitet...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> Der manuelle Fullscreen-Button ist nun auch im Landscape-Modus auf dem Handy verfügbar.</li><li><strong>Notizen Filter:</strong> Hallen-Notizen werden nun korrekt nach Priorität mitgefiltert, Notizen ohne Prio bleiben oben.</li><li><strong>Notizen UI:</strong> Orts-Badge und Bearbeiten-Button wurden für ein konsistentes Design getauscht.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & Map Fokus Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> Hat nun 3 Status (Nur Preorders, Keine Preorders, Alle anzeigen).</li><li><strong>Manueller Fullscreen:</strong> Autohide ist deaktiviert, nutze einfach den Button neben der Mini-Map!</li><li><strong>Map Fokus:</strong> Lade- und Zentrierverhalten der Karte verbessert.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden jetzt Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße. Halle 5 wird jetzt im Hochformat gedruckt.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und können direkt aufgerufen werden.</li></ul></div>",
+                changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten:</strong> Hallen-Notizen können nun direkt über das Stift-Icon bearbeitet werden.</li><li><strong>Notizen Filter:</strong> Hallen-Notizen werden nun korrekt nach Priorität mitsortiert, Notizen ohne Prio bleiben oben.</li><li><strong>Notizen UI:</strong> Orts-Badge und Bearbeiten-Button wurden für ein konsistentes Design getauscht, und Bug im Label-Text behoben.</li><li><strong>Map Fokus:</strong> Ein Wechsel der Halle zentriert die Karte nun exakt einmalig automatisch, sobald sie fertig geladen hat.</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> Hat nun 3 Status (Nur Preorders, Keine Preorders, Alle anzeigen).</li><li><strong>Manueller Fullscreen:</strong> Autohide ist deaktiviert, nutze einfach den Button neben der Mini-Map (auch im Querformat)!</li><li><strong>Übersetzungen:</strong> Ladebildschirme übersetzt.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden jetzt Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und können direkt aufgerufen werden.</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
@@ -436,7 +441,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.24';
+        let currentVersion = '1.25';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -475,6 +480,7 @@
         let statePreorderFilter = 0; // 0 = All, 1 = Only Preorder, 2 = Exclude Preorder
         let mapIsDragging = false;
         let isFullscreen = false;
+        let editingNoteId = null;
         
         const WORKER_URL = 'https://spiel-navigation.edbruin.workers.dev/?url=';
 
@@ -528,7 +534,7 @@
             }
             
             if (document.getElementById('tab-map').classList.contains('tab-active') || window.innerWidth >= 768) {
-                setTimeout(() => { requestAnimationFrame(() => { fitMap(); setTimeout(() => fitMap(), 100); }); }, 50);
+                setTimeout(() => requestAnimationFrame(fitMap), 50);
             }
         }
 
@@ -929,75 +935,77 @@
             list.innerHTML = '';
 
             const hallsToRender = currentHall === 'all' ? Object.keys(hallNotes) : [currentHall];
-            
+            let allNotes = [];
             hallsToRender.forEach(hall => {
                 const notesArray = hallNotes[hall] || [];
                 notesArray.forEach(note => {
                     if (stateHideVisited && note.checked) return; 
                     if (note.priority && !activePriorities.includes(note.priority)) return;
                     if (searchQuery && !note.text.toLowerCase().includes(searchQuery)) return;
-                    
-                    let bgClass = 'bg-slate-200 border-slate-300';
-                    if (note.priority) {
-                        const st = getPrioStyles(note.priority);
-                        bgClass = `${st.bgClass} ${st.borderClass}`;
-                    }
-                    if (note.checked) {
-                        bgClass = 'bg-slate-50 border-slate-300 opacity-60 grayscale';
-                    }
-
-                    let locBadge = '';
-                    if (note.location) {
-                        let badgeColor = 'bg-white text-slate-700 border-slate-200';
-                        const search = note.location.replace(/[^a-zA-Z0-9]/g, '');
-                        const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
-                        if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
-                        
-                        locBadge = '<button onclick="focusMap(\'' + note.location + '\', \'' + hall + '\'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ' + badgeColor + ' flex items-center"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ' + hall + ') ' + note.location + '</button>';
-                    }
-
-                    const li = document.createElement('li');
-                    li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${bgClass}`;
-                    
-                    let innerHtml = '<div class="flex items-center gap-3">';
-                    innerHtml += '<input type="checkbox" ' + (note.checked ? 'checked' : '') + ' onchange="toggleHallNoteChecked(\'' + hall + '\', \'' + note.id + '\')" class="mt-1 styled-chk shrink-0 accent-slate-600">';
-                    innerHtml += '<div class="flex-1 min-w-0 ' + (note.checked ? 'strike' : '') + '">';
-                    innerHtml += '<div class="flex justify-between items-center gap-2">';
-                    innerHtml += '<h3 class="font-bold text-sm text-slate-800 flex items-center flex-wrap gap-2 flex-1">';
-                    innerHtml += '<i class="fa-solid fa-list-check text-slate-500"></i> <span class="break-words">' + note.text + '</span>' + locBadge;
-                    innerHtml += '</h3>';
-                    innerHtml += '<button onclick="selectHall(\'' + hall + '\'); openHallNotes();" class="text-slate-500 hover:text-slate-800 w-8 h-8 flex items-center justify-center bg-white rounded shadow-sm border border-slate-200 shrink-0"><i class="fa-solid fa-pen-to-square text-xs"></i></button>';
-                    innerHtml += '</div>';
-                    if (currentHall === 'all' && !note.location) {
-                        innerHtml += '<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1"><i class="fa-solid fa-map"></i> Hal ' + hall + '</p>';
-                    }
-                    innerHtml += '</div></div>';
-                    li.innerHTML = innerHtml;
-                    
-                    list.appendChild(li);
+                    allNotes.push({ ...note, _hall: hall });
                 });
             });
-            
+
             const hallGames = games.filter(g => {
                 if (currentHall !== 'all' && g.hall !== currentHall) return false;
                 if (!activePriorities.includes(g.priority)) return false;
                 if (statePreorderFilter === 1 && !g.preorder) return false;
                 if (statePreorderFilter === 2 && g.preorder) return false;
                 if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                if (stateHideVisited && visited.includes(g.id)) return false;
                 return true;
             });
-            let count = 0;
 
-            hallGames.forEach(game => {
-                const isVis = visited.includes(game.id);
-                if (stateHideVisited && isVis) return;
-                count++;
+            const renderNoteObj = (note) => {
+                const hall = note._hall;
+                let bgClass = 'bg-slate-200 border-slate-300';
+                if (note.priority) {
+                    const st = getPrioStyles(note.priority);
+                    bgClass = `${st.bgClass} ${st.borderClass}`;
+                }
+                if (note.checked) {
+                    bgClass = 'bg-slate-50 border-slate-300 opacity-60 grayscale';
+                }
 
+                let locBadge = '';
+                if (note.location) {
+                    let badgeColor = 'bg-white text-slate-700 border-slate-200';
+                    const search = note.location.replace(/[^a-zA-Z0-9]/g, '');
+                    const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
+                    if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
+                    
+                    locBadge = '<button onclick="focusMap(\'' + note.location + '\', \'' + hall + '\'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ' + badgeColor + ' flex items-center"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ' + hall + ') ' + note.location + '</button>';
+                }
+
+                const li = document.createElement('li');
+                li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${bgClass}`;
+                
+                let innerHtml = '<div class="flex items-start gap-3">';
+                innerHtml += '<input type="checkbox" ' + (note.checked ? 'checked' : '') + ' onchange="toggleHallNoteChecked(\'' + hall + '\', \'' + note.id + '\')" class="mt-1 styled-chk shrink-0 accent-slate-600">';
+                innerHtml += '<div class="flex-1 min-w-0 ' + (note.checked ? 'strike' : '') + '">';
+                innerHtml += '<div class="flex items-start justify-between mb-0.5">';
+                innerHtml += '<h3 class="font-bold text-sm text-slate-800 flex items-center flex-wrap gap-2 pr-16">';
+                innerHtml += '<i class="fa-solid fa-list-check text-slate-500"></i> <span class="break-words">' + note.text + '</span>';
+                innerHtml += '</h3>';
+                innerHtml += '<div class="absolute top-2 right-2 flex gap-1.5 items-center">';
+                innerHtml += '<button onclick="selectHall(\'' + hall + '\'); openHallNotes();" class="text-slate-500 hover:text-blue-600 transition shrink-0 ml-1" title="Bewerk Notitie"><i class="fa-solid fa-pen-to-square"></i></button>';
+                innerHtml += locBadge;
+                innerHtml += '</div></div>';
+                if (currentHall === 'all' && !note.location) {
+                    innerHtml += '<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1"><i class="fa-solid fa-map"></i> Hal ' + hall + '</p>';
+                }
+                innerHtml += '</div></div>';
+                li.innerHTML = innerHtml;
+                
+                list.appendChild(li);
+            };
+
+            const renderGameObj = (game) => {
                 const styles = getPrioStyles(game.priority);
                 const noteText = userNotes[game.id] ? userNotes[game.id].text : '';
                 const { cleanName, titleLabels } = formatGameTitle(game.name);
                 
-                const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
+                const bgClass = (stateHideVisited && visited.includes(game.id)) ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
                 
                 let locationBadge = 'bg-white text-slate-700 border-slate-200';
                 if (game.boothLabel && pdfBoothData[game.hall]) {
@@ -1010,14 +1018,14 @@
                 const displayHall = currentHall === 'all' ? `(Hal ${game.hall}) ` : '';
 
                 const li = document.createElement('li');
-                li.className = `relative px-3 py-2 rounded-xl border-2 border-l-[6px] shadow-sm transition-all ${bgClass} cursor-pointer hover:shadow-md`;
+                li.className = `relative px-3 py-2 rounded-xl border-2 border-l-[6px] shadow-sm transition-all ${bgClass} cursor-pointer hover:shadow-md mb-2`;
                 li.onclick = () => toggleNote(game.id);
                 li.innerHTML = `
                     <div class="flex items-start gap-3">
-                        <input type="checkbox" ${isVis ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleVis('${game.id}')" class="mt-1 styled-chk shrink-0">
+                        <input type="checkbox" ${visited.includes(game.id) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleVis('${game.id}')" class="mt-1 styled-chk shrink-0">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between mb-0.5">
-                                <h3 class="font-bold text-sm text-slate-800 flex flex-wrap items-center gap-2 pr-16 ${isVis ? 'strike' : ''}">
+                                <h3 class="font-bold text-sm text-slate-800 flex flex-wrap items-center gap-2 pr-16 ${visited.includes(game.id) ? 'strike' : ''}">
                                     ${cleanName}${titleLabels}
                                     ${bggAnchor}
                                 </h3>
@@ -1034,8 +1042,20 @@
                         </div>
                     </div>`;
                 list.appendChild(li);
+            };
+
+            // Eerst de Notities zonder prio (zodat die niet over het hoofd gezien worden)
+            allNotes.filter(n => !n.priority).forEach(renderNoteObj);
+
+            // Dan per prioriteit groeperen (notities en spellen met zelfde prioriteit netjes onder elkaar)
+            dynamicPriorities.forEach(prio => {
+                if (!activePriorities.includes(prio)) return;
+                allNotes.filter(n => n.priority === prio).forEach(renderNoteObj);
+                hallGames.filter(g => g.priority === prio).forEach(renderGameObj);
             });
-            if(count === 0 && hallGames.length === 0 && games.length > 0) list.innerHTML += `<li class="p-6 text-center text-slate-500 italic bg-white rounded-xl border border-slate-200">${i18n[lang].noGames}</li>`;
+
+            let count = allNotes.length + hallGames.length;
+            if(count === 0 && games.length > 0) list.innerHTML += `<li class="p-6 text-center text-slate-500 italic bg-white rounded-xl border border-slate-200">${i18n[lang].noGames}</li>`;
         }
 
         function toggleVis(id) {
@@ -1068,6 +1088,19 @@
         
         function closeHallNotes() {
             document.getElementById('hall-notes-modal').classList.add('hidden');
+            editingNoteId = null;
+            document.getElementById('txt-btn-add-note').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[lang].addNoteBtn}`;
+        }
+
+        function editHallNote(hall, id) {
+            const note = hallNotes[hall].find(n => n.id === id);
+            if(note) {
+                document.getElementById('new-hnote-text').value = note.text;
+                document.getElementById('new-hnote-loc').value = note.location || '';
+                document.getElementById('new-hnote-prio').value = note.priority || '';
+                editingNoteId = id;
+                document.getElementById('txt-btn-add-note').innerHTML = `<i class="fa-solid fa-check mr-1"></i> ${i18n[lang].saveBtn}`;
+            }
         }
         
         function renderHallNotesInModal() {
@@ -1106,7 +1139,10 @@
                                 ${badge}
                             </div>
                         </div>
-                        <button onclick="deleteHallNote('${note.id}')" class="text-red-400 hover:text-red-600 p-2 border border-transparent hover:border-red-200 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex gap-1 shrink-0">
+                            <button onclick="editHallNote('${currentHall}', '${note.id}')" class="text-slate-400 hover:text-blue-600 p-2 border border-transparent hover:border-blue-200 rounded transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteHallNote('${note.id}')" class="text-red-400 hover:text-red-600 p-2 border border-transparent hover:border-red-200 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             });
@@ -1130,13 +1166,25 @@
             }
 
             if(!hallNotes[currentHall]) hallNotes[currentHall] = [];
-            hallNotes[currentHall].push({
-                id: 'hn_' + Date.now(),
-                text: inputTxt,
-                location: inputLoc,
-                priority: inputPrio,
-                checked: false
-            });
+            
+            if (editingNoteId) {
+                const note = hallNotes[currentHall].find(n => n.id === editingNoteId);
+                if(note) {
+                    note.text = inputTxt;
+                    note.location = inputLoc;
+                    note.priority = inputPrio;
+                }
+                editingNoteId = null;
+                document.getElementById('txt-btn-add-note').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[lang].addNoteBtn}`;
+            } else {
+                hallNotes[currentHall].push({
+                    id: 'hn_' + Date.now(),
+                    text: inputTxt,
+                    location: inputLoc,
+                    priority: inputPrio,
+                    checked: false
+                });
+            }
 
             localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
             document.getElementById('new-hnote-text').value = '';
@@ -1205,7 +1253,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_24', 'V1_23', 'V1_22', 'V1_0'];
+            const versions = ['V1_25', 'V1_24', 'V1_23', 'V1_22', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1425,7 +1473,7 @@
                     mapScaler.className = 'relative w-full h-full flex items-center justify-center';
                     
                     const mapInner = document.createElement('div');
-                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.className = 'relative inline-block';
                     mapInner.style.transform = `scale(${config.scale})`;
                     mapInner.style.transformOrigin = 'center center';
 
@@ -1553,7 +1601,7 @@
                 document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
                 document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
                 if(tab === 'map') {
-                    setTimeout(() => { fitMap(); setTimeout(() => fitMap(), 100); }, 50);
+                    setTimeout(() => requestAnimationFrame(fitMap), 50);
                 }
             }
         }
@@ -1582,7 +1630,7 @@
                     document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
                     document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
                 }
-                requestAnimationFrame(() => { fitMap(); setTimeout(() => fitMap(), 100); });
+                requestAnimationFrame(fitMap);
             });
 
             const wrap = document.getElementById('panzoom-wrapper');
@@ -1590,7 +1638,6 @@
             wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
         }
 
-        let mapFitted = false;
         function initPanzoom() {
             const el = document.getElementById('panzoom-element');
             panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1, cursor: 'default' });
@@ -1634,6 +1681,9 @@
             }, 10);
         }
 
+        function zoomIn() { panzoomInstance.zoomIn(); }
+        function zoomOut() { panzoomInstance.zoomOut(); }
+
         let imgLoaded = false;
         function loadMapImage() {
             const img = document.getElementById('map-image');
@@ -1649,7 +1699,6 @@
                 wrap.style.height = `${img.naturalHeight}px`;
 
                 fitMap();
-                setTimeout(() => fitMap(), 100);
                 renderHTMLOverlays();
             };
             
