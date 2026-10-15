@@ -195,7 +195,7 @@
 
             <!-- Toggle UI & Mini Map Overview (Top Right) -->
             <div class="absolute top-4 right-4 flex items-start justify-end gap-2 z-40 pointer-events-none">
-                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto hidden">
+                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto md:hidden">
                     <i id="icon-fullscreen" class="fa-solid fa-expand"></i>
                 </button>
                 <div id="mini-map-container" onclick="selectHall('all')" class="cursor-pointer pointer-events-auto w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md p-1 transition-opacity hidden hover:scale-105">
@@ -239,7 +239,7 @@
     <!-- Footer -->
     <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
         <div class="flex items-center gap-3">
-            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.24</button>
+            <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.23</button>
             <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
         </div>
         <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -356,7 +356,7 @@
         </div>
     </div>
 
-    <!-- LAAD HIER DE BOOTHDATA BESTAND -->
+    <!-- LAAD HIER DE BOOTHDATA BESTAND IN PLAATS VAN VIA FETCH -->
     <script src="boothdata.js"></script>
 
     <script>
@@ -389,9 +389,8 @@
                 pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print",
                 bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000 of A000)", notePrioNone: "Geen prioriteit",
                 loadingData: "Data synchroniseren...", loadingPdf: "PDF / Print voorbereiden...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> De fullscreen toggle is nu ook beschikbaar in landscape weergave op mobiel.</li><li><strong>Notitie Filters:</strong> Hal notities met een prioriteit filteren nu correct mee met de spellen. Notities zonder prioriteit blijven altijd bovenaan staan.</li><li><strong>Notitie UI:</strong> De locatie-badge en bewerk-knop in de actielijst zijn omgedraaid voor consistentie met de spellenlijst.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders, Preorders verbergen, of Alles.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer automatisch op mobiel, je kunt dit nu zelf togglen via het icoon!</li><li><strong>Map Focus:</strong> Bij het inladen van de plattegrond centreert hij deze nu perfect over het scherm.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Volledig vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld!</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders tonen, preorders uitsluiten (verbergen), of alles tonen.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer zomaar op mobiel, je kunt dit nu zelf togglen via het icoon op de map!</li><li><strong>Map Focus:</strong> Bij het inladen van de plattegrond centreert hij deze nu perfect over het scherm.</li><li><strong>Vertalingen:</strong> De laadschermen zijn nu netjes meevertaald.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Volledig vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld!</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Preorder Filter:</strong> Filter knop toegevoegd in de weergave.</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
                 btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
             },
@@ -406,9 +405,8 @@
                 pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print",
                 bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
                 loadingData: "Synchronizing data...", loadingPdf: "Preparing PDF / Print...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> The manual fullscreen toggle is now accessible in landscape mode on mobile devices.</li><li><strong>Note Filters:</strong> Action notes are now correctly filtered along with your games when a priority filter is active. Notes without a priority remain pinned at the top.</li><li><strong>Note UI:</strong> Swapped the location badge and edit button on action notes to match the consistency of the games list.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> The preorder button now has 3 states: Only preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Header and footer auto-hide is disabled; simply use the expand/compress button on the map view!</li><li><strong>Map Focus:</strong> Swapping halls or loading the map now perfectly centers it automatically.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs now use ascending numbers instead of letters.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area.</li><li><strong>Clickable Mini-map:</strong> Tap it to instantly go to the convention overview map!</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are now validated and clickable to easily locate them!</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> The preorder button now has 3 states: Only show preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Header and footer auto-hide is disabled; simply use the expand/compress button on the map view!</li><li><strong>Map Focus:</strong> Swapping halls or loading the map now perfectly centers it automatically.</li><li><strong>Translations:</strong> Loading overlays are properly translated.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs now use ascending numbers instead of letters.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area.</li><li><strong>Clickable Mini-map:</strong> Tap it to instantly go to the convention overview map!</li><li><strong>Preorder Filter:</strong> Integrated quick toggle for preorders.</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are now validated and clickable to easily locate them!</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
                 btnLoadList: "Load List", btnCancel: "Cancel"
             },
@@ -423,9 +421,8 @@
                 pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken",
                 bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
                 loadingData: "Daten werden synchronisiert...", loadingPdf: "PDF / Druck wird vorbereitet...",
-                changelogV1_24: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.24 - UI & Filtering Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Landscape Fullscreen:</strong> Der manuelle Fullscreen-Button ist nun auch im Landscape-Modus auf dem Handy verfügbar.</li><li><strong>Notizen Filter:</strong> Hallen-Notizen werden nun korrekt nach Priorität mitgefiltert, Notizen ohne Prio bleiben oben.</li><li><strong>Notizen UI:</strong> Orts-Badge und Bearbeiten-Button wurden für ein konsistentes Design getauscht.</li></ul></div>",
-                changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-95'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> Hat nun 3 Status (Nur Preorders, Keine Preorders, Alle anzeigen).</li><li><strong>Manueller Fullscreen:</strong> Autohide ist deaktiviert, nutze einfach den Button neben der Mini-Map!</li><li><strong>Map Fokus:</strong> Lade- und Zentrierverhalten der Karte verbessert.</li></ul></div>",
-                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden jetzt Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und können direkt aufgerufen werden.</li></ul></div>",
+                changelogV1_23: "<div class='border-l-4 border-emerald-500 pl-3 mb-4'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> Hat nun 3 Status (Nur Preorders, Keine Preorders, Alle anzeigen).</li><li><strong>Manueller Fullscreen:</strong> Autohide ist deaktiviert, nutze einfach den Button neben der Mini-Map!</li><li><strong>Map Fokus:</strong> Lade- und Zentrierverhalten der Karte verbessert.</li><li><strong>Übersetzungen:</strong> Ladebildschirme übersetzt.</li></ul></div>",
+                changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-90'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden jetzt Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße.</li><li><strong>Klickbare Mini-Map:</strong> Ein Klick führt direkt zur Gesamtübersicht.</li><li><strong>Preorder-Filter:</strong> Integrierter Schnellfilter in der Liste.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und können direkt aufgerufen werden.</li></ul></div>",
                 changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
                 btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
             }
@@ -441,7 +438,7 @@
         ];
         
         let lang = 'en'; 
-        let currentVersion = '1.24';
+        let currentVersion = '1.23';
         let games = [];
         let visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
         
@@ -500,13 +497,6 @@
             }
 
             checkAndLoadData();
-            
-            // Toon de fullscreen knop voor mobiel direct bij inladen (zonder auto-hide)
-            const isMobile = window.matchMedia("(max-width: 1024px)").matches || window.innerHeight <= 600;
-            if (isMobile) {
-                const btn = document.getElementById('btn-fullscreen-toggle');
-                if(btn) btn.classList.remove('hidden');
-            }
         });
 
         function toggleFullscreen() {
@@ -939,8 +929,6 @@
                 const notesArray = hallNotes[hall] || [];
                 notesArray.forEach(note => {
                     if (stateHideVisited && note.checked) return; 
-                    if (note.priority && !activePriorities.includes(note.priority)) return;
-                    if (searchQuery && !note.text.toLowerCase().includes(searchQuery)) return;
                     
                     let bgClass = 'bg-slate-200 border-slate-300';
                     if (note.priority) {
@@ -958,7 +946,7 @@
                         const found = Object.keys(pdfBoothData[hall] || {}).some(k => k.includes(search) || search.includes(k));
                         if (!found && Object.keys(pdfBoothData[hall] || {}).length > 0) badgeColor = 'bg-red-500 text-white border-red-600';
                         
-                        locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor}"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
+                        locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} ml-2 inline-block align-middle mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
                     }
 
                     const li = document.createElement('li');
@@ -967,16 +955,13 @@
                         <div class="flex items-start gap-3">
                             <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleHallNoteChecked('${hall}', '${note.id}')" class="mt-1 styled-chk shrink-0 accent-slate-600">
                             <div class="flex-1 min-w-0 ${note.checked ? 'strike' : ''}">
-                                <div class="flex items-start justify-between mb-0.5">
-                                    <h3 class="font-bold text-sm text-slate-800 flex flex-wrap items-center gap-2 pr-16">
-                                        <i class="fa-solid fa-list-check text-slate-500"></i> <span class="break-words">${note.text}</span>
-                                        <button onclick="selectHall('${hall}'); openHallNotes();" class="text-slate-500 hover:text-blue-600 transition shrink-0 ml-1" title="Bewerk Notitie"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <div class="flex justify-between items-center mb-1">
+                                    <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                                        <i class="fa-solid fa-list-check text-slate-500"></i> <span class="break-words w-full">${note.text} ${locBadge}</span>
                                     </h3>
-                                    <div class="absolute top-2 right-2 flex gap-1.5 items-center">
-                                        ${locBadge}
-                                    </div>
+                                    <button onclick="selectHall('${hall}'); openHallNotes();" class="text-slate-500 hover:text-slate-800 px-2 py-1 bg-white rounded shadow-sm border border-slate-200"><i class="fa-solid fa-edit text-xs"></i></button>
                                 </div>
-                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1"><i class="fa-solid fa-map"></i> Hal \${hall}</p>` : ''}
+                                ${currentHall === 'all' ? `<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider"><i class="fa-solid fa-map"></i> Hal ${hall}</p>` : ''}
                             </div>
                         </div>
                     `;
@@ -1090,7 +1075,7 @@
                 let badge = '';
                 if(note.priority) {
                     const st = getPrioStyles(note.priority);
-                    badge += '<span class="bg-white border ' + st.borderClass + ' ' + st.bgClass + ' px-1.5 py-0.5 rounded font-bold">' + note.priority + '</span>';
+                    badge += `<span class="bg-white border ${st.borderClass} ${st.bgClass} px-1.5 py-0.5 rounded font-bold">${note.priority}</span>`;
                 }
                 
                 let locBadge = '';
@@ -1211,7 +1196,7 @@
         }
 
         function openChangelog() {
-            const versions = ['V1_24', 'V1_23', 'V1_22', 'V1_0'];
+            const versions = ['V1_23', 'V1_22', 'V1_0'];
             let clHtml = '';
             versions.forEach(v => {
                 if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v];
@@ -1313,4 +1298,584 @@
 
                         const prioCounts = {};
                         hGames.forEach(g => {
-                            prioCounts[g.priority] = (prioCounts[g.priority] || 0) + 1
+                            prioCounts[g.priority] = (prioCounts[g.priority] || 0) + 1;
+                        });
+
+                        const markerWrap = document.createElement('div');
+                        markerWrap.className = 'absolute bg-white/95 border border-slate-300 rounded shadow-lg p-2 flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2';
+                        markerWrap.style.left = `${coords.x}%`;
+                        markerWrap.style.top = `${coords.y}%`;
+
+                        let html = `<span class="font-bold text-[14px] text-slate-800 border-b border-slate-200 mb-1.5 w-full text-center pb-0.5">Hal ${hallStr}</span><div class="flex flex-wrap gap-1.5 justify-center max-w-[120px]">`;
+                        
+                        dynamicPriorities.forEach(prio => {
+                            if (prioCounts[prio]) {
+                                const styles = getPrioStyles(prio);
+                                html += `<div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-3 h-3 rounded-full border border-black shadow-sm shrink-0" style="background-color: ${styles.hex}"></div><span class="text-[12px] font-bold text-slate-700">${prioCounts[prio]}</span></div>`;
+                            }
+                        });
+                        html += `</div>`;
+                        markerWrap.innerHTML = html;
+                        overlaysDiv.appendChild(markerWrap);
+                    }
+                    mapWrap.appendChild(overlaysDiv);
+                    pageDiv.appendChild(mapWrap);
+
+                } else {
+                    let gameCounter = 1;
+                    const gameNumbers = new Map();
+                    hallGames.forEach(g => {
+                        gameNumbers.set(g.id, gameCounter++);
+                    });
+
+                    let boothGroupsMap = {};
+                    hallGames.forEach(g => {
+                        if (!g.boothLabel) return;
+                        const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                        const match = Object.entries(pdfBoothData[hall] || {}).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                        if (match) {
+                            const key = match[0];
+                            if (!boothGroupsMap[key]) boothGroupsMap[key] = { key: key, box: match[1], games: [], label: g.boothLabel };
+                            boothGroupsMap[key].games.push(g);
+                        }
+                    });
+
+                    const allGroups = Object.values(boothGroupsMap);
+                    
+                    let leftGroups = [], rightGroups = [];
+                    if (isLR) {
+                        leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
+                        rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
+                    } else if (isTB) {
+                        leftGroups = allGroups.filter(g => g.box.y < 50).sort((a,b) => a.box.x - b.box.x); 
+                        rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
+                    }
+
+                    // GROTER FONT (v1.19 size) met compacte mb/gap (v1.17 layout) + portrait offset
+                    const createColumnHTML = (groups, isLeft) => {
+                        if(isLR) {
+                            let colHtml = `<div class="absolute ${isLeft ? 'left-0' : '-right-[50px]'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0 overflow-hidden bg-white/40">`;
+                            groups.forEach(group => {
+                                const pubs = groupGamesByPublisher(group.games);
+                                colHtml += `
+                                    <div class="mb-0.5">
+                                        <div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>
+                                        ${Object.entries(pubs).map(([pub, gs]) => `
+                                            <div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
+                                                const styles = getPrioStyles(g.priority);
+                                                const { cleanName, titleLabels } = formatGameTitle(g.name, true);
+                                                const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
+                                                const num = gameNumbers.get(g.id);
+                                                return `
+                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
+                                                    <div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>
+                                                </div>
+                                                `;
+                                            }).join('')}
+                                        `).join('')}
+                                    </div>
+                                `;
+                            });
+                            colHtml += `</div>`;
+                            return colHtml;
+                        } else {
+                            let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10 bg-white/40">`;
+                            groups.forEach(group => {
+                                const pubs = groupGamesByPublisher(group.games);
+                                colHtml += `
+                                    <div class="mb-0.5 w-44 shrink-0">
+                                        <div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div>
+                                        <div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>
+                                        ${Object.entries(pubs).map(([pub, gs]) => `
+                                            <div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>${gs.map(g => {
+                                                const styles = getPrioStyles(g.priority);
+                                                const { cleanName, titleLabels } = formatGameTitle(g.name, true);
+                                                const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName;
+                                                const num = gameNumbers.get(g.id);
+                                                return `
+                                                <div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]">
+                                                    <div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div>
+                                                    <span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>
+                                                </div>
+                                                `;
+                                            }).join('')}
+                                        `).join('')}
+                                    </div>
+                                `;
+                            });
+                            colHtml += `</div>`;
+                            return colHtml;
+                        }
+                    };
+
+                    const mapWrap = document.createElement('div');
+                    mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
+
+                    const mapScaler = document.createElement('div');
+                    mapScaler.className = 'relative w-full h-full flex items-center justify-center';
+                    
+                    const mapInner = document.createElement('div');
+                    mapInner.className = 'relative inline-block'; // wraps tightly around the image
+                    mapInner.style.transform = `scale(${config.scale})`;
+                    mapInner.style.transformOrigin = 'center center';
+
+                    const img = new Image();
+                    img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
+                    imagesToLoad++;
+                    img.onload = () => { imagesLoaded++; checkPrintReady(); };
+                    img.onerror = () => { imagesLoaded++; checkPrintReady(); };
+                    img.src = `hal${hall}.png`;
+                    
+                    mapInner.appendChild(img);
+
+                    const overlaysDiv = document.createElement('div');
+                    overlaysDiv.className = 'absolute inset-0';
+                    
+                    allGroups.forEach((group) => {
+                        const box = group.box;
+                        const markerWrap = document.createElement('div');
+                        markerWrap.className = 'absolute flex flex-col items-center justify-center z-20 print-marker-wrap';
+                        markerWrap.style.left = `${box.x}%`;
+                        markerWrap.style.top = `${box.y}%`;
+                        markerWrap.dataset.scale = "1";
+                        markerWrap.dataset.offx = "0";
+                        markerWrap.dataset.offy = "0";
+                        markerWrap.style.transform = `translate(-50%, -50%) scale(1)`;
+
+                        let markerHTML = `<div class="flex flex-wrap justify-center gap-[1px]">`;
+                        group.games.forEach(g => {
+                            const styles = getPrioStyles(g.priority);
+                            const num = gameNumbers.get(g.id);
+                            markerHTML += `<div class="w-[18px] h-[18px] rounded-full border border-black flex items-center justify-center text-[10px] font-bold text-black shadow-sm" style="background-color: ${styles.hexTrans};">${num}</div>`;
+                        });
+                        markerHTML += `</div>`;
+                        markerWrap.innerHTML = markerHTML;
+                        overlaysDiv.appendChild(markerWrap);
+                    });
+
+                    mapInner.appendChild(overlaysDiv);
+                    mapScaler.appendChild(mapInner);
+                    mapWrap.appendChild(mapScaler);
+                    
+                    pageDiv.appendChild(mapWrap);
+                    pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(leftGroups, true));
+                    pageDiv.insertAdjacentHTML('beforeend', createColumnHTML(rightGroups, false));
+                }
+
+                printContainer.appendChild(pageDiv);
+            });
+
+            if (imagesToLoad === 0) checkPrintReady(); 
+        }
+
+        // Resolves overlaps of map labels before printing
+        function resolveCollisions() {
+            const pages = document.querySelectorAll('.print-map-wrapper, .page-break'); 
+            pages.forEach(page => {
+                const markers = Array.from(page.querySelectorAll('.print-marker-wrap'));
+                let overlaps = true;
+                let iterations = 0;
+                const MAX_ITER = 15; 
+
+                while (overlaps && iterations < MAX_ITER) {
+                    overlaps = false;
+                    for (let i = 0; i < markers.length; i++) {
+                        for (let j = i + 1; j < markers.length; j++) {
+                            const r1 = markers[i].getBoundingClientRect();
+                            const r2 = markers[j].getBoundingClientRect();
+                            if (!r1 || !r2 || r1.width === 0) continue;
+
+                            if (!(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)) {
+                                overlaps = true;
+                                
+                                let s1 = Math.max(0.65, parseFloat(markers[i].dataset.scale) * 0.9);
+                                let s2 = Math.max(0.65, parseFloat(markers[j].dataset.scale) * 0.9);
+                                markers[i].dataset.scale = s1;
+                                markers[j].dataset.scale = s2;
+
+                                let cx1 = r1.left + r1.width / 2;
+                                let cy1 = r1.top + r1.height / 2;
+                                let cx2 = r2.left + r2.width / 2;
+                                let cy2 = r2.top + r2.height / 2;
+
+                                let dx = cx1 - cx2;
+                                let dy = cy1 - cy2;
+                                
+                                if(dx === 0 && dy === 0) { dx = (Math.random()-0.5)*2; dy = (Math.random()-0.5)*2; }
+
+                                let dist = Math.sqrt(dx*dx + dy*dy);
+                                
+                                let pushX = (dx / dist) * 6; 
+                                let pushY = (dy / dist) * 6;
+
+                                let ox1 = parseFloat(markers[i].dataset.offx) + pushX;
+                                let oy1 = parseFloat(markers[i].dataset.offy) + pushY;
+                                let ox2 = parseFloat(markers[j].dataset.offx) - pushX;
+                                let oy2 = parseFloat(markers[j].dataset.offy) - pushY;
+
+                                markers[i].dataset.offx = ox1;
+                                markers[i].dataset.offy = oy1;
+                                markers[j].dataset.offx = ox2;
+                                markers[j].dataset.offy = oy2;
+
+                                markers[i].style.transform = `translate(calc(-50% + ${ox1}px), calc(-50% + ${oy1}px)) scale(${s1})`;
+                                markers[j].style.transform = `translate(calc(-50% + ${ox2}px), calc(-50% + ${oy2}px)) scale(${s2})`;
+                            }
+                        }
+                    }
+                    iterations++;
+                }
+            });
+        }
+
+        window.addEventListener('afterprint', () => {
+            document.getElementById('print-container').innerHTML = '';
+        });
+
+        // --- Tabs / Panzoom / UI ---
+        function switchTab(tab) {
+            document.getElementById('tab-list').classList.toggle('tab-active', tab === 'list');
+            document.getElementById('tab-list').classList.toggle('text-slate-600', tab !== 'list');
+            document.getElementById('tab-map').classList.toggle('tab-active', tab === 'map');
+            document.getElementById('tab-map').classList.toggle('text-slate-600', tab !== 'map');
+            
+            if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display !== 'none') {
+                document.getElementById('sidebar').style.display = tab === 'list' ? 'block' : 'none';
+                document.getElementById('map-container').style.display = tab === 'map' ? 'flex' : 'none';
+                if(tab === 'map') {
+                    setTimeout(() => { fitMap(); setTimeout(() => fitMap(), 100); }, 50);
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    document.getElementById('main-header').classList.remove('hidden');
+                    document.getElementById('main-footer').classList.remove('hidden');
+                }
+
+                if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display === 'none') {
+                    document.getElementById('sidebar').style.display = '';
+                    document.getElementById('map-container').style.display = '';
+                } else {
+                    const isList = document.getElementById('tab-list').classList.contains('tab-active');
+                    document.getElementById('sidebar').style.display = isList ? 'block' : 'none';
+                    document.getElementById('map-container').style.display = isList ? 'none' : 'flex';
+                }
+                requestAnimationFrame(() => { fitMap(); setTimeout(() => fitMap(), 100); });
+            });
+
+            const wrap = document.getElementById('panzoom-wrapper');
+            wrap.addEventListener('panzoompan', () => { mapIsDragging = true; });
+            wrap.addEventListener('pointerdown', () => { mapIsDragging = false; });
+        }
+
+        function initPanzoom() {
+            const el = document.getElementById('panzoom-element');
+            panzoomInstance = Panzoom(el, { maxScale: 8, minScale: 0.1, contain: 'outside', startScale: 1, cursor: 'default' });
+            
+            el.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
+            el.addEventListener('panzoomzoom', (e) => {
+                currentScale = e.detail.scale;
+                updateDynamicStyles();
+            });
+        }
+
+        function fitMap(callback) {
+            const img = document.getElementById('map-image');
+            const wrap = document.getElementById('panzoom-wrapper');
+            if(!img || img.classList.contains('hidden')) return;
+            
+            if (wrap.clientWidth === 0) {
+                requestAnimationFrame(() => fitMap(callback));
+                return;
+            }
+            
+            let scaleX = wrap.clientWidth / img.naturalWidth;
+            let scaleY = wrap.clientHeight / img.naturalHeight;
+            let fitScale = Math.min(scaleX, scaleY) * 0.95; 
+            
+            if(currentHall === 'all') {
+                fitScale *= 0.5; 
+            }
+            
+            panzoomInstance.setOptions({ minScale: fitScale / 2 });
+            panzoomInstance.zoom(fitScale, { animate: true });
+            
+            const panX = (wrap.clientWidth - (img.naturalWidth * fitScale)) / 2;
+            const panY = (wrap.clientHeight - (img.naturalHeight * fitScale)) / 2;
+
+            setTimeout(() => {
+                panzoomInstance.pan(panX, panY, { animate: true, force: true });
+                currentScale = fitScale;
+                updateDynamicStyles();
+                if(callback) callback(fitScale);
+            }, 10);
+        }
+
+        function zoomIn() { panzoomInstance.zoomIn(); }
+        function zoomOut() { panzoomInstance.zoomOut(); }
+
+        let imgLoaded = false;
+        function loadMapImage() {
+            const img = document.getElementById('map-image');
+            const err = document.getElementById('map-error');
+            
+            img.onload = () => {
+                imgLoaded = true;
+                img.classList.remove('hidden');
+                err.classList.add('hidden');
+                
+                const wrap = document.getElementById('panzoom-element');
+                wrap.style.width = `${img.naturalWidth}px`; 
+                wrap.style.height = `${img.naturalHeight}px`;
+
+                fitMap();
+                setTimeout(() => fitMap(), 100);
+                renderHTMLOverlays();
+            };
+            
+            img.onerror = () => {
+                img.classList.add('hidden');
+                err.classList.add('hidden');
+                document.getElementById('html-overlays').innerHTML = '';
+            };
+            
+            img.src = currentHall === 'all' ? 'overview.jpg' : `hal${currentHall}.png`;
+        }
+
+        function focusMap(boothLabel, fallbackHall) {
+            if(!boothLabel) return;
+            
+            if (currentHall === 'all' && fallbackHall) {
+                selectHall(fallbackHall);
+            }
+
+            const searchStr = boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+            const hallData = pdfBoothData[currentHall] || {};
+            
+            const target = Object.entries(hallData).find(([k]) => k.includes(searchStr) || searchStr.includes(k))?.[1];
+
+            if(target) {
+                switchTab('map');
+                
+                const executeFocus = () => {
+                    const wrap = document.getElementById('panzoom-wrapper');
+                    if (wrap.clientWidth === 0) {
+                        requestAnimationFrame(executeFocus);
+                        return;
+                    }
+                    
+                    const img = document.getElementById('map-image');
+                    const pxX = (target.x / 100) * img.naturalWidth;
+                    const pxY = (target.y / 100) * img.naturalHeight;
+                    
+                    const pulse = document.getElementById('pulse-marker');
+                    pulse.style.left = `${pxX}px`; 
+                    pulse.style.top = `${pxY}px`;
+                    
+                    const panX = (wrap.clientWidth / 2) - (pxX * currentScale);
+                    const panY = (wrap.clientHeight / 2) - (pxY * currentScale);
+                    panzoomInstance.pan(panX, panY, { animate: true });
+                    
+                    pulse.classList.remove('hidden');
+                    if(window.pulseTimeout) clearTimeout(window.pulseTimeout);
+                    window.pulseTimeout = setTimeout(() => pulse.classList.add('hidden'), 10000);
+                };
+                
+                setTimeout(executeFocus, 50);
+            } else {
+                alert(`Locatie '${boothLabel}' niet gevonden op de kaart.`);
+            }
+        }
+
+        function renderHTMLOverlays() {
+            const container = document.getElementById('html-overlays');
+            container.innerHTML = '';
+            const img = document.getElementById('map-image');
+            if (img.classList.contains('hidden')) return;
+
+            if (currentHall === 'all') {
+                container.classList.add('show-labels'); 
+                for (let i = 1; i <= 8; i++) {
+                    const hallStr = i.toString();
+                    const hGames = games.filter(g => g.hall === hallStr && (!stateHideVisited || !visited.includes(g.id)) && activePriorities.includes(g.priority) && (statePreorderFilter === 0 || (statePreorderFilter === 1 && g.preorder) || (statePreorderFilter === 2 && !g.preorder)));
+                    if (hGames.length === 0) continue;
+
+                    const coords = OVERVIEW_COORDS[hallStr];
+                    if (!coords) continue;
+
+                    const prioCounts = {};
+                    hGames.forEach(g => {
+                        prioCounts[g.priority] = (prioCounts[g.priority] || 0) + 1;
+                    });
+
+                    const markerWrap = document.createElement('div');
+                    markerWrap.className = 'absolute bg-white/95 border border-slate-300 rounded shadow-lg p-2 flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer hover:scale-110 transition-transform';
+                    markerWrap.style.left = `${coords.x}%`;
+                    markerWrap.style.top = `${coords.y}%`;
+                    markerWrap.onclick = () => selectHall(hallStr);
+
+                    let html = `<span class="font-bold text-[10px] sm:text-xs text-slate-800 border-b border-slate-200 mb-1.5 w-full text-center pb-0.5">Hal ${hallStr}</span><div class="flex flex-wrap gap-1.5 justify-center max-w-[80px] sm:max-w-[120px]">`;
+                    
+                    dynamicPriorities.forEach(prio => {
+                        if (prioCounts[prio]) {
+                            const styles = getPrioStyles(prio);
+                            html += `<div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border border-black shadow-sm shrink-0" style="background-color: ${styles.hex}"></div><span class="text-[9px] sm:text-[10px] font-bold text-slate-700">${prioCounts[prio]}</span></div>`;
+                        }
+                    });
+                    html += `</div>`;
+                    markerWrap.innerHTML = html;
+                    container.appendChild(markerWrap);
+                }
+                return;
+            }
+
+            if (!pdfBoothData[currentHall]) return;
+
+            let boothGroupsMap = {}; 
+            
+            const hGames = games.filter(g => {
+                if (g.hall !== currentHall) return false;
+                if (stateHideVisited && visited.includes(g.id)) return false;
+                if (!activePriorities.includes(g.priority)) return false;
+                if (statePreorderFilter === 1 && !g.preorder) return false;
+                if (statePreorderFilter === 2 && g.preorder) return false;
+                if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
+                return true;
+            });
+
+            hGames.forEach(g => {
+                if (!g.boothLabel) return;
+                const searchStr = g.boothLabel.replace(/[^a-zA-Z0-9]/g, '');
+                const match = Object.entries(pdfBoothData[currentHall]).find(([k]) => k.includes(searchStr) || searchStr.includes(k));
+                if (match) {
+                    const key = match[0];
+                    if (!boothGroupsMap[key]) boothGroupsMap[key] = { box: match[1], games: [] };
+                    boothGroupsMap[key].games.push(g);
+                }
+            });
+
+            Object.entries(boothGroupsMap).forEach(([boothKey, group]) => {
+                const box = group.box;
+                
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'absolute booth-group pointer-events-auto';
+                groupDiv.style.left = `${box.x}%`;
+                groupDiv.style.top = `${box.y + box.h}%`;
+                groupDiv.style.marginTop = '1px'; 
+                
+                const gameIdsStr = group.games.map(g => g.id).join(',');
+                const label = group.games[0].boothLabel;
+
+                let htmlContent = '';
+                group.games.forEach(g => {
+                    const styles = getPrioStyles(g.priority);
+                    const { cleanName, titleLabels } = formatGameTitle(g.name);
+                    htmlContent += `
+                        <div class="flex items-center gap-1 cursor-pointer transition-transform hover:scale-110" onclick="handleOverlayClick('${gameIdsStr}', '${label}', event)">
+                            <div class="dot-marker rounded-full border-2 border-white shadow-sm shrink-0" style="background-color: ${styles.hexTrans}; border-color: ${styles.hex}"></div>
+                            <span class="game-label text-[11px] font-bold text-slate-800 bg-white/90 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap border border-slate-300 items-center">
+                                ${cleanName}${titleLabels}
+                            </span>
+                        </div>
+                    `;
+                });
+
+                groupDiv.innerHTML = htmlContent;
+                container.appendChild(groupDiv);
+            });
+
+            updateDynamicStyles(); 
+        }
+
+        function updateDynamicStyles() {
+            if (currentHall === 'all') return; 
+            
+            const styleEl = document.getElementById('dynamic-styles');
+            const overlays = document.getElementById('html-overlays');
+            
+            let desiredVisualSize = 12;
+            let cssSize = desiredVisualSize / currentScale;
+            
+            let textCss = 18 / currentScale; 
+            let borderCss = 1.5 / currentScale; 
+            let padY = 3 / currentScale; 
+            let padX = 6 / currentScale; 
+            let radiusCSS = 6 / currentScale; 
+            let gapCss = 2 / currentScale;
+            let marginCss = 1 / currentScale;
+
+            styleEl.innerHTML = `
+                .dot-marker { width: ${cssSize}px; height: ${cssSize}px; border-width: ${borderCss}px; }
+                .game-label { font-size: ${textCss}px; padding: ${padY}px ${padX}px; border-width: ${borderCss}px; border-radius: ${radiusCSS}px; }
+                .booth-group { gap: ${gapCss}px; margin-top: ${marginCss}px; }
+                .show-labels .booth-group { gap: ${gapCss}px; }
+            `;
+
+            if (!overlays) return;
+            const img = document.getElementById('map-image');
+            const wrap = document.getElementById('panzoom-wrapper');
+            if (!img || !wrap || wrap.clientWidth === 0) return;
+            
+            const fitScale = Math.min(wrap.clientWidth / img.naturalWidth, wrap.clientHeight / img.naturalHeight);
+            
+            if (currentScale > fitScale * 1.5) {
+                overlays.classList.add('show-labels');
+            } else {
+                overlays.classList.remove('show-labels');
+            }
+        }
+
+        window.handleOverlayClick = function(gameIdsStr, boothLabel, event) {
+            event.stopPropagation();
+            if (mapIsDragging) return; 
+            
+            const ids = gameIdsStr.split(',');
+            const matchGames = games.filter(g => ids.includes(g.id));
+            if(matchGames.length > 0) {
+                showModal(matchGames, boothLabel);
+            }
+        };
+
+        function showModal(matchGames, boothLabel) {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
+            document.getElementById('modal-title').innerText = `${boothLabel}`;
+
+            matchGames.forEach(game => {
+                const isVis = visited.includes(game.id);
+                const noteText = userNotes[game.id] ? userNotes[game.id].text : '';
+                const styles = getPrioStyles(game.priority);
+                const { cleanName, titleLabels } = formatGameTitle(game.name);
+                const bgClass = isVis ? 'bg-slate-50 opacity-50 grayscale border-slate-300' : `${styles.bgClass} ${styles.borderClass}`;
+
+                const bggAnchor = game.bggLink ? `<a href="${game.bggLink}" target="_blank" class="shrink-0" onclick="event.stopPropagation()"><img src="https://eddybruin.github.io/SoT-Review-app/BGG.svg" class="w-4 h-4 hover:scale-110 transition" alt="BGG"></a>` : '';
+
+                content.innerHTML += `
+                    <div class="p-3 rounded-xl border-2 border-l-8 shadow-sm mb-3 ${bgClass}">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${isVis ? 'checked' : ''} onchange="toggleVis('${game.id}'); closeModal();" class="mt-1 styled-chk">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h4 class="font-bold text-lg text-slate-800 pr-10 flex flex-wrap items-center gap-2 ${isVis ? 'strike' : ''}">
+                                        ${cleanName}${titleLabels}
+                                        ${bggAnchor}
+                                    </h4>
+                                    ${game.preorder ? '<i class="fa-solid fa-money-bill-wave text-green-600 text-xl"></i>' : ''}
+                                </div>
+                                <p class="text-xs text-slate-600 mb-2"><i class="fa-solid fa-building mr-1"></i> ${game.publisher}</p>
+                                <textarea onchange="saveNote('${game.id}', this.value)" class="w-full mt-2 text-sm p-3 border border-slate-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" rows="2" placeholder="${i18n[lang].notes}">${noteText}</textarea>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('booth-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('booth-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
