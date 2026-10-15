@@ -124,7 +124,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 <div id="print-container" class="hidden"></div>
 <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
     <div class="flex items-center gap-3">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.27</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.28</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </div>
     <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -211,7 +211,7 @@ const i18n = {
         notes: "Notities...", noGames: "Geen spellen gevonden.", mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
         pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print", bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
         loadingData: "Data synchroniseren...", loadingPdf: "PDF / Print voorbereiden...",
-        changelogV1_27: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.27 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint! Notities zonder locatie worden bovenaan in een apart \"Overig / Notities\" blok verzameld.</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.28 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint! Notities zonder locatie worden bovenaan in een apart \"Overig / Notities\" blok verzameld.</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
         changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon (pennetje) in de lijst om ze snel aan te passen.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd en gefilterd met de spellen.</li></ul></div>",
         changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen: Alleen preorders, Preorders verbergen, of Alles.</li><li><strong>Handmatige Fullscreen:</strong> De header en footer verdwijnen niet meer automatisch op mobiel, je kunt dit nu zelf togglen via het icoon!</li></ul></div>",
         changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering:</strong> Alle markers op de geprinte kaarten en in lijsten gebruiken nu nummers i.p.v. letters.</li><li><strong>Vernieuwde PDF Export:</strong> Print strakker dan ooit met automatische portret/landscape detectie en het hele A4'tje gevuld!</li><li><strong>Klikbare Mini-Map:</strong> Tik op de mini-map om direct terug naar het hal-overzicht te gaan!</li><li><strong>Hal Notities Update:</strong> Locaties aan notities toegevoegd. Ze hebben nu validatie en zijn klikbaar om de locatie direct te tonen op de kaart!</li></ul></div>",
@@ -225,7 +225,7 @@ const i18n = {
         notes: "Notes...", noGames: "No games found.", mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
         pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print", bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
         loadingData: "Synchronizing data...", loadingPdf: "Preparing PDF / Print...",
-        changelogV1_27: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.27 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports. Unlocated notes are pinned to a dedicated section at the top!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved the rendering bug that caused blank pages when generating PDFs.</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.28 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports. Unlocated notes are pinned to a dedicated section at the top!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved the rendering bug that caused blank pages when generating PDFs.</li></ul></div>",
         changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes:</strong> Easily edit your hall notes via the pen icon.</li><li><strong>Note Filters:</strong> Action notes are now filtered along with your games when a priority filter is active.</li></ul></div>",
         changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> 3 states: Only preorders, Exclude preorders, or Show All.</li><li><strong>Manual Fullscreen:</strong> Use the expand/compress button on the map view!</li></ul></div>",
         changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering:</strong> Map markers on PDFs use ascending numbers.</li><li><strong>Full-Page Print Exports:</strong> Smart orientation detection utilizing the entire printable area.</li><li><strong>Clickable Mini-map:</strong> Tap to go to the convention overview map!</li><li><strong>Advanced Hall Notes:</strong> Booth locations in notes are validated and clickable!</li></ul></div>",
@@ -239,7 +239,7 @@ const i18n = {
         notes: "Notizen...", noGames: "Keine Spiele gefunden.", mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
         pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken", bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
         loadingData: "Daten werden synchronisiert...", loadingPdf: "PDF / Druck wird vorbereitet...",
-        changelogV1_27: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.27 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs:</strong> Hallen-Notizen werden im PDF-Druck aufgeführt. Notizen ohne Standort erhalten einen Block oben links!</li><li><strong>iOS / Opera Print Fix:</strong> Das Problem mit leeren Seiten beim PDF-Druck wurde behoben.</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4'><strong>v1.28 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs:</strong> Hallen-Notizen werden im PDF-Druck aufgeführt. Notizen ohne Standort erhalten einen Block oben links!</li><li><strong>iOS / Opera Print Fix:</strong> Das Problem mit leeren Seiten beim PDF-Druck wurde behoben.</li></ul></div>",
         changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-95'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten:</strong> Hallen-Notizen können über das Stift-Icon bearbeitet werden.</li><li><strong>Notizen Filter:</strong> Hallen-Notizen werden nach Priorität mitsortiert.</li></ul></div>",
         changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-90'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button:</strong> 3 Status (Nur Preorders, Keine Preorders, Alle).</li><li><strong>Manueller Fullscreen:</strong> Nutze den Button neben der Mini-Map!</li></ul></div>",
         changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-80'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung:</strong> Marker im Druck verwenden Zahlen statt Buchstaben.</li><li><strong>Randloser PDF-Export:</strong> Intelligente Ausrichtung für volle Blattgröße.</li><li><strong>Klickbare Mini-Map:</strong> Klick führt zur Gesamtübersicht.</li><li><strong>Erweiterte Hallen-Notizen:</strong> Standorte werden validiert und sind klickbar.</li></ul></div>",
@@ -261,7 +261,7 @@ function getPrioStyles(prio) {
     if(index === -1) return PRIO_STYLES[0];
     return PRIO_STYLES[index % PRIO_STYLES.length];
 }
-let lang = 'en', currentVersion = '1.27', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
+let lang = 'en', currentVersion = '1.28', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
 let userNotes = JSON.parse(localStorage.getItem('spielNotes') || '{}');
 for (let key in userNotes) { if (typeof userNotes[key] === 'string') userNotes[key] = { text: userNotes[key], originalTTT: "" }; }
 let rawHallNotes = JSON.parse(localStorage.getItem('spielHallNotes') || '{}'), hallNotes = {};
@@ -754,7 +754,7 @@ function openPdfModal() {
 function closePdfModal() { document.getElementById('pdf-modal').classList.add('hidden'); }
 
 function openChangelog() {
-    const versions = ['V1_27', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
+    const versions = ['V1_28', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
     let clHtml = '';
     versions.forEach(v => { if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v]; });
     document.getElementById('changelog-content').innerHTML = clHtml;
@@ -766,7 +766,7 @@ function closeChangelog() { document.getElementById('changelog-modal').classList
 function groupGamesByPublisher(gamesList) {
     const groups = {};
     gamesList.forEach(g => {
-        let pub = g.publisher || "Notities";
+        let pub = g.isNote ? "" : (g.publisher || "");
         if (!groups[pub]) groups[pub] = [];
         groups[pub].push(g);
     });
@@ -815,7 +815,7 @@ function generatePDF() {
                 if (stateHideVisited && n.checked) return false;
                 if (n.priority && !selectedPrios.includes(n.priority)) return false;
                 return true;
-            }).map(n => ({ id: n.id, name: n.text, publisher: "Actiepunt / Notitie", priority: n.priority || "", boothLabel: n.location || "", isNote: true }));
+            }).map(n => ({ id: n.id, name: n.text, publisher: "", priority: n.priority || "", boothLabel: n.location || "", isNote: true }));
             hallGames = hallGames.concat(hNotes);
         }
         if(hallGames.length === 0 && !isOverview) return;
@@ -880,7 +880,7 @@ function generatePDF() {
                         const pubs = groupGamesByPublisher(group.games);
                         colHtml += `<div class="mb-0.5"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
-                            colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
+                            if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
                             gs.forEach(g => {
                                 const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
@@ -897,7 +897,7 @@ function generatePDF() {
                         const pubs = groupGamesByPublisher(group.games);
                         colHtml += `<div class="mb-0.5 w-44 shrink-0"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
-                            colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
+                            if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
                             gs.forEach(g => {
                                 const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
                                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
