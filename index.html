@@ -41,14 +41,18 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
     align-items: center;
     justify-content: center;
     color: #000;
-    background: transparent;
     font-weight: 700;
     line-height: 1;
     white-space: nowrap;
     pointer-events: none;
     user-select: none;
-    overflow: hidden;
+    overflow: visible;
     text-align: center;
+}
+.booth-num-lbl span {
+    background-color: #ffffff;
+    padding: 0.5px 1.5px;
+    border-radius: 1px;
 }
 .print-preparation-mode #print-container { position: absolute !important; top: 0 !important; left: -9999px !important; display: block !important; background: white !important; visibility: visible !important; opacity: 0.01 !important; z-index: -9999 !important; }
 .print-preparation-mode .page-landscape { width: 297mm; height: 210mm; position: relative; overflow: hidden; }
@@ -331,7 +335,7 @@ function getBoothFontSize(box, text, refW, refH, maxPx) {
     const fitW = (bw * 0.88) / (Math.max(1, text.length) * 0.58);
     const fitH = bh * 0.72;
     const baseSize = Math.max(1.2, Math.min(fitW, fitH, maxPx));
-    return baseSize + 1.33;
+    return baseSize + 0.9;
 }
 
 function renderBoothNumbersOverlay(hall, targetContainer, refW, refH, maxPx = 11) {
@@ -348,7 +352,7 @@ function renderBoothNumbersOverlay(hall, targetContainer, refW, refH, maxPx = 11
         div.style.width = `${box.w || 1}%`;
         div.style.height = `${box.h || 1}%`;
         div.style.fontSize = `${fontSize.toFixed(2)}px`;
-        div.textContent = labelText;
+        div.innerHTML = `<span>${labelText}</span>`;
         frag.appendChild(div);
     });
     targetContainer.appendChild(frag);
