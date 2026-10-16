@@ -214,13 +214,13 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
 const HALL_CONFIG = {
     '1': { dir: 'tb', scale: 1.0, orient: 'landscape' },
-    '2': { dir: 'tb', scale: 1.0, orient: 'landscape' },
-    '3': { dir: 'lr', scale: 1.17, orient: 'portrait' },
+    '2': { dir: 'tb', scale: 1.15, orient: 'landscape' },
+    '3': { dir: 'lr', scale: 1.25, orient: 'portrait' },
     '4': { dir: 'lr', scale: 1.00, orient: 'portrait' },
     '5': { dir: 'lr', scale: 0.80, orient: 'landscape' },
     '6': { dir: 'lr', scale: 1.00, orient: 'portrait' },
     '7': { dir: 'lr', scale: 1.00, orient: 'portrait' },
-    '8': { dir: 'lr', scale: 1.00, orient: 'portrait' },
+    '8': { dir: 'lr', scale: 1.20, orient: 'portrait' },
     'all': { dir: 'none', scale: 1.0, orient: 'landscape' }
 };
 const OVERVIEW_COORDS = { '1': {x:26,y:65}, '2': {x:38,y:62}, '3': {x:18,y:48}, '4': {x:38,y:32}, '5': {x:47,y:42}, '6': {x:55,y:53}, '7': {x:65,y:65}, '8': {x:73,y:73} };
@@ -1063,9 +1063,13 @@ function generatePDF() {
 
             const mapWrap = document.createElement('div'); mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
             const mapScaler = document.createElement('div'); mapScaler.className = 'relative w-full h-full flex items-center justify-center';
-            const mapInner = document.createElement('div');
+const mapInner = document.createElement('div');
 mapInner.className = 'relative inline-block';
-mapInner.style.transform = hall === '5' ? `scale(${config.scale}) translateY(50px)` : `scale(${config.scale})`;
+let translateY = 0;
+if (hall === '2') translateY = 40; 
+if (hall === '3') translateY = 60; 
+if (hall === '5') translateY = 90; 
+mapInner.style.transform = `scale(${config.scale}) translateY(${translateY}px)`;
 mapInner.style.transformOrigin = 'center center';
             
             const img = new Image(); img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
