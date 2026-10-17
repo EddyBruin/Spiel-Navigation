@@ -37,7 +37,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 15; /* Zorg dat deze hoger is dan de map-image (z-index 10) */
+    z-index: 15;
     pointer-events: none;
 }
 .booth-group { display: grid; grid-template-columns: repeat(3, min-content); justify-content: start; }
@@ -120,16 +120,20 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
         <ul id="game-list" class="p-2 space-y-2 bg-slate-50 flex-1 overflow-y-auto"></ul>
     </div>
     <div id="map-container" class="w-full bg-slate-200 hidden flex-col relative h-full absolute inset-0 overflow-hidden shadow-inner">
-        <div class="absolute top-4 left-4 flex gap-2 z-40 pointer-events-none">
-            <div class="relative group pointer-events-auto" id="hall-dropdown-container">
-                <button onclick="toggleHallDropdown(event)" class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-md text-sm font-bold text-slate-700 border border-slate-200 flex items-center hover:bg-slate-50 transition"><i class="fa-solid fa-map mr-2 text-blue-500"></i><span id="txt-map-hall-indicator">Hal 1</span><i class="fa-solid fa-chevron-down ml-2 text-xs text-slate-400"></i></button>
-                <div id="hall-dropdown" class="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-1 hidden flex-col w-32 z-50"></div>
+        <div class="absolute top-4 left-4 flex flex-col gap-2 z-40 pointer-events-none">
+            <div class="flex items-center gap-2">
+                <button onclick="openPdfModal()" class="bg-red-50/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-red-600 hover:bg-red-600 hover:text-white transition border border-red-200 flex items-center justify-center pointer-events-auto" title="Exporteer PDF / Print"><i class="fa-solid fa-file-pdf"></i></button>
+                <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-200 flex items-center justify-center pointer-events-auto" title="Fullscreen in-/uitklappen"><i id="icon-fullscreen" class="fa-solid fa-expand"></i></button>
             </div>
-            <button onclick="openHallNotes()" id="btn-map-notes" class="bg-white/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-200 flex items-center justify-center pointer-events-auto"><i class="fa-solid fa-file-pen"></i></button>
-            <button onclick="openPdfModal()" class="bg-red-50/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-red-600 hover:bg-red-600 hover:text-white transition border border-red-200 flex items-center justify-center pointer-events-auto"><i class="fa-solid fa-file-pdf"></i></button>
+            <div class="flex items-center gap-2">
+                <div class="relative group pointer-events-auto" id="hall-dropdown-container">
+                    <button onclick="toggleHallDropdown(event)" class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-md text-sm font-bold text-slate-700 border border-slate-200 flex items-center hover:bg-slate-50 transition"><i class="fa-solid fa-map mr-2 text-blue-500"></i><span id="txt-map-hall-indicator">Hal 1</span><i class="fa-solid fa-chevron-down ml-2 text-xs text-slate-400"></i></button>
+                    <div id="hall-dropdown" class="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-1 hidden flex-col w-32 z-50"></div>
+                </div>
+                <button onclick="openHallNotes()" id="btn-map-notes" class="bg-white/90 backdrop-blur w-9 h-9 rounded-full shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-200 flex items-center justify-center pointer-events-auto" title="Hal Notities"><i class="fa-solid fa-file-pen"></i></button>
+            </div>
         </div>
         <div class="absolute top-4 right-4 flex items-start justify-end gap-2 z-40 pointer-events-none">
-            <button id="btn-fullscreen-toggle" onclick="toggleFullscreen()" class="bg-white/90 backdrop-blur w-9 h-9 rounded shadow-md text-slate-700 hover:text-blue-600 transition border border-slate-300 flex items-center justify-center pointer-events-auto hidden"><i id="icon-fullscreen" class="fa-solid fa-expand"></i></button>
             <div id="mini-map-container" onclick="selectHall('all')" class="cursor-pointer pointer-events-auto w-28 sm:w-36 bg-white/90 backdrop-blur border border-slate-300 rounded shadow-md p-1 transition-opacity hidden hover:scale-105">
                 <div class="relative w-full h-full bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
                     <img src="overview.jpg" class="w-full h-auto object-cover opacity-70" />
@@ -154,7 +158,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 <div id="print-container" class="hidden"></div>
 <footer id="main-footer" class="bg-slate-900 text-slate-400 text-[10px] py-2 px-3 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-4 z-20 shrink-0 border-t border-slate-800 transition-all duration-300">
     <div class="flex items-center gap-3">
-        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.31</button>
+        <button onclick="openChangelog()" id="btn-version" class="hover:text-white transition font-bold bg-slate-800 px-2 py-0.5 rounded shadow-inner">v1.32</button>
         <span>Made by <a href="https://theseriousgamers.com" target="_blank" class="hover:text-blue-400 text-blue-300 transition underline">Eddy Bruin (The Serious Gamers)</a></span>
     </div>
     <div class="sm:border-l sm:border-slate-700 sm:pl-4 mt-1 sm:mt-0">
@@ -184,11 +188,33 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
     </div>
 </div>
 <div id="pdf-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+    <div class="bg-slate-50 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
         <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0"><h3 class="font-bold text-lg flex items-center gap-2 text-red-600"><i class="fa-solid fa-file-pdf"></i><span id="txt-pdf-title">Exporteer PDF Kaart</span></h3><button onclick="closePdfModal()" class="text-slate-400 hover:text-slate-800 transition"><i class="fa-solid fa-xmark fa-xl"></i></button></div>
-        <div class="p-4 bg-slate-50 space-y-4">
-            <div><p class="font-bold text-sm text-slate-700 mb-2" id="txt-pdf-prios">Selecteer Prioriteiten</p><div class="flex flex-wrap gap-2 bg-white p-3 rounded-lg border border-slate-200" id="pdf-prio-checkboxes"></div></div>
-            <div><p class="font-bold text-sm text-slate-700 mb-2" id="txt-pdf-halls">Selecteer Hallen</p><div class="grid grid-cols-4 gap-2 bg-white p-3 rounded-lg border border-slate-200" id="pdf-hall-checkboxes"></div></div>
+        <div class="p-4 bg-slate-50 space-y-3 overflow-y-auto flex-1">
+            <div><p class="font-bold text-sm text-slate-700 mb-1.5" id="txt-pdf-prios">Selecteer Prioriteiten</p><div class="flex flex-wrap gap-2 bg-white p-2.5 rounded-lg border border-slate-200" id="pdf-prio-checkboxes"></div></div>
+            <div><p class="font-bold text-sm text-slate-700 mb-1.5" id="txt-pdf-halls">Selecteer Hallen</p><div class="grid grid-cols-4 gap-2 bg-white p-2.5 rounded-lg border border-slate-200" id="pdf-hall-checkboxes"></div></div>
+            <div>
+                <p class="font-bold text-sm text-slate-700 mb-1.5" id="txt-pdf-sort">Sortering Lijst</p>
+                <div class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="pdf-sort" value="booth" class="accent-blue-600 w-4 h-4 cursor-pointer" checked>
+                        <span id="txt-pdf-sort-booth">Dichtst bij stand (Kaartpositie)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="pdf-sort" value="prio" class="accent-blue-600 w-4 h-4 cursor-pointer">
+                        <span id="txt-pdf-sort-prio">Op prioriteit & nummering</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <p class="font-bold text-sm text-slate-700 mb-1.5" id="txt-pdf-options">Extra Opties</p>
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="pdf-include-notes" class="styled-chk w-4 h-4">
+                        <span class="text-xs font-bold text-slate-700" id="txt-pdf-inc-notes">Spelnotities meeprinten</span>
+                    </label>
+                </div>
+            </div>
             <button onclick="generatePDF()" id="txt-btn-generate-pdf" class="w-full bg-red-600 text-white px-5 py-3 rounded-xl font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2 mt-2"><i class="fa-solid fa-print"></i> Genereer PDF / Print</button>
         </div>
     </div>
@@ -239,17 +265,18 @@ const i18n = {
         uploadTitle: "Welkom bij SPIEL Navigator!", uploadDesc: "Vind makkelijk je gewilde spellen terug op de SPIEL beursvloer. Plak hieronder je TabletopTogether 'Share' URL om te beginnen. Dit hoeft maar één keer.", 
         featuresTitle: "Wat kan deze app?", featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Directe sync met je TabletopTogether lijst</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactieve plattegrond per hal</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Lokaal afvinken en (hal)notities maken</li>",
         notes: "Notities...", noGames: "Geen spellen gevonden.", mapHallPrefix: "Hal ", mapHallAll: "Overzicht", hallNotesTitle: "Actielijst Hal ", saveBtn: "Opslaan", changelogTitle: "Nieuw in versie ", searchPlaceholder: "Zoek spel of uitgever...",
-        pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfGenerate: "Genereer PDF / Print", bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
+        pdfTitle: "Exporteer PDF Kaart", pdfHalls: "Selecteer Hallen", pdfPrios: "Selecteer Prioriteiten", pdfSort: "Sortering Lijst", pdfSortBooth: "Dichtst bij stand (Kaartpositie)", pdfSortPrio: "Op prioriteit & nummering", pdfOptions: "Extra Opties", pdfIncNotes: "Spelnotities meeprinten", pdfGenerate: "Genereer PDF / Print", bggLinkText: "Bespreek deze tool op BGG", addNoteBtn: "Toevoegen", noteLoc: "Locatie (bijv. 1-A000)", notePrioNone: "Geen prioriteit",
         loadingData: "Data synchroniseren...", loadingPdf: "PDF / Print voorbereiden...",
         offlineOnMsg: "Offline Modus & Locatie-Backup AAN: Alle spellen en huidige standlocaties zijn veilig lokaal opgeslagen. Als de online bron plotseling geen locaties meer levert, valt de app automatisch terug op deze backup!",
         offlineOffMsg: "Offline Modus UIT.",
-        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4'><strong>v1.31 - PDF Schaling & Overlay Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Kaart Vergroting:</strong> Hallen 3, 4, 6, 7 en 8 worden op de PDF-print nu 10% groter afgebeeld voor nog betere leesbaarheid.</li><li><strong>Groter Standnummer Font:</strong> De standnummers in de kaart-overlay zijn in alle hallen met 1pt vergroot.</li></ul></div>",
-        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-95'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummer Overlay:</strong> Alle hal-kaarten én de PDF-prints zijn nu voorzien van een schaalbare laag met alle standnummers uit de plattegronddata, exact passend binnen elke standruimte.</li></ul></div>",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.29 - Slimme Offline & Locatie Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Modus & Kluis:</strong> Knop naast de reset-knop waarmee alle data en locaties lokaal worden vastgelegd.</li><li><strong>Automatische Locatie-Fallback:</strong> Als de online bron plotseling geen locaties meer meestuurt bij een update, behoudt de app automatisch je laatst bekende standnummers!</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-85'><strong>v1.28 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint!</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon in de lijst.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd.</li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-75'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen.</li><li><strong>Handmatige Fullscreen:</strong> Zelf header/footer in- en uitklappen op mobiel.</li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-70'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering & PDF Export:</strong> Volledig A4-vullende prints en klikbare mini-map.</li></ul></div>",
+        changelogV1_32: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.32 - PDF Sortering, Spelnotities & UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Sortering & Notities:</strong> Kies in het PDF-menu of je de lijst wilt sorteren op kaartpositie (dichtst bij de stand) of op prioriteit/nummering, en kies of je spelnotities wilt meeprinten.</li><li><strong>Knoppen Lay-out:</strong> De PDF-print en fullscreen/collapse knoppen staan nu overzichtelijk direct boven de hal-selector.</li></ul></div>",
+        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-95'><strong>v1.31 - PDF Schaling & Overlay Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Kaart Vergroting:</strong> Hallen 3, 4, 6, 7 en 8 worden op de PDF-print nu groter afgebeeld voor nog betere leesbaarheid.</li><li><strong>Groter Standnummer Font:</strong> De standnummers in de kaart-overlay zijn in alle hallen vergroot en voorzien van een witte achtergrond.</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummer Overlay:</strong> Alle hal-kaarten én de PDF-prints zijn nu voorzien van een schaalbare laag met alle standnummers uit de plattegronddata.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.29 - Slimme Offline & Locatie Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Modus & Kluis:</strong> Knop naast de reset-knop waarmee alle data en locaties lokaal worden vastgelegd.</li><li><strong>Automatische Locatie-Fallback:</strong> Als de online bron plotseling geen locaties meer meestuurt bij een update, behoudt de app automatisch je laatst bekende standnummers!</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.28 - PDF Notities & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notities in PDF:</strong> Hal-notities worden nu netjes als lijstitem in de PDF geprint!</li><li><strong>iOS / Opera Print Fix:</strong> Probleem met blanco pagina's tijdens het printen opgelost.</li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-75'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Bewerk Notities:</strong> Hal notities hebben nu een bewerk-icoon in de lijst.</li><li><strong>Filter & Sorteer Fixes:</strong> Hal notities mét prioriteit worden in de lijst nu correct meegesorteerd.</li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-70'><strong>v1.23 - Preorder & Overige UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> De preorder knop heeft nu 3 standen.</li><li><strong>Handmatige Fullscreen:</strong> Zelf header/footer in- en uitklappen op mobiel.</li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-65'><strong>v1.11 t/m v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Slimme Marker Nummering & PDF Export:</strong> Volledig A4-vullende prints en klikbare mini-map.</li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Eerste Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basis integratie met TabletopTogether en interactieve kaarten.</li></ul></div>",
         btnLoadList: "Lijst Ophalen", btnCancel: "Annuleren"
     },
@@ -258,17 +285,18 @@ const i18n = {
         uploadTitle: "Welcome to SPIEL Navigator!", uploadDesc: "Easily locate your most wanted games on the SPIEL show floor. Paste your TabletopTogether 'Share' URL below to get started. You only need to do this once.", 
         featuresTitle: "App Features:", featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direct sync with your TabletopTogether list</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interactive maps per hall</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Track progress and save offline notes</li>",
         notes: "Notes...", noGames: "No games found.", mapHallPrefix: "Hall ", mapHallAll: "Overview", hallNotesTitle: "Action List Hall ", saveBtn: "Save", changelogTitle: "New in version ", searchPlaceholder: "Search game or publisher...",
-        pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfGenerate: "Generate PDF / Print", bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
+        pdfTitle: "Export PDF Map", pdfHalls: "Select Halls", pdfPrios: "Select Priorities", pdfSort: "List Sorting", pdfSortBooth: "Closest to booth (Map position)", pdfSortPrio: "By priority & numbering", pdfOptions: "Extra Options", pdfIncNotes: "Include game notes", pdfGenerate: "Generate PDF / Print", bggLinkText: "Discuss this tool on BGG", addNoteBtn: "Add", noteLoc: "Location (e.g. 1-A000)", notePrioNone: "No priority",
         loadingData: "Synchronizing data...", loadingPdf: "Preparing PDF / Print...",
         offlineOnMsg: "Offline Mode & Location Backup ON: All games and current booth locations are safely stored locally. If the online source suddenly stops providing locations, the app will automatically fall back to this backup!",
         offlineOffMsg: "Offline Mode OFF.",
-        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4'><strong>v1.31 - PDF Scaling & Overlay Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Map Scaling:</strong> Halls 3, 4, 6, 7, and 8 are now scaled 10% larger in PDF printouts.</li><li><strong>Larger Booth Font:</strong> Increased the booth number overlay font size by 1pt across all halls.</li></ul></div>",
-        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-95'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Booth Number Overlay:</strong> All hall maps and PDF printouts now feature a scalable overlay displaying all booth numbers, dynamically sized to fit inside each booth space without overlapping.</li></ul></div>",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.29 - Smart Offline & Location Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Mode & Vault:</strong> Lock and save all data and locations locally.</li><li><strong>Automatic Location Fallback:</strong> Restores last known booth numbers if the online source drops location data!</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-85'><strong>v1.28 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved blank pages when generating PDFs.</li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes & Filters:</strong> Edit hall notes and filter them by priority.</li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-75'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> 3 states: Only preorders, Exclude preorders, or Show All.</li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-70'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering, Full-Page PDFs & Mini-map.</strong></li></ul></div>",
+        changelogV1_32: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.32 - PDF Sorting, Game Notes & UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Sorting & Game Notes:</strong> Choose between sorting the PDF list by booth proximity or by priority/numbering, and optionally include your personal game notes in the printout.</li><li><strong>Button Layout:</strong> Moved the PDF print and fullscreen/collapse buttons directly above the hall selector pillbox.</li></ul></div>",
+        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-95'><strong>v1.31 - PDF Scaling & Overlay Font Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF Map Scaling:</strong> Halls 3, 4, 6, 7, and 8 are now scaled larger in PDF printouts.</li><li><strong>Larger Booth Font:</strong> Increased the booth number overlay font size across all halls.</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.30 - Booth Number Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Booth Number Overlay:</strong> All hall maps and PDF printouts now feature a scalable overlay displaying all booth numbers.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.29 - Smart Offline & Location Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline Mode & Vault:</strong> Lock and save all data and locations locally.</li><li><strong>Automatic Location Fallback:</strong> Restores last known booth numbers if the online source drops location data!</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.28 - PDF Notes & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notes in PDF:</strong> Action notes are now printed in your PDF exports!</li><li><strong>iOS / Opera Print Fix:</strong> Resolved blank pages when generating PDFs.</li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-75'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Edit Notes & Filters:</strong> Edit hall notes and filter them by priority.</li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-70'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder Toggle:</strong> 3 states: Only preorders, Exclude preorders, or Show All.</li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-65'><strong>v1.11 to v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smart Marker Numbering, Full-Page PDFs & Mini-map.</strong></li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Initial Release</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Basic integration with TabletopTogether and interactive maps.</li></ul></div>",
         btnLoadList: "Load List", btnCancel: "Cancel"
     },
@@ -277,17 +305,18 @@ const i18n = {
         uploadTitle: "Willkommen beim SPIEL Navigator!", uploadDesc: "Finde deine Wunschspiele ganz einfach auf der SPIEL. Füge unten deine TabletopTogether 'Share'-URL ein. Das musst du nur einmal tun.", 
         featuresTitle: "Was kann diese App?", featuresList: "<li><i class='fa-solid fa-sync text-blue-500 mr-2 w-4 text-center'></i>Direkte Synchronisation mit deiner TabletopTogether-Liste</li><li><i class='fa-solid fa-map text-blue-500 mr-2 w-4 text-center'></i>Interaktive Karten pro Halle</li><li><i class='fa-solid fa-check text-blue-500 mr-2 w-4 text-center'></i>Fortschritt speichern und (Hallen-)Notizen machen</li>",
         notes: "Notizen...", noGames: "Keine Spiele gefunden.", mapHallPrefix: "Halle ", mapHallAll: "Übersicht", hallNotesTitle: "Aktionsliste Halle ", saveBtn: "Speichern", changelogTitle: "Neu in Version ", searchPlaceholder: "Suche Spiel oder Verlag...",
-        pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfGenerate: "PDF erstellen / Drucken", bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
+        pdfTitle: "Als PDF exportieren", pdfHalls: "Hallen auswählen", pdfPrios: "Prioritäten auswählen", pdfSort: "Listensortierung", pdfSortBooth: "Nächstgelegener Stand (Kartenposition)", pdfSortPrio: "Nach Priorität & Nummerierung", pdfOptions: "Weitere Optionen", pdfIncNotes: "Spielnotizen mitdrucken", pdfGenerate: "PDF erstellen / Drucken", bggLinkText: "Diskutiere dieses Tool auf BGG", addNoteBtn: "Hinzufügen", noteLoc: "Stand (z.B. 1-A000)", notePrioNone: "Keine Priorität",
         loadingData: "Daten werden synchronisiert...", loadingPdf: "PDF / Druck wird vorbereitet...",
         offlineOnMsg: "Offline-Modus & Standort-Backup AN: Alle Spiele und aktuellen Standorte sind sicher lokal gespeichert. Falls die Online-Quelle plötzlich keine Standorte mehr liefert, greift die App automatisch auf dieses Backup zurück!",
         offlineOffMsg: "Offline-Modus AUS.",
-        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4'><strong>v1.31 - PDF-Skalierung & Overlay-Schrift</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF-Kartenvergrößerung:</strong> Hallen 3, 4, 6, 7 und 8 werden im PDF-Druck nun 10% größer dargestellt.</li><li><strong>Größere Standnummern:</strong> Die Schriftgröße der Standnummern-Overlay wurde in allen Hallen um 1pt erhöht.</li></ul></div>",
-        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-95'><strong>v1.30 - Standnummern-Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummern-Overlay:</strong> Alle Hallenkarten und PDF-Ausdrucke zeigen nun automatisch alle Standnummern passgenau innerhalb der jeweiligen Standflächen an.</li></ul></div>",
-        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-90'><strong>v1.29 - Smart Offline & Standort-Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline-Modus & Tresor:</strong> Daten und Standorte lokal sichern.</li></ul></div>",
-        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-85'><strong>v1.28 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs & iOS Print Fix.</strong></li></ul></div>",
-        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-80'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten & Filter.</strong></li></ul></div>",
-        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-75'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button (3 Status) & Manueller Fullscreen.</strong></li></ul></div>",
-        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-70'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung, Randloser PDF-Export & Mini-Map.</strong></li></ul></div>",
+        changelogV1_32: "<div class='border-l-4 border-indigo-500 pl-3 mb-4'><strong>v1.32 - PDF-Sortierung, Spielnotizen & UI</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF-Sortierung & Notizen:</strong> Wähle im PDF-Menü zwischen Sortierung nach Kartenposition oder nach Priorität/Nummerierung und drucke optional deine Spielnotizen mit.</li><li><strong>Button-Layout:</strong> Die PDF- und Fullscreen-Buttons befinden sich nun direkt über der Hallenauswahl.</li></ul></div>",
+        changelogV1_31: "<div class='border-l-4 border-amber-500 pl-3 mb-4 opacity-95'><strong>v1.31 - PDF-Skalierung & Overlay-Schrift</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>PDF-Kartenvergrößerung:</strong> Hallen 3, 4, 6, 7 und 8 werden im PDF-Druck größer dargestellt.</li><li><strong>Größere Standnummern:</strong> Die Schriftgröße der Standnummern-Overlay wurde in allen Hallen erhöht.</li></ul></div>",
+        changelogV1_30: "<div class='border-l-4 border-blue-500 pl-3 mb-4 opacity-90'><strong>v1.30 - Standnummern-Overlay</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Standnummern-Overlay:</strong> Alle Hallenkarten und PDF-Ausdrucke zeigen nun automatisch alle Standnummern an.</li></ul></div>",
+        changelogV1_29: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-85'><strong>v1.29 - Smart Offline & Standort-Backup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Offline-Modus & Tresor:</strong> Daten und Standorte lokal sichern.</li></ul></div>",
+        changelogV1_28: "<div class='border-l-4 border-fuchsia-500 pl-3 mb-4 opacity-80'><strong>v1.28 - PDF Notizen & iOS Print Fix</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen in PDFs & iOS Print Fix.</strong></li></ul></div>",
+        changelogV1_25: "<div class='border-l-4 border-emerald-500 pl-3 mb-4 opacity-75'><strong>v1.25 - Edit & UI Filters</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Notizen Bearbeiten & Filter.</strong></li></ul></div>",
+        changelogV1_23: "<div class='border-l-4 border-indigo-500 pl-3 mb-4 opacity-70'><strong>v1.23 - Preorder & UI Update</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Preorder-Button (3 Status) & Manueller Fullscreen.</strong></li></ul></div>",
+        changelogV1_22: "<div class='border-l-4 border-slate-700 pl-3 mb-4 opacity-65'><strong>v1.11 bis v1.22 - Feature Rollup</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li><strong>Smarte Nummerierung, Randloser PDF-Export & Mini-Map.</strong></li></ul></div>",
         changelogV1_0: "<div class='border-l-4 border-slate-400 pl-3 mb-4 opacity-40'><strong>v1.0 - Erste Veröffentlichung</strong><ul class='list-disc pl-4 mt-2 space-y-1'><li>Grundlegende Integration mit TabletopTogether und interaktiven Karten.</li></ul></div>",
         btnLoadList: "Liste Laden", btnCancel: "Abbrechen"
     }
@@ -306,7 +335,7 @@ function getPrioStyles(prio) {
     if(index === -1) return PRIO_STYLES[0];
     return PRIO_STYLES[index % PRIO_STYLES.length];
 }
-let lang = 'en', currentVersion = '1.31', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
+let lang = 'en', currentVersion = '1.32', games = [], visited = JSON.parse(localStorage.getItem('spielVisited') || '[]');
 let offlineMode = JSON.parse(localStorage.getItem('spielOfflineMode') || 'false');
 let locationVault = JSON.parse(localStorage.getItem('spielLocationVault') || '{}');
 let userNotes = JSON.parse(localStorage.getItem('spielNotes') || '{}');
@@ -328,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateToggleUI(); updateOfflineUI();
     if (typeof pdfBoothData === 'undefined') window.pdfBoothData = {};
     checkAndLoadData();
-    if (window.innerWidth < 1024) { const btn = document.getElementById('btn-fullscreen-toggle'); if(btn) btn.classList.remove('hidden'); }
 });
 
 function formatBoothCode(hall, key) {
@@ -445,6 +473,11 @@ function setLang(l) {
     document.getElementById('txt-pdf-title').innerText = i18n[l].pdfTitle;
     document.getElementById('txt-pdf-prios').innerText = i18n[l].pdfPrios;
     document.getElementById('txt-pdf-halls').innerText = i18n[l].pdfHalls;
+    document.getElementById('txt-pdf-sort').innerText = i18n[l].pdfSort;
+    document.getElementById('txt-pdf-sort-booth').innerText = i18n[l].pdfSortBooth;
+    document.getElementById('txt-pdf-sort-prio').innerText = i18n[l].pdfSortPrio;
+    document.getElementById('txt-pdf-options').innerText = i18n[l].pdfOptions;
+    document.getElementById('txt-pdf-inc-notes').innerText = i18n[l].pdfIncNotes;
     document.getElementById('txt-bgg-link').innerText = i18n[l].bggLinkText;
     document.getElementById('txt-btn-add-note').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[l].addNoteBtn}`;
     document.getElementById('new-hnote-loc').placeholder = i18n[l].noteLoc;
@@ -913,7 +946,7 @@ function openPdfModal() {
 function closePdfModal() { document.getElementById('pdf-modal').classList.add('hidden'); }
 
 function openChangelog() {
-    const versions = ['V1_31', 'V1_30', 'V1_29', 'V1_28', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
+    const versions = ['V1_32', 'V1_31', 'V1_30', 'V1_29', 'V1_28', 'V1_25', 'V1_23', 'V1_22', 'V1_0'];
     let clHtml = '';
     versions.forEach(v => { if(i18n[lang]['changelog' + v]) clHtml += i18n[lang]['changelog' + v]; });
     document.getElementById('changelog-content').innerHTML = clHtml;
@@ -935,6 +968,9 @@ function groupGamesByPublisher(gamesList) {
 function generatePDF() {
     const selectedHalls = Array.from(document.querySelectorAll('.pdf-hall-chk:checked')).map(cb => cb.value);
     const selectedPrios = Array.from(document.querySelectorAll('.pdf-prio-chk:checked')).map(cb => cb.value);
+    const sortMode = document.querySelector('input[name="pdf-sort"]:checked')?.value || 'booth';
+    const includeGameNotes = document.getElementById('pdf-include-notes')?.checked || false;
+
     if(selectedHalls.length === 0) { alert('Selecteer minimaal 1 hal.'); return; }
     if(selectedPrios.length === 0) { alert('Selecteer minimaal 1 prioriteit.'); return; }
 
@@ -962,6 +998,12 @@ function generatePDF() {
         }
     };
 
+    const getPrioOrder = (prio) => {
+        if (!prio) return 999;
+        const idx = dynamicPriorities.indexOf(prio);
+        return idx === -1 ? 998 : idx;
+    };
+
     selectedHalls.forEach((hall) => {
         const isOverview = hall === 'all';
         let hallGames = [], hNotes = [];
@@ -976,6 +1018,7 @@ function generatePDF() {
                 return true;
             }).map(n => ({ id: n.id, name: n.text, publisher: "", priority: n.priority || "", boothLabel: n.location || "", isNote: true }));
             hallGames = hallGames.concat(hNotes);
+            hallGames.sort((a, b) => getPrioOrder(a.priority) - getPrioOrder(b.priority));
         }
         if(hallGames.length === 0 && !isOverview) return;
 
@@ -1009,7 +1052,9 @@ function generatePDF() {
             }
             mapWrap.appendChild(overlaysDiv); pageDiv.appendChild(mapWrap);
         } else {
-            let gameCounter = 1, gameNumbers = new Map(); hallGames.forEach(g => { gameNumbers.set(g.id, gameCounter++); });
+            let gameCounter = 1, gameNumbers = new Map();
+            hallGames.forEach(g => { gameNumbers.set(g.id, gameCounter++); });
+
             let boothGroupsMap = {}, noLocGames = [];
             hallGames.forEach(g => {
                 if (!g.boothLabel) { noLocGames.push(g); return; }
@@ -1023,14 +1068,39 @@ function generatePDF() {
             });
             const allGroups = Object.values(boothGroupsMap);
             let leftGroups = [], rightGroups = [];
-            if (isLR) {
-                leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
-                rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
-            } else if (isTB) {
-                leftGroups = allGroups.filter(g => g.box.y < 50).sort((a,b) => a.box.x - b.box.x); 
-                rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
+
+            if (sortMode === 'prio') {
+                allGroups.sort((a, b) => {
+                    const minA = Math.min(...a.games.map(g => gameNumbers.get(g.id)));
+                    const minB = Math.min(...b.games.map(g => gameNumbers.get(g.id)));
+                    return minA - minB;
+                });
+                const half = Math.ceil(allGroups.length / 2);
+                leftGroups = allGroups.slice(0, half);
+                rightGroups = allGroups.slice(half);
+            } else {
+                if (isLR) {
+                    leftGroups = allGroups.filter(g => g.box.x < 50).sort((a,b) => a.box.y - b.box.y);
+                    rightGroups = allGroups.filter(g => g.box.x >= 50).sort((a,b) => a.box.y - b.box.y);
+                } else if (isTB) {
+                    leftGroups = allGroups.filter(g => g.box.y < 50).sort((a,b) => a.box.x - b.box.x); 
+                    rightGroups = allGroups.filter(g => g.box.y >= 50).sort((a,b) => a.box.x - b.box.x); 
+                }
             }
+
             if (noLocGames.length > 0) leftGroups.unshift({ key: 'no_loc', box: {x: 0, y: 0}, games: noLocGames, label: 'Overig / Notities' });
+
+            const renderGamePrintRow = (g) => {
+                const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
+                const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
+                const gNote = (!g.isNote && includeGameNotes && userNotes[g.id] && userNotes[g.id].text) ? userNotes[g.id].text.trim() : '';
+                let html = `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><div class="flex flex-col min-w-0 flex-1"><span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>`;
+                if (gNote) {
+                    html += `<span class="text-[8px] italic text-slate-600 leading-tight break-words whitespace-normal">${gNote}</span>`;
+                }
+                html += `</div></div>`;
+                return html;
+            };
 
             const createColumnHTML = (groups, isLeft) => {
                 if(isLR) {
@@ -1040,11 +1110,7 @@ function generatePDF() {
                         colHtml += `<div class="mb-0.5"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
                             if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
-                            gs.forEach(g => {
-                                const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
-                                const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
-                                colHtml += `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span></div>`;
-                            });
+                            gs.forEach(g => { colHtml += renderGamePrintRow(g); });
                         });
                         colHtml += `</div>`;
                     });
@@ -1057,11 +1123,7 @@ function generatePDF() {
                         colHtml += `<div class="mb-0.5 w-44 shrink-0"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
                             if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
-                            gs.forEach(g => {
-                                const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
-                                const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
-                                colHtml += `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span></div>`;
-                            });
+                            gs.forEach(g => { colHtml += renderGamePrintRow(g); });
                         });
                         colHtml += `</div>`;
                     });
@@ -1072,14 +1134,14 @@ function generatePDF() {
 
             const mapWrap = document.createElement('div'); mapWrap.className = 'absolute inset-0 w-full h-full flex items-center justify-center z-0 overflow-hidden';
             const mapScaler = document.createElement('div'); mapScaler.className = 'relative w-full h-full flex items-center justify-center';
-const mapInner = document.createElement('div');
-mapInner.className = 'relative inline-block';
-let translateY = 0;
-if (hall === '2') translateY = 40; 
-if (hall === '3') translateY = 60; 
-if (hall === '5') translateY = 95; 
-mapInner.style.transform = `scale(${config.scale}) translateY(${translateY}px)`;
-mapInner.style.transformOrigin = 'center center';
+            const mapInner = document.createElement('div');
+            mapInner.className = 'relative inline-block';
+            let translateY = 0;
+            if (hall === '2') translateY = 40; 
+            if (hall === '3') translateY = 60; 
+            if (hall === '5') translateY = 95; 
+            mapInner.style.transform = `scale(${config.scale}) translateY(${translateY}px)`;
+            mapInner.style.transformOrigin = 'center center';
             
             const img = new Image(); img.className = 'max-w-full max-h-full object-contain pointer-events-none block';
             const boothLayer = document.createElement('div'); boothLayer.className = 'absolute inset-0 pointer-events-none z-10';
@@ -1167,13 +1229,6 @@ function switchTab(tab) {
 
 function setupEventListeners() {
     window.addEventListener('resize', () => {
-        const isMobile = window.innerWidth < 1024, btn = document.getElementById('btn-fullscreen-toggle');
-        if (!isMobile) {
-            document.getElementById('main-header').classList.remove('hidden'); document.getElementById('main-footer').classList.remove('hidden');
-            if(btn) btn.classList.add('hidden'); isFullscreen = false;
-            const icon = document.getElementById('icon-fullscreen'); if(icon) { icon.classList.remove('fa-compress'); icon.classList.add('fa-expand'); }
-        } else if(btn) btn.classList.remove('hidden');
-
         if (window.getComputedStyle(document.querySelector('.mobile-tabs')).display === 'none') {
             document.getElementById('sidebar').style.display = ''; document.getElementById('map-container').style.display = '';
         } else {
@@ -1213,17 +1268,14 @@ function zoomOut() { panzoomInstance.zoomOut(); }
 let imgLoaded = false;
 function loadMapImage() {
     const img = document.getElementById('map-image'), err = document.getElementById('map-error');
-    const boothOverlay = document.getElementById('booth-numbers-overlay'); // <--- Voeg deze regel toe
+    const boothOverlay = document.getElementById('booth-numbers-overlay');
     
     img.onload = () => {
         imgLoaded = true; img.classList.remove('hidden'); err.classList.add('hidden');
         const wrap = document.getElementById('panzoom-element'); 
         wrap.style.width = `${img.naturalWidth}px`; 
         wrap.style.height = `${img.naturalHeight}px`;
-        
-        // --- VOEG DEZE REGEL TOE OM DE OVERLAY TE LADEN ---
         renderBoothNumbersOverlay(currentHall, boothOverlay, img.naturalWidth, img.naturalHeight, 12);
-        
         fitMap(); 
         renderHTMLOverlays();
     };
@@ -1231,7 +1283,7 @@ function loadMapImage() {
     img.onerror = () => {
         img.classList.add('hidden'); err.classList.add('hidden');
         document.getElementById('html-overlays').innerHTML = '';
-        if (boothOverlay) boothOverlay.innerHTML = ''; // <--- Ook hier leegmaken bij fout
+        if (boothOverlay) boothOverlay.innerHTML = '';
     };
     
     img.src = currentHall === 'all' ? 'overview.jpg' : `hal${currentHall}.png`;
