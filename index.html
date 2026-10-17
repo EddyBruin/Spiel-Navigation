@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SPIEL Navigator</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -37,7 +38,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 15;
+    z-index: 15; /* Zorg dat deze hoger is dan de map-image (z-index 10) */
     pointer-events: none;
 }
 .booth-group { display: grid; grid-template-columns: repeat(3, min-content); justify-content: start; }
@@ -83,7 +84,7 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
 <header id="main-header" class="bg-slate-900 text-white p-3 shadow-md flex justify-between items-center z-20 shrink-0 transition-all duration-300">
     <div class="flex items-center gap-3">
         <h1 class="text-xl font-bold flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-            <div class="flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-blue-400"></i><span id="txt-title" class="hidden sm:inline">SPIEL Nav</span></div>
+            <div class="flex items-center gap-2"><img src="favicon.svg" class="w-5 h-5" alt="SPIEL Nav"><span id="txt-title" class="hidden sm:inline">SPIEL Nav</span></div>
             <div class="flex items-center gap-2"><a id="header-display-name" href="#" target="_blank" class="text-xs font-medium text-blue-300 hover:text-white transition line-clamp-1 max-w-[150px] sm:max-w-[300px]"></a><span id="header-count" class="bg-slate-700 text-[10px] px-2 py-0.5 rounded-full font-bold shadow-inner">0</span></div>
         </h1>
         <div class="flex gap-2 text-xs">
@@ -1150,7 +1151,7 @@ function generatePDF() {
                     colHtml += `</div>`;
                     return colHtml;
                 } else {
-                    let colHtml = `<div class="absolute ${isLeft ? 'top-0' : 'bottom-0'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10 bg-white/40">`;
+                    let colHtml = `<div class="absolute ${isLeft ? 'top-0' : '-bottom-[2px]'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10 bg-white/40">`;
                     groups.forEach(group => {
                         const pubs = groupGamesByPublisher(group.games);
                         colHtml += `<div class="mb-0.5 w-44 shrink-0"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
@@ -1170,7 +1171,7 @@ function generatePDF() {
             const mapInner = document.createElement('div');
             mapInner.className = 'relative inline-block';
             let translateY = 0;
-            if (hall === '2') translateY = 40; 
+            if (hall === '2') translateY = 27; 
             if (hall === '3') translateY = 60; 
             if (hall === '5') translateY = 95; 
             mapInner.style.transform = `scale(${config.scale}) translateY(${translateY}px)`;
