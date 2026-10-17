@@ -176,14 +176,15 @@ input[type="checkbox"].styled-chk { width: 1.25rem; height: 1.25rem; cursor: poi
         <div class="p-4 border-b flex justify-between items-center bg-white shadow-sm z-10 shrink-0"><h3 class="font-bold text-lg flex items-center gap-2 text-slate-800"><i class="fa-solid fa-list-check text-blue-500"></i><span id="txt-hall-notes-title">Hal Notities</span></h3><button onclick="closeHallNotes()" class="text-slate-400 hover:text-slate-800 transition"><i class="fa-solid fa-xmark fa-xl"></i></button></div>
         <div class="p-4 bg-slate-50 overflow-y-auto flex-1 flex flex-col">
             <div id="hall-notes-list" class="space-y-2 mb-4 flex-1"></div>
-            <div class="flex flex-col gap-2 border-t border-slate-300 pt-4 mt-auto">
-                <input type="text" id="new-hnote-text" placeholder="Nieuwe notitie..." class="w-full text-sm p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
-                <div class="flex gap-2">
-                    <input type="text" id="new-hnote-loc" placeholder="Locatie (bijv. 1-A000)" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
-                    <select id="new-hnote-prio" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner"></select>
-                </div>
-                <button onclick="addHallNote()" id="txt-btn-add-note" class="w-full bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-slate-700 transition mt-1"><i class="fa-solid fa-plus mr-1"></i> Toevoegen</button>
-            </div>
+<div class="flex flex-col gap-2 border-t border-slate-300 pt-4 mt-auto">
+    <input type="text" id="new-hnote-text" placeholder="Nieuwe notitie..." class="w-full text-sm p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
+    <textarea id="new-hnote-notes" placeholder="Extra notities..." class="w-full text-xs p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" rows="2"></textarea>
+    <div class="flex gap-2">
+        <input type="text" id="new-hnote-loc" placeholder="Locatie (bijv. 1-A000)" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" onkeypress="if(event.key === 'Enter') addHallNote()">
+        <select id="new-hnote-prio" class="w-1/2 text-sm p-2 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-inner"></select>
+    </div>
+    <button onclick="addHallNote()" id="txt-btn-add-note" class="w-full bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-slate-700 transition mt-1"><i class="fa-solid fa-plus mr-1"></i> Toevoegen</button>
+</div>
         </div>
     </div>
 </div>
@@ -644,6 +645,19 @@ function updateToggleUI() {
 function renderHallTabs() {
     const container = document.getElementById('hall-tabs'); container.innerHTML = '';
     const dropdown = document.getElementById('hall-dropdown'); if(dropdown) dropdown.innerHTML = '';
+    
+    const countNotesForHall = (hStr) => {
+        return (hallNotes[hStr] || []).filter(n => {
+            if (stateHideVisited && n.checked) return false;
+            if (n.priority && !activePriorities.includes(n.priority)) return false;
+            if (searchQuery && !n.text.toLowerCase().includes(searchQuery)) return false;
+            return true;
+        }).length;
+    };
+
+    let allNotesCount = 0;
+    Object.keys(hallNotes).forEach(h => { allNotesCount += countNotesForHall(h); });
+
     const allCount = games.filter(g => {
         if (stateHideVisited && visited.includes(g.id)) return false;
         if (!activePriorities.includes(g.priority)) return false;
@@ -651,7 +665,8 @@ function renderHallTabs() {
         if (statePreorderFilter === 2 && g.preorder) return false;
         if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
         return true;
-    }).length;
+    }).length + allNotesCount;
+
     const btnAll = document.createElement('button');
     btnAll.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === 'all' ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
     btnAll.innerHTML = `<span class="text-sm font-bold">${i18n[lang].hallAll}</span> <span class="ml-1 text-[10px] ${currentHall === 'all' ? 'bg-white text-slate-800' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded-full">${allCount}</span>`;
@@ -668,7 +683,8 @@ function renderHallTabs() {
             if (statePreorderFilter === 2 && g.preorder) return false;
             if (searchQuery && !(g.name.toLowerCase().includes(searchQuery) || g.publisher.toLowerCase().includes(searchQuery))) return false;
             return true;
-        }).length;
+        }).length + countNotesForHall(hallStr);
+        
         const btn = document.createElement('button');
         btn.className = `flex-none px-3 py-1.5 text-xs rounded-full transition-colors border shadow-sm ${currentHall === hallStr ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`;
         btn.innerHTML = `<span class="text-sm font-bold">${i}</span> <span class="ml-1 text-[10px] ${currentHall === hallStr ? 'bg-white text-blue-700' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded-full">${count}</span>`;
@@ -741,7 +757,7 @@ function renderList() {
         return true;
     });
 
-    const renderNoteObj = (note) => {
+const renderNoteObj = (note) => {
         const hall = note._hall;
         let bgClass = 'bg-slate-200 border-slate-300';
         if (note.priority) { const st = getPrioStyles(note.priority); bgClass = `${st.bgClass} ${st.borderClass}`; }
@@ -756,18 +772,22 @@ function renderList() {
             locBadge = `<button onclick="focusMap('${note.location}', '${hall}'); event.stopPropagation();" class="text-[9px] px-2 py-1 rounded shadow-sm border font-bold transition hover:opacity-80 ${badgeColor} flex items-center shrink-0"><i class="fa-solid fa-location-dot mr-1"></i>(Hal ${hall}) ${note.location}</button>`;
         }
 
+        const hallNoteText = note.notes || '';
         const li = document.createElement('li');
-        li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${bgClass}`;
+        li.className = `relative px-3 py-2 rounded-xl border-2 shadow-sm transition-all mb-2 ${bgClass} cursor-pointer hover:shadow-md`;
+        li.onclick = () => { if(!stateShowNotes) { document.getElementById(`hnote-note-${note.id}`).classList.toggle('hidden'); } };
+        
         let innerHtml = '<div class="flex items-start gap-3">';
-        innerHtml += '<input type="checkbox" ' + (note.checked ? 'checked' : '') + ' onchange="toggleHallNoteChecked(\'' + hall + '\', \'' + note.id + '\')" class="mt-1 styled-chk shrink-0 accent-slate-600">';
+        innerHtml += '<input type="checkbox" ' + (note.checked ? 'checked' : '') + ' onclick="event.stopPropagation()" onchange="toggleHallNoteChecked(\'' + hall + '\', \'' + note.id + '\')" class="mt-1 styled-chk shrink-0 accent-slate-600">';
         innerHtml += '<div class="flex-1 min-w-0 ' + (note.checked ? 'strike' : '') + '">';
         innerHtml += '<div class="flex items-start justify-between mb-0.5 gap-2">';
         innerHtml += '<h3 class="font-bold text-sm text-slate-800 flex items-center flex-wrap gap-2 pr-2"><i class="fa-solid fa-list-check text-slate-500"></i> <span class="break-words">' + note.text + '</span></h3>';
         innerHtml += '<div class="flex gap-1.5 items-center justify-end shrink-0">';
-        innerHtml += '<button onclick="selectHall(\'' + hall + '\'); openHallNotes(); editHallNote(\'' + hall + '\', \'' + note.id + '\');" class="text-slate-500 hover:text-blue-600 transition shrink-0 bg-white border border-slate-200 rounded px-2 py-1 shadow-sm" title="Bewerk Notitie"><i class="fa-solid fa-pen-to-square text-xs"></i></button>';
+        innerHtml += '<button onclick="selectHall(\'' + hall + '\'); openHallNotes(); editHallNote(\'' + hall + '\', \'' + note.id + '\'); event.stopPropagation();" class="text-slate-500 hover:text-blue-600 transition shrink-0 bg-white border border-slate-200 rounded px-2 py-1 shadow-sm" title="Bewerk Notitie"><i class="fa-solid fa-pen-to-square text-xs"></i></button>';
         innerHtml += locBadge;
         innerHtml += '</div></div>';
         if (currentHall === 'all' && !note.location) innerHtml += '<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1"><i class="fa-solid fa-map"></i> Hal ' + hall + '</p>';
+        innerHtml += `<textarea id="hnote-note-${note.id}" onchange="saveHallNoteNote('${hall}', '${note.id}', this.value)" onclick="event.stopPropagation()" class="w-full mt-2 text-xs p-2 border border-slate-200 rounded-lg bg-white/80 outline-none focus:ring-2 focus:ring-blue-500 transition shadow-inner ${stateShowNotes ? '' : 'hidden'}" rows="2" placeholder="Notities...">${hallNoteText}</textarea>`;
         innerHtml += '</div></div>';
         li.innerHTML = innerHtml;
         list.appendChild(li);
@@ -851,6 +871,7 @@ function editHallNote(hall, id) {
     const note = hallNotes[hall].find(n => n.id === id);
     if(note) {
         document.getElementById('new-hnote-text').value = note.text;
+        document.getElementById('new-hnote-notes').value = note.notes || '';
         document.getElementById('new-hnote-loc').value = note.location || '';
         document.getElementById('new-hnote-prio').value = note.priority || '';
         editingNoteId = id;
@@ -891,6 +912,7 @@ function renderHallNotesInModal() {
 function addHallNote() {
     const inputTxt = document.getElementById('new-hnote-text').value.trim();
     if(!inputTxt) return;
+    const inputNotes = document.getElementById('new-hnote-notes').value.trim();
     const inputLoc = document.getElementById('new-hnote-loc').value.trim();
     const inputPrio = document.getElementById('new-hnote-prio').value;
 
@@ -903,26 +925,37 @@ function addHallNote() {
     if(!hallNotes[currentHall]) hallNotes[currentHall] = [];
     if (editingNoteId) {
         const note = hallNotes[currentHall].find(n => n.id === editingNoteId);
-        if(note) { note.text = inputTxt; note.location = inputLoc; note.priority = inputPrio; }
+        if(note) { note.text = inputTxt; note.notes = inputNotes; note.location = inputLoc; note.priority = inputPrio; }
         editingNoteId = null;
         document.getElementById('txt-btn-add-note').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[lang].addNoteBtn}`;
     } else {
-        hallNotes[currentHall].push({ id: 'hn_' + Date.now(), text: inputTxt, location: inputLoc, priority: inputPrio, checked: false });
+        hallNotes[currentHall].push({ id: 'hn_' + Date.now(), text: inputTxt, notes: inputNotes, location: inputLoc, priority: inputPrio, checked: false });
     }
     localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
-    document.getElementById('new-hnote-text').value = ''; document.getElementById('new-hnote-loc').value = ''; document.getElementById('new-hnote-prio').value = '';
-    renderHallNotesInModal(); renderList();
+    document.getElementById('new-hnote-text').value = ''; 
+    document.getElementById('new-hnote-notes').value = ''; 
+    document.getElementById('new-hnote-loc').value = ''; 
+    document.getElementById('new-hnote-prio').value = '';
+    renderHallNotesInModal(); renderHallTabs(); renderList();
+}
+
+function saveHallNoteNote(hall, id, val) {
+    const note = (hallNotes[hall] || []).find(n => n.id === id);
+    if (note) {
+        note.notes = val;
+        localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
+    }
 }
 
 function deleteHallNote(id) {
     hallNotes[currentHall] = hallNotes[currentHall].filter(n => n.id !== id);
     localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes));
-    renderHallNotesInModal(); renderList();
+    renderHallNotesInModal(); renderHallTabs(); renderList();
 }
 
 function toggleHallNoteChecked(hall, id) {
     const note = hallNotes[hall].find(n => n.id === id);
-    if(note) { note.checked = !note.checked; localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes)); renderList(); }
+    if(note) { note.checked = !note.checked; localStorage.setItem('spielHallNotes', JSON.stringify(hallNotes)); renderHallTabs(); renderList(); }
 }
 
 function openPdfModal() {
@@ -1016,7 +1049,7 @@ function generatePDF() {
                 if (stateHideVisited && n.checked) return false;
                 if (n.priority && !selectedPrios.includes(n.priority)) return false;
                 return true;
-            }).map(n => ({ id: n.id, name: n.text, publisher: "", priority: n.priority || "", boothLabel: n.location || "", isNote: true }));
+            }).map(n => ({ id: n.id, name: n.text, publisher: "", priority: n.priority || "", boothLabel: n.location || "", isNote: true, notes: n.notes || "" }));
             hallGames = hallGames.concat(hNotes);
             hallGames.sort((a, b) => getPrioOrder(a.priority) - getPrioOrder(b.priority));
         }
@@ -1090,10 +1123,10 @@ function generatePDF() {
 
             if (noLocGames.length > 0) leftGroups.unshift({ key: 'no_loc', box: {x: 0, y: 0}, games: noLocGames, label: 'Overig / Notities' });
 
-            const renderGamePrintRow = (g) => {
+           const renderGamePrintRow = (g) => {
                 const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
-                const gNote = (!g.isNote && includeGameNotes && userNotes[g.id] && userNotes[g.id].text) ? userNotes[g.id].text.trim() : '';
+                const gNote = (includeGameNotes && ((g.isNote && g.notes) || (!g.isNote && userNotes[g.id] && userNotes[g.id].text))) ? (g.isNote ? g.notes : userNotes[g.id].text).trim() : '';
                 let html = `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><div class="flex flex-col min-w-0 flex-1"><span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>`;
                 if (gNote) {
                     html += `<span class="text-[8px] italic text-slate-600 leading-tight break-words whitespace-normal">${gNote}</span>`;
