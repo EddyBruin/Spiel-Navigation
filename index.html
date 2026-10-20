@@ -1128,9 +1128,9 @@ function generatePDF() {
                 const styles = getPrioStyles(g.priority), { cleanName, titleLabels } = formatGameTitle(g.name, true);
                 const truncName = cleanName.length > 20 ? cleanName.substring(0, 20).trim() + '...' : cleanName, num = gameNumbers.get(g.id);
                 const gNote = (includeGameNotes && ((g.isNote && g.notes) || (!g.isNote && userNotes[g.id] && userNotes[g.id].text))) ? (g.isNote ? g.notes : userNotes[g.id].text).trim() : '';
-                let html = `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[14px] h-[14px] rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><div class="flex flex-col min-w-0 flex-1"><span class="text-[9.5px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[1px]">${truncName}${titleLabels}</span>`;
+                let html = `<div class="flex items-start gap-1 mt-0.5 leading-none mb-[1px]"><div class="w-[11px] h-[11px] rounded-full border border-black flex items-center justify-center text-[7px] font-bold text-black shrink-0" style="background-color: ${styles.hex}">${num}</div><div class="flex flex-col min-w-0 flex-1"><span class="text-[7px] leading-tight text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis pt-[0.5px]">${truncName}${titleLabels}</span>`;
                 if (gNote) {
-                    html += `<span class="text-[8px] italic text-slate-600 leading-tight break-words whitespace-normal">${gNote}</span>`;
+                    html += `<span class="text-[7px] italic text-slate-600 leading-tight break-words whitespace-normal">${gNote}</span>`;
                 }
                 html += `</div></div>`;
                 return html;
@@ -1141,9 +1141,9 @@ function generatePDF() {
                     let colHtml = `<div class="absolute ${isLeft ? 'left-[0px]' : '-right-[52px]'} top-0 bottom-0 w-[20%] flex flex-col justify-start z-10 gap-0 overflow-hidden bg-white/40">`;
                     groups.forEach(group => {
                         const pubs = groupGamesByPublisher(group.games);
-                        colHtml += `<div class="mb-0.5"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
+                        colHtml += `<div class="mb-0.5"><div class="font-bold text-[6px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px]"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
-                            if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
+                            if (pub) colHtml += `<div class="font-bold text-[6px] uppercase mt-[0.5px] leading-none text-slate-900">${pub}</div>`;
                             gs.forEach(g => { colHtml += renderGamePrintRow(g); });
                         });
                         colHtml += `</div>`;
@@ -1154,9 +1154,9 @@ function generatePDF() {
                     let colHtml = `<div class="absolute ${isLeft ? 'top-0' : '-bottom-[2px]'} left-0 right-0 flex flex-row flex-wrap justify-between items-${isLeft ? 'start content-start' : 'end content-end'} gap-x-2 gap-y-0.5 z-10 bg-white/40">`;
                     groups.forEach(group => {
                         const pubs = groupGamesByPublisher(group.games);
-                        colHtml += `<div class="mb-0.5 w-44 shrink-0"><div class="font-bold text-[10px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px] border-b-[1.5px] border-slate-800 mb-0.5"></div>`;
+                        colHtml += `<div class="mb-0.5 w-44 shrink-0"><div class="font-bold text-[6px] mb-0.5 leading-none">${group.label}</div><div class="w-[50px]"></div>`;
                         Object.entries(pubs).forEach(([pub, gs]) => {
-                            if (pub) colHtml += `<div class="font-bold text-[8px] uppercase mt-[2px] leading-none text-slate-900">${pub}</div>`;
+                            if (pub) colHtml += `<div class="font-bold text-[6px] uppercase mt-[0.5px] leading-none text-slate-900">${pub}</div>`;
                             gs.forEach(g => { colHtml += renderGamePrintRow(g); });
                         });
                         colHtml += `</div>`;
